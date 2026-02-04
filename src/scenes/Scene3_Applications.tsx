@@ -12,10 +12,25 @@ const apps = [
   { name: "Research / Experimental Interfaces", desc: "Exploration in controlled settings" },
 ];
 
+const BASE_TIME = 5000;  // 10 seconds base
+const HOVER_DELAY = 1000; // 1 second per new panel
+const MAX_TOTAL = 15000;  // max total time
+
 export default function Scene3_Applications({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [hoveredPanels, setHoveredPanels] = useState<Set<string>>(new Set());
   const appRefs = useRef<HTMLDivElement[]>([]);
   const orbRef = useRef<HTMLDivElement>(null);
+  const startTimeRef = useRef<number>(Date.now());
+  const deadlineRef = useRef<number>(startTimeRef.current + BASE_TIME);
+
+  // Reset timer whenever scene becomes active
+  useEffect(() => {
+    if (!_isActive) return;
+    startTimeRef.current = Date.now();
+    deadlineRef.current = startTimeRef.current + BASE_TIME;
+    setHoveredPanels(new Set());
+  }, [_isActive]);
 
   // Orb rotation + pulse
   useEffect(() => {
@@ -34,7 +49,7 @@ export default function Scene3_Applications({ onAdvance: _onAdvance, isActive: _
     return () => cancelAnimationFrame(animationId);
   }, [_isActive]);
 
-  // Card drift with vertical + horizontal wiggle
+  // Card drift + hover scale
   useEffect(() => {
     if (!_isActive) return;
     let frame = 0;
@@ -56,13 +71,39 @@ export default function Scene3_Applications({ onAdvance: _onAdvance, isActive: _
     return () => cancelAnimationFrame(animationId);
   }, [_isActive, hovered]);
 
+  // Auto-advance logic
+  useEffect(() => {
+    if (!_isActive) return;
+
+    const interval = setInterval(() => {
+      if (Date.now() >= deadlineRef.current) {
+        _onAdvance();
+      }
+    }, 50); // frequent check
+    return () => clearInterval(interval);
+  }, [_isActive, _onAdvance]);
+
+  // Extend deadline on **new panel hover**
+  const handleHover = (name: string) => {
+    setHovered(name);
+
+    if (!hoveredPanels.has(name)) {
+      const newPanels = new Set(hoveredPanels);
+      newPanels.add(name);
+      setHoveredPanels(newPanels);
+
+      // New deadline = start + BASE_TIME + (hovered panels × HOVER_DELAY), capped at MAX_TOTAL
+      const totalTime = Math.min(BASE_TIME + newPanels.size * HOVER_DELAY, MAX_TOTAL);
+      deadlineRef.current = startTimeRef.current + totalTime;
+    }
+  };
+
   return (
     <div
       className="scene"
-      onClick={() => _onAdvance()}
       style={{
         height: "100vh",
-        cursor: "pointer",
+        cursor: "default",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -92,10 +133,8 @@ export default function Scene3_Applications({ onAdvance: _onAdvance, isActive: _
         {apps.map((a, idx) => (
           <div
             key={a.name}
-            ref={(el) => {
-              if (el) appRefs.current[idx] = el;
-            }}
-            onMouseEnter={() => setHovered(a.name)}
+            ref={(el) => { if (el) appRefs.current[idx] = el; }}
+            onMouseEnter={() => handleHover(a.name)}
             onMouseLeave={() => setHovered(null)}
             style={{
               padding: "20px",

@@ -12,10 +12,17 @@ const terms = [
   { word: "VR", desc: "Starts with high-fidelity VR but not limited" },
 ];
 
+const BASE_TIME = 5000; // 5s base
+const HOVER_EXTENSION = 1500; // +1.5s when a new term is hovered
+const MAX_TOTAL = 15000; // max 12s total
+
 export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [hoveredTerms, setHoveredTerms] = useState<Set<string>>(new Set());
   const termRefs = useRef<HTMLSpanElement[]>([]);
   const orbRef = useRef<HTMLDivElement>(null);
+  const startTimeRef = useRef<number>(0);
+  const deadlineRef = useRef<number>(0);
 
   // Orb rotation + pulse
   useEffect(() => {
@@ -34,7 +41,7 @@ export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isA
     return () => cancelAnimationFrame(animationId);
   }, [_isActive]);
 
-  // Term drift
+  // Term drift + hover scale
   useEffect(() => {
     if (!_isActive) return;
     let frame = 0;
@@ -55,13 +62,45 @@ export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isA
     return () => cancelAnimationFrame(animationId);
   }, [_isActive, hovered]);
 
+  // Auto-advance logic
+  useEffect(() => {
+    if (!_isActive) return;
+
+    // initialize start and deadline
+    startTimeRef.current = Date.now();
+    deadlineRef.current = startTimeRef.current + BASE_TIME;
+
+    const interval = setInterval(() => {
+      if (Date.now() >= deadlineRef.current) {
+        _onAdvance();
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [_isActive, _onAdvance]);
+
+  // Extend deadline when a new term is hovered
+  const handleHover = (word: string) => {
+    setHovered(word);
+
+    if (!hoveredTerms.has(word)) {
+      const newTerms = new Set(hoveredTerms);
+      newTerms.add(word);
+      setHoveredTerms(newTerms);
+
+      // Extend the deadline dynamically
+      const elapsed = Date.now() - startTimeRef.current;
+      const remaining = Math.min(BASE_TIME + newTerms.size * HOVER_EXTENSION - elapsed, MAX_TOTAL - elapsed);
+      deadlineRef.current = Date.now() + remaining;
+    }
+  };
+
   return (
     <div
       className="scene"
-      onClick={() => _onAdvance()}
       style={{
         height: "100vh",
-        cursor: "pointer",
+        cursor: "default",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -92,7 +131,7 @@ export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isA
           <span
             key={t.word}
             ref={(el) => { if (el) termRefs.current[idx] = el; }}
-            onMouseEnter={() => setHovered(t.word)}
+            onMouseEnter={() => handleHover(t.word)}
             onMouseLeave={() => setHovered(null)}
             style={{
               padding: "10px",

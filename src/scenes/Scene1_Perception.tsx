@@ -15,11 +15,12 @@ const signals = [
 
 export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [hoveredSignals, setHoveredSignals] = useState<Set<string>>(new Set());
   const signalRefs = useRef<HTMLDivElement[]>([]);
   const orbRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
 
-  // Orb rotation + pulse
+  // --- Orb rotation + pulse ---
   useEffect(() => {
     if (!_isActive) return;
     let animationId: number;
@@ -27,7 +28,7 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
     const animateOrb = () => {
       if (orbRef.current) {
         angle += 0.2;
-        const scale = 1 + Math.sin(angle / 50) * 0.02; // subtle pulse
+        const scale = 1 + Math.sin(angle / 50) * 0.02;
         orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
       }
       animationId = requestAnimationFrame(animateOrb);
@@ -36,7 +37,7 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
     return () => cancelAnimationFrame(animationId);
   }, [_isActive]);
 
-  // Signal drift with horizontal wiggle
+  // --- Signal drift ---
   useEffect(() => {
     if (!_isActive) return;
     let frame = 0;
@@ -45,8 +46,8 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
     const drift = () => {
       signalRefs.current.forEach((el, idx) => {
         if (el) {
-          const offsetY = Math.sin(frame / 20 + idx) * 1; // ±1px vertical
-          const offsetX = Math.sin(frame / 30 + idx) * 0.5; // ±0.5px horizontal
+          const offsetY = Math.sin(frame / 20 + idx) * 1;
+          const offsetX = Math.sin(frame / 30 + idx) * 0.5;
           const scale = hovered === signals[idx] ? 1.05 : 1;
           el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
         }
@@ -58,11 +59,12 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
     return () => cancelAnimationFrame(animationId);
   }, [_isActive, hovered]);
 
-  // Optional subtle background gradient shift
+  // --- Background subtle gradient shift ---
   useEffect(() => {
     if (!_isActive) return;
     let frame = 0;
     let animationId: number;
+
     const driftBG = () => {
       if (bgRef.current) {
         const hue = (frame % 360) / 360 * 10;
@@ -75,11 +77,28 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
     return () => cancelAnimationFrame(animationId);
   }, [_isActive]);
 
+  // --- Auto-advance timer (hover all signals first) ---
+  useEffect(() => {
+    if (!_isActive) return;
+    if (hoveredSignals.size < signals.length) return;
+
+    let timerId: number;
+    const startTimer = () => {
+      timerId = window.setTimeout(() => {
+        _onAdvance();
+      }, 2500); // 2.5s delay after all signals hovered
+    };
+
+    startTimer();
+
+    // Cleanup / reset if hovered changes
+    return () => clearTimeout(timerId);
+  }, [_isActive, hoveredSignals, hovered]);
+
   return (
     <div
       ref={bgRef}
       className="scene"
-      onClick={() => _onAdvance()}
       style={{
         height: "100vh",
         cursor: "pointer",
@@ -92,6 +111,10 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
         paddingTop: "50px",
         position: "relative",
         overflow: "hidden",
+      }}
+      onClick={() => {
+        // Clicking resets timer but doesn't advance
+        setHoveredSignals(new Set(hoveredSignals));
       }}
     >
       {/* Orb */}
@@ -115,7 +138,10 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
             ref={(el) => {
               if (el) signalRefs.current[idx] = el;
             }}
-            onMouseEnter={() => setHovered(s)}
+            onMouseEnter={() => {
+              setHovered(s);
+              setHoveredSignals((prev) => new Set(prev).add(s));
+            }}
             onMouseLeave={() => setHovered(null)}
             style={{
               padding: "20px",

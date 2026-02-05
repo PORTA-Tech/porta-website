@@ -1,6 +1,7 @@
-import SceneManager from "./core/SceneManager";
-import "./styles/global.css";
+import SceneManager3D from "./components/SceneManager3D";
 
-export default function App() {
-  return <SceneManager />;
+function App() {
+  return <SceneManager3D />;
 }
+
+export default App;

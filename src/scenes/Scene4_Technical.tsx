@@ -12,87 +12,111 @@ const terms = [
   { word: "VR", desc: "Starts with high-fidelity VR but not limited" },
 ];
 
-const BASE_TIME = 5000; // 5s base
-const HOVER_EXTENSION = 1500; // +1.5s when a new term is hovered
-const MAX_TOTAL = 15000; // max 12s total
+const BASE_TIME = 5000;
+const HOVER_EXTENSION = 1500;
+const MAX_TOTAL = 15000;
 
-export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
+export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredTerms, setHoveredTerms] = useState<Set<string>>(new Set());
-  const termRefs = useRef<HTMLSpanElement[]>([]);
-  const orbRef = useRef<HTMLDivElement>(null);
-  const startTimeRef = useRef<number>(0);
-  const deadlineRef = useRef<number>(0);
 
-  // Orb rotation + pulse
+  const termRefs = useRef<HTMLSpanElement[]>([]);
+  const orbRef = useRef<HTMLDivElement | null>(null);
+
+  const startTimeRef = useRef(0);
+  const deadlineRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const finishedRef = useRef(false);
+
+  // --- Reset on activation ---
   useEffect(() => {
-    if (!_isActive) return;
-    let animationId: number;
+    if (!isActive) return;
+    startTimeRef.current = Date.now();
+    deadlineRef.current = startTimeRef.current + BASE_TIME;
+    finishedRef.current = false;
+    setHoveredTerms(new Set());
+  }, [isActive]);
+
+  // --- Orb rotation ---
+  useEffect(() => {
+    if (!isActive) return;
     let angle = 0;
-    const animateOrb = () => {
+    let id: number;
+
+    const animate = () => {
       if (orbRef.current) {
         angle += 0.2;
         const scale = 1 + Math.sin(angle / 50) * 0.02;
         orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
       }
-      animationId = requestAnimationFrame(animateOrb);
+      id = requestAnimationFrame(animate);
     };
-    animateOrb();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive]);
 
-  // Term drift + hover scale
+    animate();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
+
+  // --- Term drift + hover ---
   useEffect(() => {
-    if (!_isActive) return;
+    if (!isActive) return;
     let frame = 0;
-    let animationId: number;
+    let id: number;
 
     const drift = () => {
       termRefs.current.forEach((el, idx) => {
-        if (el) {
-          const offsetY = Math.sin(frame / 20 + idx) * 1;
-          const scale = hovered === terms[idx].word ? 1.05 : 1;
-          el.style.transform = `translateY(${offsetY}px) scale(${scale})`;
-        }
+        if (!el) return;
+        const offsetY = Math.sin(frame / 20 + idx) * 1;
+        const scale = hovered === terms[idx].word ? 1.05 : 1;
+        el.style.transform = `translateY(${offsetY}px) scale(${scale})`;
       });
       frame++;
-      animationId = requestAnimationFrame(drift);
+      id = requestAnimationFrame(drift);
     };
+
     drift();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive, hovered]);
+    return () => cancelAnimationFrame(id);
+  }, [isActive, hovered]);
 
-  // Auto-advance logic
+  // --- Closed-loop advance controller ---
   useEffect(() => {
-    if (!_isActive) return;
+    if (!isActive) return;
 
-    // initialize start and deadline
-    startTimeRef.current = Date.now();
-    deadlineRef.current = startTimeRef.current + BASE_TIME;
+    const loop = () => {
+      if (finishedRef.current) return;
 
-    const interval = setInterval(() => {
       if (Date.now() >= deadlineRef.current) {
-        _onAdvance();
+        finishedRef.current = true;
+        onAdvance();
+        return;
       }
-    }, 50);
 
-    return () => clearInterval(interval);
-  }, [_isActive, _onAdvance]);
+      rafIdRef.current = requestAnimationFrame(loop);
+    };
 
-  // Extend deadline when a new term is hovered
+    rafIdRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      finishedRef.current = true;
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    };
+  }, [isActive, onAdvance]);
+
+  // --- Hover logic ---
   const handleHover = (word: string) => {
     setHovered(word);
 
-    if (!hoveredTerms.has(word)) {
-      const newTerms = new Set(hoveredTerms);
-      newTerms.add(word);
-      setHoveredTerms(newTerms);
+    if (hoveredTerms.has(word)) return;
 
-      // Extend the deadline dynamically
-      const elapsed = Date.now() - startTimeRef.current;
-      const remaining = Math.min(BASE_TIME + newTerms.size * HOVER_EXTENSION - elapsed, MAX_TOTAL - elapsed);
-      deadlineRef.current = Date.now() + remaining;
-    }
+    const newTerms = new Set(hoveredTerms);
+    newTerms.add(word);
+    setHoveredTerms(newTerms);
+
+    const totalTime = Math.min(
+      BASE_TIME + newTerms.size * HOVER_EXTENSION,
+      MAX_TOTAL
+    );
+
+    deadlineRef.current = startTimeRef.current + totalTime;
   };
 
   return (
@@ -100,15 +124,12 @@ export default function Scene4_Technical({ onAdvance: _onAdvance, isActive: _isA
       className="scene"
       style={{
         height: "100vh",
-        cursor: "default",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "flex-start",
+        paddingTop: "50px",
         background: "linear-gradient(180deg, #000000, #111111)",
         color: "white",
-        paddingTop: "50px",
-        position: "relative",
         overflow: "hidden",
       }}
     >

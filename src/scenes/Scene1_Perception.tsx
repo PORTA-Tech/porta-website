@@ -13,57 +13,66 @@ const signals = [
   "Emotional Inference Engine",
 ];
 
-export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
+const AUTO_ADVANCE_DELAY = 2500; // 2.5s after all signals hovered
+const MAX_TOTAL = 10000; // optional hard cap
+
+export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredSignals, setHoveredSignals] = useState<Set<string>>(new Set());
+
   const signalRefs = useRef<HTMLDivElement[]>([]);
   const orbRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
 
+  const startTimeRef = useRef<number>(0);
+  const deadlineRef = useRef<number>(0);
+  const rafIdRef = useRef<number | null>(null);
+  const finishedRef = useRef(false);
+
   // --- Orb rotation + pulse ---
   useEffect(() => {
-    if (!_isActive) return;
-    let animationId: number;
+    if (!isActive) return;
     let angle = 0;
-    const animateOrb = () => {
+    let id: number;
+
+    const animate = () => {
       if (orbRef.current) {
         angle += 0.2;
         const scale = 1 + Math.sin(angle / 50) * 0.02;
         orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
       }
-      animationId = requestAnimationFrame(animateOrb);
+      id = requestAnimationFrame(animate);
     };
-    animateOrb();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive]);
+    animate();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
 
   // --- Signal drift ---
   useEffect(() => {
-    if (!_isActive) return;
+    if (!isActive) return;
     let frame = 0;
-    let animationId: number;
+    let id: number;
 
     const drift = () => {
       signalRefs.current.forEach((el, idx) => {
-        if (el) {
-          const offsetY = Math.sin(frame / 20 + idx) * 1;
-          const offsetX = Math.sin(frame / 30 + idx) * 0.5;
-          const scale = hovered === signals[idx] ? 1.05 : 1;
-          el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        }
+        if (!el) return;
+        const offsetY = Math.sin(frame / 20 + idx) * 1;
+        const offsetX = Math.sin(frame / 30 + idx) * 0.5;
+        const scale = hovered === signals[idx] ? 1.05 : 1;
+        el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
       frame++;
-      animationId = requestAnimationFrame(drift);
+      id = requestAnimationFrame(drift);
     };
     drift();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive, hovered]);
+    return () => cancelAnimationFrame(id);
+  }, [isActive, hovered]);
 
   // --- Background subtle gradient shift ---
   useEffect(() => {
-    if (!_isActive) return;
+    if (!isActive) return;
     let frame = 0;
-    let animationId: number;
+    let id: number;
 
     const driftBG = () => {
       if (bgRef.current) {
@@ -71,29 +80,51 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
         bgRef.current.style.background = `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
       }
       frame++;
-      animationId = requestAnimationFrame(driftBG);
+      id = requestAnimationFrame(driftBG);
     };
     driftBG();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive]);
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
 
-  // --- Auto-advance timer (hover all signals first) ---
+  // --- Closed-loop auto-advance ---
   useEffect(() => {
-    if (!_isActive) return;
-    if (hoveredSignals.size < signals.length) return;
+    if (!isActive) return;
 
-    let timerId: number;
-    const startTimer = () => {
-      timerId = window.setTimeout(() => {
-        _onAdvance();
-      }, 2500); // 2.5s delay after all signals hovered
+    finishedRef.current = false;
+    startTimeRef.current = Date.now();
+    if (hoveredSignals.size >= signals.length) {
+      deadlineRef.current = startTimeRef.current + AUTO_ADVANCE_DELAY;
+    } else {
+      deadlineRef.current = Infinity; // wait for all signals hovered
+    }
+
+    const loop = () => {
+      if (finishedRef.current) return;
+
+      // update deadline dynamically when all signals hovered
+      if (hoveredSignals.size >= signals.length && deadlineRef.current === Infinity) {
+        deadlineRef.current = Date.now() + AUTO_ADVANCE_DELAY;
+      }
+
+      const now = Date.now();
+      const elapsed = now - startTimeRef.current;
+
+      if (now >= deadlineRef.current || elapsed >= MAX_TOTAL) {
+        finishedRef.current = true;
+        onAdvance();
+        return;
+      }
+
+      rafIdRef.current = requestAnimationFrame(loop);
     };
 
-    startTimer();
+    rafIdRef.current = requestAnimationFrame(loop);
 
-    // Cleanup / reset if hovered changes
-    return () => clearTimeout(timerId);
-  }, [_isActive, hoveredSignals, hovered]);
+    return () => {
+      finishedRef.current = true;
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    };
+  }, [isActive, hoveredSignals, onAdvance]);
 
   return (
     <div
@@ -111,10 +142,6 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
         paddingTop: "50px",
         position: "relative",
         overflow: "hidden",
-      }}
-      onClick={() => {
-        // Clicking resets timer but doesn't advance
-        setHoveredSignals(new Set(hoveredSignals));
       }}
     >
       {/* Orb */}
@@ -135,12 +162,10 @@ export default function Scene1_Perception({ onAdvance: _onAdvance, isActive: _is
         {signals.map((s, idx) => (
           <div
             key={s}
-            ref={(el) => {
-              if (el) signalRefs.current[idx] = el;
-            }}
+            ref={(el) => { if (el) signalRefs.current[idx] = el; }}
             onMouseEnter={() => {
+              setHoveredSignals((prev) => new Set([...prev, s]));
               setHovered(s);
-              setHoveredSignals((prev) => new Set(prev).add(s));
             }}
             onMouseLeave={() => setHovered(null)}
             style={{

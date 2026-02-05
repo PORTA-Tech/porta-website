@@ -22,30 +22,22 @@ export default function SceneManager() {
     setActiveIndex((prev) => Math.min(prev + 1, scenes.length - 1));
   };
 
-  // Minor keyboard triggers for testing
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "n") handleAdvance(); // press 'n' to advance scene
-      if (e.key === "p") setActiveIndex((prev) => Math.max(prev - 1, 0)); // press 'p' to go back
+      if (e.key === "n") handleAdvance();
+      if (e.key === "p") setActiveIndex((prev) => Math.max(prev - 1, 0));
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  const ActiveScene = scenes[activeIndex];
+
   return (
-    <>
-      {scenes.map((SceneComponent, idx) => (
-        <div
-          key={idx}
-          style={{
-            display: idx === activeIndex ? "block" : "none",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <SceneComponent isActive={idx === activeIndex} onAdvance={handleAdvance} />
-        </div>
-      ))}
-    </>
+    <ActiveScene
+      isActive
+      onAdvance={handleAdvance}
+    />
   );
 }
+

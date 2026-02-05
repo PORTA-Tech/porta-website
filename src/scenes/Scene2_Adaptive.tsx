@@ -12,95 +12,125 @@ const panels = [
   { name: "Environment Modulation", desc: "Continuously shapes user experience in real time" },
 ];
 
-const BASE_DELAY = 4000; // 4s base auto-advance
-const HOVER_DELAY = 1500; // 1.5s added per hover
-const MAX_TOTAL = 10000; // 10s max total for scene
+const BASE_DELAY = 4000;
+const HOVER_DELAY = 1500;
+const MAX_TOTAL = 10000;
 
 export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
-  const panelRefs = useRef<HTMLDivElement[]>([]);
-  const orbRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const deadlineRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
 
-  // Orb rotation + pulse
+  const panelRefs = useRef<HTMLDivElement[]>([]);
+  const orbRef = useRef<HTMLDivElement | null>(null);
+  const bgRef = useRef<HTMLDivElement | null>(null);
+
+  const startTimeRef = useRef(0);
+  const deadlineRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const finishedRef = useRef(false);
+
+  // --- Orb ---
   useEffect(() => {
     if (!isActive) return;
-    let animationId: number;
     let angle = 0;
-    const animateOrb = () => {
+    let id: number;
+
+    const animate = () => {
       if (orbRef.current) {
         angle += 0.2;
         const scale = 1 + Math.sin(angle / 50) * 0.02;
         orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
       }
-      animationId = requestAnimationFrame(animateOrb);
+      id = requestAnimationFrame(animate);
     };
-    animateOrb();
-    return () => cancelAnimationFrame(animationId);
+
+    animate();
+    return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // Panel drift
+  // --- Panel drift ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
-    let animationId: number;
+    let id: number;
+
     const drift = () => {
       panelRefs.current.forEach((el, idx) => {
-        if (el) {
-          const offsetY = Math.sin(frame / 20 + idx) * 1;
-          const offsetX = Math.sin(frame / 30 + idx) * 0.5;
-          const scale = hovered === panels[idx].name ? 1.05 : 1;
-          el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-        }
+        if (!el) return;
+        const offsetY = Math.sin(frame / 20 + idx) * 1;
+        const offsetX = Math.sin(frame / 30 + idx) * 0.5;
+        const scale = hovered === panels[idx].name ? 1.05 : 1;
+        el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
       frame++;
-      animationId = requestAnimationFrame(drift);
+      id = requestAnimationFrame(drift);
     };
+
     drift();
-    return () => cancelAnimationFrame(animationId);
+    return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // Background gradient
+  // --- Background ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
-    let animationId: number;
-    const driftBG = () => {
+    let id: number;
+
+    const drift = () => {
       if (bgRef.current) {
-        const hue = (frame % 360) / 360 * 10;
-        bgRef.current.style.background = `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
+        const hue = ((frame % 360) / 360) * 10;
+        bgRef.current.style.background =
+          `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
       }
       frame++;
-      animationId = requestAnimationFrame(driftBG);
+      id = requestAnimationFrame(drift);
     };
-    driftBG();
-    return () => cancelAnimationFrame(animationId);
+
+    drift();
+    return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // Auto-advance logic
+  // --- Closed-loop timing controller ---
   useEffect(() => {
     if (!isActive) return;
 
+    finishedRef.current = false;
     startTimeRef.current = Date.now();
     deadlineRef.current = startTimeRef.current + BASE_DELAY;
 
-    const checkAdvance = () => {
+    const loop = () => {
+      if (finishedRef.current) return;
+
       const now = Date.now();
-      if (now >= deadlineRef.current || now - startTimeRef.current >= MAX_TOTAL) {
+      const elapsed = now - startTimeRef.current;
+
+      if (now >= deadlineRef.current || elapsed >= MAX_TOTAL) {
+        finishedRef.current = true;
         onAdvance();
-      } else {
-        requestAnimationFrame(checkAdvance);
+        return;
       }
+
+      rafIdRef.current = requestAnimationFrame(loop);
     };
-    requestAnimationFrame(checkAdvance);
+
+    rafIdRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      finishedRef.current = true;
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    };
   }, [isActive, onAdvance]);
 
-  // Hover panel extends timer
+  // --- Hover signal (attention input) ---
   const handlePanelHover = (panelName: string) => {
     setHovered(panelName);
-    deadlineRef.current = Math.min(deadlineRef.current + HOVER_DELAY, startTimeRef.current + MAX_TOTAL);
+
+    const now = Date.now();
+    if (now >= deadlineRef.current) return;
+
+    deadlineRef.current = Math.min(
+      deadlineRef.current + HOVER_DELAY,
+      startTimeRef.current + MAX_TOTAL
+    );
   };
 
   return (
@@ -109,19 +139,15 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
       className="scene"
       style={{
         height: "100vh",
-        cursor: "pointer",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "flex-start",
+        paddingTop: "50px",
         background: "linear-gradient(180deg, #000000, #111111)",
         color: "white",
-        paddingTop: "50px",
-        position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Orb */}
       <div
         ref={orbRef}
         style={{
@@ -135,7 +161,14 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
 
       <h2>Adaptive Intelligence</h2>
 
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "50px", width: "90%" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "50px",
+          width: "90%",
+        }}
+      >
         {panels.map((p, idx) => (
           <div
             key={p.name}
@@ -156,7 +189,15 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
           >
             {p.name}
             {hovered === p.name && (
-              <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>{p.desc}</div>
+              <div
+                style={{
+                  fontSize: "0.8em",
+                  color: "lightgray",
+                  marginTop: "5px",
+                }}
+              >
+                {p.desc}
+              </div>
             )}
           </div>
         ))}

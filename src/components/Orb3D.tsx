@@ -1,43 +1,71 @@
-import { useRef, useState } from "react";
+// src/components/Orb3D.tsx
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Mesh } from "three";
+import * as THREE from "three";
 
-type OrbProps = {
-  onClick: () => void;
-  position?: [number, number, number];
-  scale?: number;
-};
+interface Orb3DProps {
+  radius?: number;
+  color?: string;
+  glowIntensity?: number;
+}
 
 export default function Orb3D({
-  onClick,
-  position = [0, 0, 0],
-  scale = 1,
-}: OrbProps) {
-  const ref = useRef<Mesh>(null);
-  const [hovered, setHovered] = useState(false);
+  radius = 1.5,
+  color = "#00ffff", // cyan
+  glowIntensity = 1.5,
+}: Orb3DProps) {
+  const orbRef = useRef<THREE.Mesh>(null);
+  const ringsRef = useRef<THREE.Group>(null);
 
-  useFrame(() => {
-    if (ref.current) {
-      ref.current.rotation.y += 0.01;
-      ref.current.rotation.x += 0.005;
+  // Animate rotation and pulsing scale
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+
+    // Orb rotation
+    if (orbRef.current) {
+      orbRef.current.rotation.y = t * 0.2; // slow rotation
+      const pulse = 1 + 0.05 * Math.sin(t * 1.5); // ambient pulse
+      orbRef.current.scale.set(pulse, pulse, pulse);
+    }
+
+    // Inner rings rotation/pulse
+    if (ringsRef.current) {
+      ringsRef.current.rotation.y = t * 0.4;
+      ringsRef.current.rotation.x = t * 0.2;
     }
   });
 
   return (
-    <mesh
-      ref={ref}
-      onClick={onClick}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-      position={position}
-      scale={hovered ? scale * 1.2 : scale}
-    >
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshStandardMaterial
-        color="cyan"
-        emissive="cyan"
-        emissiveIntensity={hovered ? 1 : 0.4}
-      />
-    </mesh>
+    <group>
+      {/* Main orb */}
+      <mesh ref={orbRef}>
+        <sphereGeometry args={[radius, 64, 64]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={glowIntensity}
+          metalness={0.2}
+          roughness={0.1}
+        />
+      </mesh>
+
+      {/* Inner rings */}
+      <group ref={ringsRef}>
+        {[0.8, 1.0, 1.2].map((r, i) => (
+          <mesh key={i}>
+            <torusGeometry args={[r, 0.02, 16, 100]} />
+            <meshStandardMaterial
+              color={color}
+              emissive={color}
+              emissiveIntensity={glowIntensity * 0.6}
+              metalness={0.1}
+              roughness={0.2}
+              transparent
+              opacity={0.6 - i * 0.15} // inner rings fade out
+            />
+          </mesh>
+        ))}
+      </group>
+    </group>
   );
 }

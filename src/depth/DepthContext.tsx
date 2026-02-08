@@ -1,9 +1,8 @@
-// src/depth/DepthContext.tsx
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 type DepthContextType = {
-  depth: number; // 0 → start, 1 → end
+  depth: number;
   setDepth: (value: number) => void;
 };
 

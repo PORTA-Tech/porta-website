@@ -1,4 +1,3 @@
-// src/depth/DepthController.tsx
 import { useEffect } from "react";
 import { useDepth } from "./DepthContext";
 
@@ -7,15 +6,16 @@ export default function DepthController() {
 
   useEffect(() => {
     const handleScroll = () => {
-  const scrollY = window.scrollY;
-  const totalHeight = document.body.scrollHeight - window.innerHeight;
-  const depth = Math.min(scrollY / totalHeight, 1);
+      const scrollY = window.scrollY;
+      const totalHeight = document.body.scrollHeight - window.innerHeight;
+      if (totalHeight <= 0) return;
+      setDepth(Math.min(scrollY / totalHeight, 1));
+    };
 
-  console.log("DEPTH:", depth); 
-  setDepth(depth);
-};
+    // initialize depth at current scroll to prevent jump
+    handleScroll();
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setDepth]);
 

@@ -1,30 +1,27 @@
-// src/App.tsx
 import { Canvas } from "@react-three/fiber";
-import { DepthProvider } from "./depth/DepthContext";
-import DepthController from "./depth/DepthController";
-import CameraRig from "./world/CameraRig";
+import { useState } from "react";
+import SceneManager from "./core/SceneManager";
 import World3D from "./world/World3D";
 
-function App() {
+export default function App() {
+  const [sceneIndex, setSceneIndex] = useState(0);
+
   return (
-    <DepthProvider>
-      <DepthController />
-
+    <>
       <Canvas
-        camera={{ fov: 50, near: 0.1, far: 100, position: [0, 0, 6] }}
-        style={{ width: "100%", height: "100vh" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 1, // behind scene content
+        }}
       >
-        {/* CameraRig just holds the group, no children yet */}
-        <CameraRig startZ={6} maxZ={0} />
-
-        {/* Your orb + panels */}
-        <World3D />
+        <World3D sceneIndex={sceneIndex} />
       </Canvas>
 
-      {/* scroll space */}
-      <div style={{ height: "300vh" }} />
-    </DepthProvider>
+      <SceneManager onSceneChange={setSceneIndex} />
+    </>
   );
 }
-
-export default App;

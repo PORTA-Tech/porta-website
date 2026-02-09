@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -21,8 +23,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
   const [hoveredPanels, setHoveredPanels] = useState<Set<string>>(new Set());
 
   const appRefs = useRef<HTMLDivElement[]>([]);
-  const orbRef = useRef<HTMLDivElement | null>(null);
-
   const startTimeRef = useRef(0);
   const deadlineRef = useRef(0);
   const rafIdRef = useRef<number | null>(null);
@@ -35,25 +35,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     deadlineRef.current = startTimeRef.current + BASE_TIME;
     finishedRef.current = false;
     setHoveredPanels(new Set());
-  }, [isActive]);
-
-  // --- Orb ---
-  useEffect(() => {
-    if (!isActive) return;
-    let angle = 0;
-    let id: number;
-
-    const animate = () => {
-      if (orbRef.current) {
-        angle += 0.2;
-        const scale = 1 + Math.sin(angle / 50) * 0.02;
-        orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
-      }
-      id = requestAnimationFrame(animate);
-    };
-
-    animate();
-    return () => cancelAnimationFrame(id);
   }, [isActive]);
 
   // --- Card drift ---
@@ -113,11 +94,7 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     newPanels.add(name);
     setHoveredPanels(newPanels);
 
-    const totalTime = Math.min(
-      BASE_TIME + newPanels.size * HOVER_DELAY,
-      MAX_TOTAL
-    );
-
+    const totalTime = Math.min(BASE_TIME + newPanels.size * HOVER_DELAY, MAX_TOTAL);
     deadlineRef.current = startTimeRef.current + totalTime;
   };
 
@@ -135,18 +112,23 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
         overflow: "hidden",
       }}
     >
-      <div
-        ref={orbRef}
+      {/* 3D Orb */}
+      <Canvas
         style={{
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #4444ff, #000000)",
-          marginBottom: "30px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
         }}
-      />
+      >
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+        <Orb3D mode={3} /> {/* Scene3 mode */}
+      </Canvas>
 
-      <h2>Platform Applications</h2>
+      <h2 style={{ position: "relative", zIndex: 1 }}>Platform Applications</h2>
 
       <div
         style={{
@@ -154,14 +136,14 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
           justifyContent: "space-around",
           marginTop: "50px",
           width: "90%",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         {apps.map((a, idx) => (
           <div
             key={a.name}
-            ref={(el) => {
-              if (el) appRefs.current[idx] = el;
-            }}
+            ref={(el) => { if (el) appRefs.current[idx] = el; }}
             onMouseEnter={() => handleHover(a.name)}
             onMouseLeave={() => setHovered(null)}
             style={{
@@ -176,13 +158,7 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
           >
             {a.name}
             {hovered === a.name && (
-              <div
-                style={{
-                  fontSize: "0.8em",
-                  color: "lightgray",
-                  marginTop: "5px",
-                }}
-              >
+              <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
                 {a.desc}
               </div>
             )}

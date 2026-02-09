@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -29,39 +31,54 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
   }, [isActive]);
 
   return (
-    <div
-      ref={bgRef}
-      className="scene"
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        color: "white",
-        position: "relative", // keep in flow so Canvas behind is visible
-        overflow: "hidden",
-      }}
-    >
-      <h1>PORTA</h1>
-      <h3>A neuro-adaptive emotional intelligence platform</h3>
-      <p>Senses. Infers. Responds. In real time.</p>
-
-      <button
-        onClick={onAdvance}
+    <div ref={bgRef} className="scene" style={{ overflow: "hidden" }}>
+      {/* 3D Orb canvas behind text */}
+      <Canvas
         style={{
-          marginTop: "30px",
-          padding: "10px 20px",
-          cursor: "pointer",
-          transition: "all 0.3s",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
         }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow = "0 0 15px rgba(255,255,255,0.5)")
-        }
-        onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
       >
-        Enter Interface
-      </button>
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+        <Orb3D mode={0} /> {/* mode 0 = Scene0 idle */}
+      </Canvas>
+
+      {/* Overlay text + button */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <h1>PORTA</h1>
+        <h3>A neuro-adaptive emotional intelligence platform</h3>
+        <p>Senses. Infers. Responds. In real time.</p>
+
+        <button
+          onClick={onAdvance}
+          style={{
+            marginTop: "30px",
+            padding: "10px 20px",
+            cursor: "pointer",
+            transition: "all 0.3s",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.boxShadow = "0 0 15px rgba(255,255,255,0.5)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+        >
+          Enter Interface
+        </button>
+      </div>
     </div>
   );
 }

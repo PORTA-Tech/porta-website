@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -13,15 +15,14 @@ const signals = [
   "Emotional Inference Engine",
 ];
 
-const AUTO_ADVANCE_DELAY = 2500; // 2.5s after all signals hovered
-const MAX_TOTAL = 10000; // optional hard cap
+const AUTO_ADVANCE_DELAY = 2500;
+const MAX_TOTAL = 10000;
 
 export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredSignals, setHoveredSignals] = useState<Set<string>>(new Set());
 
   const signalRefs = useRef<HTMLDivElement[]>([]);
-  const orbRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
 
   const startTimeRef = useRef<number>(0);
@@ -29,21 +30,21 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
   const rafIdRef = useRef<number | null>(null);
   const finishedRef = useRef(false);
 
-  // --- Orb rotation + pulse ---
+  // --- Background subtle gradient shift ---
   useEffect(() => {
     if (!isActive) return;
-    let angle = 0;
+    let frame = 0;
     let id: number;
 
-    const animate = () => {
-      if (orbRef.current) {
-        angle += 0.2;
-        const scale = 1 + Math.sin(angle / 50) * 0.02;
-        orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
+    const driftBG = () => {
+      if (bgRef.current) {
+        const hue = (frame % 360) / 360 * 10;
+        bgRef.current.style.background = `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
       }
-      id = requestAnimationFrame(animate);
+      frame++;
+      id = requestAnimationFrame(driftBG);
     };
-    animate();
+    driftBG();
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
@@ -68,25 +69,7 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // --- Background subtle gradient shift ---
-  useEffect(() => {
-    if (!isActive) return;
-    let frame = 0;
-    let id: number;
-
-    const driftBG = () => {
-      if (bgRef.current) {
-        const hue = (frame % 360) / 360 * 10;
-        bgRef.current.style.background = `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
-      }
-      frame++;
-      id = requestAnimationFrame(driftBG);
-    };
-    driftBG();
-    return () => cancelAnimationFrame(id);
-  }, [isActive]);
-
-  // --- Closed-loop auto-advance ---
+  // --- Auto-advance ---
   useEffect(() => {
     if (!isActive) return;
 
@@ -95,13 +78,12 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
     if (hoveredSignals.size >= signals.length) {
       deadlineRef.current = startTimeRef.current + AUTO_ADVANCE_DELAY;
     } else {
-      deadlineRef.current = Infinity; // wait for all signals hovered
+      deadlineRef.current = Infinity;
     }
 
     const loop = () => {
       if (finishedRef.current) return;
 
-      // update deadline dynamically when all signals hovered
       if (hoveredSignals.size >= signals.length && deadlineRef.current === Infinity) {
         deadlineRef.current = Date.now() + AUTO_ADVANCE_DELAY;
       }
@@ -144,25 +126,40 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
         overflow: "hidden",
       }}
     >
-      {/* Orb */}
-      <div
-        ref={orbRef}
+      {/* 3D Orb */}
+      <Canvas
         style={{
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #4444ff, #000000)",
-          marginBottom: "30px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
         }}
-      />
+      >
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+        <Orb3D mode={1} /> {/* Scene1 mode */}
+      </Canvas>
 
-      <h2>Neuro-Scanning / Perception</h2>
+      <h2 style={{ position: "relative", zIndex: 1 }}>Neuro-Scanning / Perception</h2>
 
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "50px", width: "90%" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "50px",
+          width: "90%",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {signals.map((s, idx) => (
           <div
             key={s}
-            ref={(el) => { if (el) signalRefs.current[idx] = el; }}
+            ref={(el) => {
+              if (el) signalRefs.current[idx] = el;
+            }}
             onMouseEnter={() => {
               setHoveredSignals((prev) => new Set([...prev, s]));
               setHovered(s);

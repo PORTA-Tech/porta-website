@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -21,8 +23,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
   const [hoveredTerms, setHoveredTerms] = useState<Set<string>>(new Set());
 
   const termRefs = useRef<HTMLSpanElement[]>([]);
-  const orbRef = useRef<HTMLDivElement | null>(null);
-
   const startTimeRef = useRef(0);
   const deadlineRef = useRef(0);
   const rafIdRef = useRef<number | null>(null);
@@ -35,25 +35,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     deadlineRef.current = startTimeRef.current + BASE_TIME;
     finishedRef.current = false;
     setHoveredTerms(new Set());
-  }, [isActive]);
-
-  // --- Orb rotation ---
-  useEffect(() => {
-    if (!isActive) return;
-    let angle = 0;
-    let id: number;
-
-    const animate = () => {
-      if (orbRef.current) {
-        angle += 0.2;
-        const scale = 1 + Math.sin(angle / 50) * 0.02;
-        orbRef.current.style.transform = `rotate(${angle}deg) scale(${scale})`;
-      }
-      id = requestAnimationFrame(animate);
-    };
-
-    animate();
-    return () => cancelAnimationFrame(id);
   }, [isActive]);
 
   // --- Term drift + hover ---
@@ -111,11 +92,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     newTerms.add(word);
     setHoveredTerms(newTerms);
 
-    const totalTime = Math.min(
-      BASE_TIME + newTerms.size * HOVER_EXTENSION,
-      MAX_TOTAL
-    );
-
+    const totalTime = Math.min(BASE_TIME + newTerms.size * HOVER_EXTENSION, MAX_TOTAL);
     deadlineRef.current = startTimeRef.current + totalTime;
   };
 
@@ -133,21 +110,34 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
         overflow: "hidden",
       }}
     >
-      {/* Orb */}
-      <div
-        ref={orbRef}
+      {/* 3D Orb */}
+      <Canvas
         style={{
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #4444ff, #000000)",
-          marginBottom: "30px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
         }}
-      />
+      >
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+        <Orb3D mode={4} /> {/* Scene4 mode */}
+      </Canvas>
 
-      <h2>Technical Foundation</h2>
+      <h2 style={{ position: "relative", zIndex: 1 }}>Technical Foundation</h2>
 
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "50px", width: "90%" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "50px",
+          width: "90%",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {terms.map((t, idx) => (
           <span
             key={t.word}

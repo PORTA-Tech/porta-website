@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Scene0_Portal from "../scenes/Scene0_Portal";
 import Scene1_Perception from "../scenes/Scene1_Perception";
 import Scene2_Adaptive from "../scenes/Scene2_Adaptive";
@@ -22,30 +22,49 @@ const scenes = [
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const handleAdvance = () => {
+  // Advance to next scene
+  const handleAdvance = useCallback(() => {
     setActiveIndex((prev) => {
       const next = Math.min(prev + 1, scenes.length - 1);
-      onSceneChange(next); // update App about scene change
+      onSceneChange(next);
       return next;
     });
-  };
+  }, [onSceneChange]);
 
+  // Go back to previous scene
+  const handleBack = useCallback(() => {
+    setActiveIndex((prev) => {
+      const next = Math.max(prev - 1, 0);
+      onSceneChange(next);
+      return next;
+    });
+  }, [onSceneChange]);
+
+  // Dev keyboard navigation: n / p
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "n") handleAdvance();
-      if (e.key === "p") {
-        setActiveIndex((prev) => {
-          const next = Math.max(prev - 1, 0);
-          onSceneChange(next); // update App about scene change
-          return next;
-        });
-      }
+      if (e.key === "p") handleBack();
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+  }, [handleAdvance, handleBack]);
+
+  // Automatic advance for scenes 1–4
+  useEffect(() => {
+    if (activeIndex === 0 || activeIndex === 5) return;
+
+    const timer = setTimeout(() => handleAdvance(), 12000); // 12s max per scene
+    return () => clearTimeout(timer);
+  }, [activeIndex, handleAdvance]);
 
   const ActiveScene = scenes[activeIndex];
 
-  return <ActiveScene isActive onAdvance={handleAdvance} />;
+  // Pass isActive to the scene
+  return (
+    <ActiveScene
+      isActive={true}        // ✅ Only current scene sees isActive
+      onAdvance={handleAdvance}
+    />
+  );
 }

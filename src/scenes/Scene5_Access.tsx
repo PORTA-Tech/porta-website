@@ -1,30 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
   isActive: boolean;
 };
 
-export default function Scene5_Access({ onAdvance: _onAdvance, isActive: _isActive }: SceneProps) {
+export default function Scene5_Access({ onAdvance, }: SceneProps) {
   const [email, setEmail] = useState("");
   const [hovered, setHovered] = useState(false);
-  const orbRef = useRef<HTMLDivElement>(null);
-
-  // Orb slow pulse
-  useEffect(() => {
-    if (!_isActive) return; // ✅ use _isActive
-    let animationId: number;
-    let angle = 0;
-    const pulseOrb = () => {
-      if (orbRef.current) {
-        angle += 0.1;
-        orbRef.current.style.transform = `rotate(${angle}deg) scale(${1 + Math.sin(angle / 20) * 0.02})`;
-      }
-      animationId = requestAnimationFrame(pulseOrb);
-    };
-    pulseOrb();
-    return () => cancelAnimationFrame(animationId);
-  }, [_isActive]); // ✅ dependency array
 
   return (
     <div
@@ -41,20 +26,24 @@ export default function Scene5_Access({ onAdvance: _onAdvance, isActive: _isActi
         overflow: "hidden",
       }}
     >
-      {/* Orb placeholder */}
-      <div
-        ref={orbRef}
+      {/* 3D Orb */}
+      <Canvas
         style={{
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #ff8844, #222)",
-          marginBottom: "30px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
         }}
-      />
+      >
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+        <Orb3D mode={5} color="#ff8844" /> {/* Scene5 mode + warm color */}
+      </Canvas>
 
-      <h2>Early Access</h2>
-      <p style={{ textAlign: "center", maxWidth: "400px" }}>
+      <h2 style={{ position: "relative", zIndex: 1 }}>Early Access</h2>
+      <p style={{ textAlign: "center", maxWidth: "400px", position: "relative", zIndex: 1 }}>
         Early testers and collaborators. Not mass-market users.
       </p>
       <input
@@ -62,17 +51,19 @@ export default function Scene5_Access({ onAdvance: _onAdvance, isActive: _isActi
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Your email"
-        style={{ padding: "10px", margin: "10px", width: "250px" }}
+        style={{ padding: "10px", margin: "10px", width: "250px", position: "relative", zIndex: 1 }}
       />
       <button
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={() => _onAdvance()}
+        onClick={() => onAdvance()}
         style={{
           padding: "10px 20px",
           cursor: "pointer",
           boxShadow: hovered ? "0 0 10px #ff8844" : "none",
           transition: "all 0.2s",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         Request Access

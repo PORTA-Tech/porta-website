@@ -18,6 +18,14 @@ const BASE_TIME = 5000;
 const HOVER_DELAY = 1000;
 const MAX_TOTAL = 15000;
 
+// Explicit offsets around the orb
+const OFFSETS = [
+  { x: -300, y:-200 }, // Immersive Training — left
+  { x: 200, y: -80 },  // High-Stakes Performance — right
+  { x: -200, y: 150 },  // Therapeutic Environments — left
+  { x: 200, y: 80 },   // Research / Experimental Interfaces — right
+];
+
 export default function Scene3_Applications({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredPanels, setHoveredPanels] = useState<Set<string>>(new Set());
@@ -37,7 +45,7 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     setHoveredPanels(new Set());
   }, [isActive]);
 
-  // --- Card drift ---
+  // --- Drift cards around their offsets ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -46,11 +54,12 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     const drift = () => {
       appRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetY = Math.sin(frame / 20 + idx) * 1;
-        const offsetX = Math.sin(frame / 30 + idx) * 0.5;
+        const base = OFFSETS[idx];
+        const offsetX = Math.sin(frame / 50 + idx) * 8; // gentle horizontal float
+        const offsetY = Math.cos(frame / 60 + idx) * 5; // gentle vertical float
         const scale = hovered === apps[idx].name ? 1.05 : 1;
-        el.style.transform =
-          `translate(${offsetX}px, ${hovered === apps[idx].name ? -2 : offsetY}px) scale(${scale})`;
+        el.style.transform = `translate(calc(50% + ${base.x + offsetX}px), calc(50% + ${base.y + offsetY}px)) scale(${scale})`;
+        el.style.filter = hovered === apps[idx].name ? "brightness(1.3)" : "brightness(1)";
       });
       frame++;
       id = requestAnimationFrame(drift);
@@ -110,6 +119,7 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
         background: "linear-gradient(180deg, #000000, #111111)",
         color: "white",
         overflow: "hidden",
+        position: "relative",
       }}
     >
       {/* 3D Orb */}
@@ -125,46 +135,41 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
       >
         <ambientLight intensity={0.3} />
         <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={3} /> {/* Scene3 mode */}
+        <Orb3D mode={3} />
       </Canvas>
 
       <h2 style={{ position: "relative", zIndex: 1 }}>Platform Applications</h2>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          marginTop: "50px",
-          width: "90%",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {apps.map((a, idx) => (
-          <div
-            key={a.name}
-            ref={(el) => { if (el) appRefs.current[idx] = el; }}
-            onMouseEnter={() => handleHover(a.name)}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              padding: "20px",
-              border: "1px solid gray",
-              borderRadius: "5px",
-              background: "#111111",
-              transition: "all 0.2s",
-              textAlign: "center",
-              minWidth: "140px",
-            }}
-          >
-            {a.name}
-            {hovered === a.name && (
-              <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
-                {a.desc}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {apps.map((a, idx) => (
+        <div
+          key={a.name}
+          ref={(el) => { if (el) appRefs.current[idx] = el; }}
+          onMouseEnter={() => handleHover(a.name)}
+          onMouseLeave={() => setHovered(null)}
+          style={{
+            position: "absolute",
+            padding: "20px",
+            borderRadius: "8px",
+            background: "#111111",
+            border: "1px solid rgba(255,255,255,0.2)",
+            minWidth: "140px",
+            textAlign: "center",
+            cursor: "pointer",
+            transition: "all 0.3s",
+            zIndex: 1,
+            boxShadow: hovered === a.name
+              ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+              : "0 0 8px rgba(68,68,255,0.2)", // soft glow always
+          }}
+        >
+          {a.name}
+          {hovered === a.name && (
+            <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
+              {a.desc}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

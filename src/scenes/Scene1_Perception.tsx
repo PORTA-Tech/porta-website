@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -18,10 +16,18 @@ const signals = [
 const AUTO_ADVANCE_DELAY = 2500;
 const MAX_TOTAL = 10000;
 
+// Predefined positions avoiding the orb (center 50%/50%)
+const positions = [
+  { x: 20, y: 20 }, // EEG – top-left
+  { x: 80, y: 20 }, // Heart Rate – top-right
+  { x: 20, y: 70 }, // Behavioral Signals – bottom-left
+  { x: 80, y: 70 }, // Emotional Inference Engine – bottom-right
+  { x: 50, y: 80 }, // Emotional Inference Engine – bottom-center, avoids orb
+];
+
 export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredSignals, setHoveredSignals] = useState<Set<string>>(new Set());
-
   const signalRefs = useRef<HTMLDivElement[]>([]);
   const bgRef = useRef<HTMLDivElement>(null);
 
@@ -30,12 +36,11 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
   const rafIdRef = useRef<number | null>(null);
   const finishedRef = useRef(false);
 
-  // --- Background subtle gradient shift ---
+  // --- Background subtle gradient ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
     let id: number;
-
     const driftBG = () => {
       if (bgRef.current) {
         const hue = (frame % 360) / 360 * 10;
@@ -48,7 +53,7 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // --- Signal drift ---
+  // --- Panels gentle movement ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -57,29 +62,27 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
     const drift = () => {
       signalRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetY = Math.sin(frame / 20 + idx) * 1;
-        const offsetX = Math.sin(frame / 30 + idx) * 0.5;
-        const scale = hovered === signals[idx] ? 1.05 : 1;
+        const offsetX = Math.sin(frame / 50 + idx) * 15; // gentle horizontal float
+        const offsetY = Math.cos(frame / 70 + idx) * 10; // gentle vertical float
+        const scale = hovered === signals[idx] ? 1.1 : 1;
         el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
       frame++;
       id = requestAnimationFrame(drift);
     };
+
     drift();
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // --- Auto-advance ---
+  // --- Auto-advance logic ---
   useEffect(() => {
     if (!isActive) return;
-
     finishedRef.current = false;
     startTimeRef.current = Date.now();
-    if (hoveredSignals.size >= signals.length) {
-      deadlineRef.current = startTimeRef.current + AUTO_ADVANCE_DELAY;
-    } else {
-      deadlineRef.current = Infinity;
-    }
+    deadlineRef.current = hoveredSignals.size >= signals.length
+      ? startTimeRef.current + AUTO_ADVANCE_DELAY
+      : Infinity;
 
     const loop = () => {
       if (finishedRef.current) return;
@@ -90,7 +93,6 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
 
       const now = Date.now();
       const elapsed = now - startTimeRef.current;
-
       if (now >= deadlineRef.current || elapsed >= MAX_TOTAL) {
         finishedRef.current = true;
         onAdvance();
@@ -101,7 +103,6 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
     };
 
     rafIdRef.current = requestAnimationFrame(loop);
-
     return () => {
       finishedRef.current = true;
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
@@ -126,68 +127,64 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
         overflow: "hidden",
       }}
     >
-      {/* 3D Orb */}
-      <Canvas
+      {/* Orb centered */}
+      <div
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, #4444ff, #000000)",
           zIndex: 0,
         }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={1} /> {/* Scene1 mode */}
-      </Canvas>
+      />
 
       <h2 style={{ position: "relative", zIndex: 1 }}>Neuro-Scanning / Perception</h2>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          marginTop: "50px",
-          width: "90%",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {signals.map((s, idx) => (
-          <div
-            key={s}
-            ref={(el) => {
-              if (el) signalRefs.current[idx] = el;
-            }}
-            onMouseEnter={() => {
-              setHoveredSignals((prev) => new Set([...prev, s]));
-              setHovered(s);
-            }}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              padding: "20px",
-              border: "1px solid gray",
-              borderRadius: "5px",
-              background: "#111111",
-              transition: "all 0.2s",
-              textAlign: "center",
-              minWidth: "120px",
-            }}
-          >
-            {s}
-            {hovered === s && (
-              <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
-                {s === "EEG" && "Measures brain electrical activity"}
-                {s === "Heart Rate" && "Tracks heartbeat"}
-                {s === "Electrodermal Activity (EDA)" && "Tracks skin conductance"}
-                {s === "Behavioral Signals" && "Monitors gestures and movement"}
-                {s === "Emotional Inference Engine" && "Computes inferred emotional state"}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Signal panels scattered around */}
+      {signals.map((s, idx) => (
+        <div
+          key={s}
+          ref={(el) => { if (el) signalRefs.current[idx] = el; }}
+          onMouseEnter={() => {
+            setHoveredSignals((prev) => new Set([...prev, s]));
+            setHovered(s);
+          }}
+          onMouseLeave={() => setHovered(null)}
+          style={{
+            position: "absolute",
+            top: `${positions[idx].y}%`,
+            left: `${positions[idx].x}%`,
+            padding: "20px",
+            borderRadius: "8px",
+            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            color: "white",
+            textAlign: "center",
+            minWidth: "140px",
+            cursor: "pointer",
+            zIndex: 1,
+            boxShadow: hovered === s
+              ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+              : "0 0 8px rgba(68,68,255,0.2)", // soft glow even when not hovered
+            transition: "all 0.3s",
+          }}
+        >
+          {s}
+          {hovered === s && (
+            <div style={{ fontSize: "0.85em", color: "lightgray", marginTop: "5px" }}>
+              {s === "EEG" && "Measures brain electrical activity"}
+              {s === "Heart Rate" && "Tracks heartbeat"}
+              {s === "Electrodermal Activity (EDA)" && "Tracks skin conductance"}
+              {s === "Behavioral Signals" && "Monitors gestures and movement"}
+              {s === "Emotional Inference Engine" && "Computes inferred emotional state"}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

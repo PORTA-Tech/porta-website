@@ -8,10 +8,10 @@ type SceneProps = {
 };
 
 const terms = [
-  { word: "Software", desc: "PORTA is software, not hardware" },
-  { word: "Hardware-Agnostic", desc: "Sits above sensors and devices" },
-  { word: "Closed-Loop Regulation", desc: "Enables closed-loop emotional regulation" },
-  { word: "VR", desc: "Starts with high-fidelity VR but not limited" },
+  { word: "Software", desc: "PORTA is software, not hardware", pos: { x: 25, y: 25 } },
+  { word: "Hardware-Agnostic", desc: "Sits above sensors and devices", pos: { x: 75, y: 25 } },
+  { word: "Closed-Loop Regulation", desc: "Enables closed-loop emotional regulation", pos: { x: 25, y: 70 } },
+  { word: "VR", desc: "Starts with high-fidelity VR but not limited", pos: { x: 75, y: 70 } },
 ];
 
 const BASE_TIME = 5000;
@@ -22,7 +22,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredTerms, setHoveredTerms] = useState<Set<string>>(new Set());
 
-  const termRefs = useRef<HTMLSpanElement[]>([]);
+  const termRefs = useRef<HTMLDivElement[]>([]);
   const startTimeRef = useRef(0);
   const deadlineRef = useRef(0);
   const rafIdRef = useRef<number | null>(null);
@@ -46,9 +46,13 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     const drift = () => {
       termRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetY = Math.sin(frame / 20 + idx) * 1;
+        const offsetY = Math.sin(frame / 20 + idx) * 2; // gentle drift
         const scale = hovered === terms[idx].word ? 1.05 : 1;
         el.style.transform = `translateY(${offsetY}px) scale(${scale})`;
+        el.style.filter = hovered === terms[idx].word ? "brightness(1.3)" : "brightness(1)";
+        el.style.boxShadow = hovered === terms[idx].word
+          ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+          : "0 0 8px rgba(68,68,255,0.2)"; // soft glow always
       });
       frame++;
       id = requestAnimationFrame(drift);
@@ -82,7 +86,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     };
   }, [isActive, onAdvance]);
 
-  // --- Hover logic ---
   const handleHover = (word: string) => {
     setHovered(word);
 
@@ -108,6 +111,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
         background: "linear-gradient(180deg, #000000, #111111)",
         color: "white",
         overflow: "hidden",
+        position: "relative",
       }}
     >
       {/* 3D Orb */}
@@ -123,45 +127,41 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
       >
         <ambientLight intensity={0.3} />
         <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={4} /> {/* Scene4 mode */}
+        <Orb3D mode={4} />
       </Canvas>
 
       <h2 style={{ position: "relative", zIndex: 1 }}>Technical Foundation</h2>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          marginTop: "50px",
-          width: "90%",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {terms.map((t, idx) => (
-          <span
-            key={t.word}
-            ref={(el) => { if (el) termRefs.current[idx] = el; }}
-            onMouseEnter={() => handleHover(t.word)}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              padding: "10px",
-              borderBottom: hovered === t.word ? "1px solid lightgray" : "none",
-              transition: "all 0.2s",
-              minWidth: "120px",
-              textAlign: "center",
-              display: "inline-block",
-            }}
-          >
-            {t.word}
-            {hovered === t.word && (
-              <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
-                {t.desc}
-              </div>
-            )}
-          </span>
-        ))}
-      </div>
+      {terms.map((t, idx) => (
+        <div
+          key={t.word}
+          ref={(el) => { if (el) termRefs.current[idx] = el; }}
+          onMouseEnter={() => handleHover(t.word)}
+          onMouseLeave={() => setHovered(null)}
+          style={{
+            position: "absolute",
+            top: `${t.pos.y}%`,
+            left: `${t.pos.x}%`,
+            padding: "20px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            textAlign: "center",
+            minWidth: "140px",
+            cursor: "pointer",
+            color: "white",
+            zIndex: 1,
+            transition: "all 0.3s",
+          }}
+        >
+          {t.word}
+          {hovered === t.word && (
+            <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
+              {t.desc}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

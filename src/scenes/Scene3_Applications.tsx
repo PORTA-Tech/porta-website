@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -20,10 +18,10 @@ const MAX_TOTAL = 15000;
 
 // Explicit offsets around the orb
 const OFFSETS = [
-  { x: -300, y:-200 }, // Immersive Training — left
-  { x: 200, y: -80 },  // High-Stakes Performance — right
-  { x: -200, y: 150 },  // Therapeutic Environments — left
-  { x: 200, y: 80 },   // Research / Experimental Interfaces — right
+  { x: -300, y:-200 },
+  { x: 200, y: -80 },
+  { x: -200, y: 150 },
+  { x: 200, y: 80 },
 ];
 
 export default function Scene3_Applications({ onAdvance, isActive }: SceneProps) {
@@ -36,7 +34,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
   const rafIdRef = useRef<number | null>(null);
   const finishedRef = useRef(false);
 
-  // --- Reset timing on activation ---
   useEffect(() => {
     if (!isActive) return;
     startTimeRef.current = Date.now();
@@ -45,7 +42,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     setHoveredPanels(new Set());
   }, [isActive]);
 
-  // --- Drift cards around their offsets ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -55,8 +51,8 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
       appRefs.current.forEach((el, idx) => {
         if (!el) return;
         const base = OFFSETS[idx];
-        const offsetX = Math.sin(frame / 50 + idx) * 8; // gentle horizontal float
-        const offsetY = Math.cos(frame / 60 + idx) * 5; // gentle vertical float
+        const offsetX = Math.sin(frame / 50 + idx) * 8;
+        const offsetY = Math.cos(frame / 60 + idx) * 5;
         const scale = hovered === apps[idx].name ? 1.05 : 1;
         el.style.transform = `translate(calc(50% + ${base.x + offsetX}px), calc(50% + ${base.y + offsetY}px)) scale(${scale})`;
         el.style.filter = hovered === apps[idx].name ? "brightness(1.3)" : "brightness(1)";
@@ -69,7 +65,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // --- Closed-loop advance controller ---
   useEffect(() => {
     if (!isActive) return;
 
@@ -93,7 +88,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
     };
   }, [isActive, onAdvance]);
 
-  // --- Hover signal ---
   const handleHover = (name: string) => {
     setHovered(name);
 
@@ -122,22 +116,6 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
         position: "relative",
       }}
     >
-      {/* 3D Orb */}
-      <Canvas
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-        }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={3} />
-      </Canvas>
-
       <h2 style={{ position: "relative", zIndex: 1 }}>Platform Applications</h2>
 
       {apps.map((a, idx) => (
@@ -159,7 +137,7 @@ export default function Scene3_Applications({ onAdvance, isActive }: SceneProps)
             zIndex: 1,
             boxShadow: hovered === a.name
               ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
-              : "0 0 8px rgba(68,68,255,0.2)", // soft glow always
+              : "0 0 8px rgba(68,68,255,0.2)",
           }}
         >
           {a.name}

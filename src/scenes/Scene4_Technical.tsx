@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -28,7 +26,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
   const rafIdRef = useRef<number | null>(null);
   const finishedRef = useRef(false);
 
-  // --- Reset on activation ---
   useEffect(() => {
     if (!isActive) return;
     startTimeRef.current = Date.now();
@@ -37,7 +34,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     setHoveredTerms(new Set());
   }, [isActive]);
 
-  // --- Term drift + hover ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -52,7 +48,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
         el.style.filter = hovered === terms[idx].word ? "brightness(1.3)" : "brightness(1)";
         el.style.boxShadow = hovered === terms[idx].word
           ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
-          : "0 0 8px rgba(68,68,255,0.2)"; // soft glow always
+          : "0 0 8px rgba(68,68,255,0.2)";
       });
       frame++;
       id = requestAnimationFrame(drift);
@@ -62,7 +58,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // --- Closed-loop advance controller ---
   useEffect(() => {
     if (!isActive) return;
 
@@ -114,22 +109,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
         position: "relative",
       }}
     >
-      {/* 3D Orb */}
-      <Canvas
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-        }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={4} />
-      </Canvas>
-
       <h2 style={{ position: "relative", zIndex: 1 }}>Technical Foundation</h2>
 
       {terms.map((t, idx) => (

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -32,7 +31,7 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
 
   return (
     <div ref={bgRef} className="scene" style={{ overflow: "hidden" }}>
-      {/* 3D Orb canvas behind text */}
+      {/* Canvas kept for lights or other 3D elements if needed */}
       <Canvas
         style={{
           position: "absolute",
@@ -45,7 +44,7 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
       >
         <ambientLight intensity={0.3} />
         <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={0} /> {/* mode 0 = Scene0 idle */}
+        {/* Orb3D removed from this scene */}
       </Canvas>
 
       {/* Overlay text + button */}

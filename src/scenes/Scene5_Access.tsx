@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -47,22 +45,6 @@ export default function Scene5_Access({ onAdvance }: SceneProps) {
         overflow: "hidden",
       }}
     >
-      {/* 3D Orb */}
-      <Canvas
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-        }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={5} color="#ff8844" />
-      </Canvas>
-
       <h2 style={{ position: "relative", zIndex: 1 }}>Early Access</h2>
       <p style={{ textAlign: "center", maxWidth: "400px", position: "relative", zIndex: 1 }}>
         Early testers and collaborators. Not mass-market users.

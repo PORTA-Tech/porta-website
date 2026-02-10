@@ -1,18 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import Orb3D from "../components/Orb3D";
 
 type SceneProps = {
   onAdvance: () => void;
   isActive: boolean;
 };
 
-// Panels and positions (fixed, avoids orb)
+// Panels and positions (fixed, avoids orb area)
 const panels = [
-  { name: "Perception Layer", desc: "Captures physiological and behavioral signals", pos: { x: 25, y: 25 } }, // left-upper
-  { name: "Inference Layer", desc: "Processes signals to infer internal state", pos: { x: 75, y: 25 } },     // right-upper
-  { name: "Adaptive Control", desc: "Adjusts environments based on inferred state", pos: { x: 25, y: 70 } }, // left-lower
-  { name: "Environment Modulation", desc: "Continuously shapes user experience in real time", pos: { x: 75, y: 70 } }, // right-lower
+  { name: "Perception Layer", desc: "Captures physiological and behavioral signals", pos: { x: 25, y: 25 } }, 
+  { name: "Inference Layer", desc: "Processes signals to infer internal state", pos: { x: 75, y: 25 } },     
+  { name: "Adaptive Control", desc: "Adjusts environments based on inferred state", pos: { x: 25, y: 70 } }, 
+  { name: "Environment Modulation", desc: "Continuously shapes user experience in real time", pos: { x: 75, y: 70 } },
 ];
 
 const BASE_DELAY = 4000;
@@ -54,8 +52,8 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
     const drift = () => {
       panelRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetX = Math.sin(frame / 100 + idx) * 8; // slower horizontal float
-        const offsetY = Math.cos(frame / 120 + idx) * 5; // slower vertical float
+        const offsetX = Math.sin(frame / 100 + idx) * 8;
+        const offsetY = Math.cos(frame / 120 + idx) * 5;
         const scale = hovered === panels[idx].name ? 1.05 : 1;
         el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
@@ -91,7 +89,6 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
     };
   }, [isActive, onAdvance]);
 
-  // --- Panel hover ---
   const handlePanelHover = (panelName: string) => {
     setHovered(panelName);
     const now = Date.now();
@@ -115,22 +112,6 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
         position: "relative",
       }}
     >
-      {/* 3D Orb */}
-      <Canvas
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-        }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        <Orb3D mode={2} />
-      </Canvas>
-
       <h2 style={{ position: "relative", zIndex: 1 }}>Adaptive Intelligence</h2>
 
       {panels.map((p, idx) => (
@@ -154,7 +135,7 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
             zIndex: 1,
             boxShadow: hovered === p.name
               ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
-              : "0 0 8px rgba(68,68,255,0.2)", // soft glow even when not hovered
+              : "0 0 8px rgba(68,68,255,0.2)",
             transition: "all 0.3s",
           }}
         >

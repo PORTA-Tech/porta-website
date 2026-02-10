@@ -127,20 +127,7 @@ export default function Scene1_Perception({ onAdvance, isActive }: SceneProps) {
         overflow: "hidden",
       }}
     >
-      {/* Orb centered */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #4444ff, #000000)",
-          zIndex: 0,
-        }}
-      />
+      {/* Static orb removed; only World3D / global 3D orb remains */}
 
       <h2 style={{ position: "relative", zIndex: 1 }}>Neuro-Scanning / Perception</h2>
 

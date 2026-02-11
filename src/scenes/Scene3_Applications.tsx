@@ -22,9 +22,41 @@ const OFFSETS = [
 
 export default function Scene3_Applications({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [entranceProgress, setEntranceProgress] = useState(0);
   const appRefs = useRef<HTMLDivElement[]>([]);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const depthRef = useRef<number[]>(apps.map(() => Math.random() * 20 + 10));
 
-  // --- Panel float effect ---
+  // Mouse tracking for parallax
+  useEffect(() => {
+    const handleMouse = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      mouseRef.current = { x, y };
+    };
+    window.addEventListener("mousemove", handleMouse);
+    return () => window.removeEventListener("mousemove", handleMouse);
+  }, []);
+
+  // Entrance animation
+  useEffect(() => {
+    if (!isActive) {
+      setEntranceProgress(0);
+      return;
+    }
+    let progress = 0;
+    let id: number;
+    const animate = () => {
+      progress += 0.02;
+      if (progress > 1) progress = 1;
+      setEntranceProgress(progress);
+      if (progress < 1) id = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
+
+  // Float + parallax + entrance
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -33,22 +65,41 @@ export default function Scene3_Applications({ isActive }: SceneProps) {
     const drift = () => {
       appRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const base = OFFSETS[idx];
-        const offsetX = Math.sin(frame / 50 + idx) * 8;
-        const offsetY = Math.cos(frame / 60 + idx) * 5;
-        const scale = hovered === apps[idx].name
-          ? PORTA_VISUAL_STYLE.ui.panelHoverScale
-          : 1;
-        el.style.transform = `translate(calc(50% + ${base.x + offsetX}px), calc(50% + ${base.y + offsetY}px)) scale(${scale})`;
-        el.style.filter = hovered === apps[idx].name ? "brightness(1.3)" : "brightness(1)";
+
+        const depth = depthRef.current[idx];
+        const depthFactor = depth / 20;
+
+        const floatX = Math.sin(frame / 50 + idx) * 8 * depthFactor;
+        const floatY = Math.cos(frame / 60 + idx) * 5 * depthFactor;
+
+        const entranceOffsetY = (1 - entranceProgress) * -100;
+        const entranceScale = 0.6 + 0.4 * entranceProgress;
+
+        const parallaxX = mouseRef.current.x * depthFactor * 15;
+        const parallaxY = mouseRef.current.y * depthFactor * 15;
+
+        const scale =
+          hovered === apps[idx].name
+            ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+            : entranceScale;
+
+        el.style.transform = `translate(calc(50% + ${OFFSETS[idx].x + floatX + parallaxX}px), calc(50% + ${OFFSETS[idx].y + floatY + entranceOffsetY + parallaxY}px)) scale(${scale})`;
+
+        el.style.boxShadow =
+          hovered === apps[idx].name
+            ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
+            : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
+
+        el.style.zIndex = `${Math.floor(100 - depth)}`;
       });
+
       frame++;
       id = requestAnimationFrame(drift);
     };
 
     drift();
     return () => cancelAnimationFrame(id);
-  }, [isActive, hovered]);
+  }, [isActive, hovered, entranceProgress]);
 
   return (
     <div
@@ -92,10 +143,6 @@ export default function Scene3_Applications({ isActive }: SceneProps) {
             textAlign: "center",
             cursor: "pointer",
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
-            zIndex: 1,
-            boxShadow: hovered === a.name
-              ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
-              : "0 0 8px rgba(68,68,255,0.2)",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
           }}
         >

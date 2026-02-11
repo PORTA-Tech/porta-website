@@ -13,18 +13,55 @@ const signals = [
   "Emotional Inference Engine",
 ];
 
+// Improved positions (balanced & asymmetrical)
 const positions = [
-  { x: 20, y: 20 },
-  { x: 80, y: 20 },
-  { x: 20, y: 70 },
-  { x: 80, y: 70 },
+  { x: 25, y: 25 },
+  { x: 70, y: 20 },
+  { x: 20, y: 65 },
+  { x: 75, y: 70 },
   { x: 50, y: 80 },
 ];
 
 export default function Scene1_Perception({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [entranceProgress, setEntranceProgress] = useState(0); // 0 -> 1
   const signalRefs = useRef<HTMLDivElement[]>([]);
   const bgRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+
+  // --- Pseudo-Z-depth per panel ---
+  const depthRef = useRef<number[]>(
+    signals.map(() => Math.random() * 20 + 10)
+  );
+
+  // Mouse tracking for parallax
+  useEffect(() => {
+    const handleMouse = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+      const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+      mouseRef.current = { x, y };
+    };
+    window.addEventListener("mousemove", handleMouse);
+    return () => window.removeEventListener("mousemove", handleMouse);
+  }, []);
+
+  // Entrance animation
+  useEffect(() => {
+    if (!isActive) {
+      setEntranceProgress(0);
+      return;
+    }
+    let progress = 0;
+    let id: number;
+    const animate = () => {
+      progress += 0.02;
+      if (progress > 1) progress = 1;
+      setEntranceProgress(progress);
+      if (progress < 1) id = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
 
   // Background subtle gradient
   useEffect(() => {
@@ -43,28 +80,53 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // Panels gentle movement
+  // Panels float + entrance + parallax
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
     let id: number;
+
     const drift = () => {
       signalRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetX = Math.sin(frame / 50 + idx) * 15;
-        const offsetY = Math.cos(frame / 70 + idx) * 10;
+
+        const depth = depthRef.current[idx];
+        const depthFactor = depth / 20;
+
+        // floating offsets
+        const floatX = Math.sin(frame / (50 + idx * 5)) * 15 * depthFactor;
+        const floatY = Math.cos(frame / (70 + idx * 7)) * 10 * depthFactor;
+
+        // entrance effect
+        const entranceOffsetY = (1 - entranceProgress) * -100;
+        const entranceScale = 0.6 + 0.4 * entranceProgress;
+
+        // parallax
+        const parallaxX = mouseRef.current.x * depthFactor * 20;
+        const parallaxY = mouseRef.current.y * depthFactor * 20;
+
         const scale =
           hovered === signals[idx]
-            ? PORTA_VISUAL_STYLE.ui.panelHoverScale
-            : 1;
-        el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+            ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+            : entranceScale;
+
+        el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
+
+        el.style.boxShadow =
+          hovered === signals[idx]
+            ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
+            : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
+
+        el.style.zIndex = `${Math.floor(100 - depth)}`;
       });
+
       frame++;
       id = requestAnimationFrame(drift);
     };
+
     drift();
     return () => cancelAnimationFrame(id);
-  }, [isActive, hovered]);
+  }, [isActive, hovered, entranceProgress]);
 
   return (
     <div
@@ -114,13 +176,8 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
             textAlign: "center",
             minWidth: "140px",
             cursor: "pointer",
-            zIndex: 1,
-            boxShadow:
-              hovered === s
-                ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
-                : "0 0 8px rgba(68,68,255,0.2)",
-            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
             fontFamily: PORTA_VISUAL_STYLE.font.family,
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
           }}
         >
           {s}

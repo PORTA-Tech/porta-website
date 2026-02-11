@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Scene0_Portal from "../scenes/Scene0_Portal";
 import Scene1_Perception from "../scenes/Scene1_Perception";
 import Scene2_Adaptive from "../scenes/Scene2_Adaptive";
@@ -21,8 +21,8 @@ const scenes = [
 
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const scrollLockRef = useRef(false);
 
-  // Advance to next scene
   const handleAdvance = useCallback(() => {
     setActiveIndex((prev) => {
       const next = Math.min(prev + 1, scenes.length - 1);
@@ -31,7 +31,6 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     });
   }, [onSceneChange]);
 
-  // Go back to previous scene
   const handleBack = useCallback(() => {
     setActiveIndex((prev) => {
       const next = Math.max(prev - 1, 0);
@@ -40,31 +39,56 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     });
   }, [onSceneChange]);
 
-  // Dev keyboard navigation: n / p
+  // Keyboard navigation (n / p)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "n") handleAdvance();
-      if (e.key === "p") handleBack();
+      if (scrollLockRef.current) return;
+      if (e.key === "n") {
+        scrollLockRef.current = true;
+        handleAdvance();
+      }
+      if (e.key === "p") {
+        scrollLockRef.current = true;
+        handleBack();
+      }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [handleAdvance, handleBack]);
 
-  // Automatic advance for scenes 1–4
+  // Scroll navigation
   useEffect(() => {
-    if (activeIndex === 0 || activeIndex === 5) return;
+    const handleScroll = (e: WheelEvent) => {
+      if (scrollLockRef.current) return;
 
-    const timer = setTimeout(() => handleAdvance(), 12000); // 12s max per scene
-    return () => clearTimeout(timer);
-  }, [activeIndex, handleAdvance]);
+      if (e.deltaY > 0 && activeIndex < scenes.length - 1) {
+        scrollLockRef.current = true;
+        handleAdvance();
+      } else if (e.deltaY < 0 && activeIndex > 0) {
+        scrollLockRef.current = true;
+        handleBack();
+      }
+    };
+
+    const releaseLock = () => {
+      scrollLockRef.current = false;
+    };
+
+    // Listen to wheel + release lock after scroll ends
+    let wheelTimeout: any = null;
+    const wrappedWheel = (e: WheelEvent) => {
+      handleScroll(e);
+      clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(releaseLock, 200); // 200ms after last wheel event
+    };
+
+    window.addEventListener("wheel", wrappedWheel, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", wrappedWheel);
+      clearTimeout(wheelTimeout);
+    };
+  }, [activeIndex, handleAdvance, handleBack]);
 
   const ActiveScene = scenes[activeIndex];
-
-  // Pass isActive to the scene
-  return (
-    <ActiveScene
-      isActive={true}        // ✅ Only current scene sees isActive
-      onAdvance={handleAdvance}
-    />
-  );
+  return <ActiveScene isActive={true} onAdvance={handleAdvance} />;
 }

@@ -1,16 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 
-type SceneProps = {
-  onAdvance: () => void;
-  isActive: boolean;
-};
-
-export default function Scene5_Access({ onAdvance }: SceneProps) {
+export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) {
   const [email, setEmail] = useState("");
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Optional: pulse the button slightly for more dynamic feedback
+  // Pulse effect on hover
   useEffect(() => {
     if (!hovered || !buttonRef.current) return;
     let angle = 0;
@@ -73,7 +68,7 @@ export default function Scene5_Access({ onAdvance }: SceneProps) {
         ref={buttonRef}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={() => onAdvance()}
+        onClick={onAdvance}
         style={{
           padding: "12px 24px",
           cursor: "pointer",

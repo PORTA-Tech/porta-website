@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 
 type SceneProps = {
-  onAdvance: () => void;
   isActive: boolean;
+  onAdvance: () => void;
 };
 
 const terms = [
@@ -12,28 +12,11 @@ const terms = [
   { word: "VR", desc: "Starts with high-fidelity VR but not limited", pos: { x: 75, y: 70 } },
 ];
 
-const BASE_TIME = 5000;
-const HOVER_EXTENSION = 1500;
-const MAX_TOTAL = 15000;
-
-export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
+export default function Scene4_Technical({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
-  const [hoveredTerms, setHoveredTerms] = useState<Set<string>>(new Set());
-
   const termRefs = useRef<HTMLDivElement[]>([]);
-  const startTimeRef = useRef(0);
-  const deadlineRef = useRef(0);
-  const rafIdRef = useRef<number | null>(null);
-  const finishedRef = useRef(false);
 
-  useEffect(() => {
-    if (!isActive) return;
-    startTimeRef.current = Date.now();
-    deadlineRef.current = startTimeRef.current + BASE_TIME;
-    finishedRef.current = false;
-    setHoveredTerms(new Set());
-  }, [isActive]);
-
+  // --- Gentle drift ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -42,7 +25,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     const drift = () => {
       termRefs.current.forEach((el, idx) => {
         if (!el) return;
-        const offsetY = Math.sin(frame / 20 + idx) * 2; // gentle drift
+        const offsetY = Math.sin(frame / 20 + idx) * 2;
         const scale = hovered === terms[idx].word ? 1.05 : 1;
         el.style.transform = `translateY(${offsetY}px) scale(${scale})`;
         el.style.filter = hovered === terms[idx].word ? "brightness(1.3)" : "brightness(1)";
@@ -57,42 +40,6 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
     drift();
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    const loop = () => {
-      if (finishedRef.current) return;
-
-      if (Date.now() >= deadlineRef.current) {
-        finishedRef.current = true;
-        onAdvance();
-        return;
-      }
-
-      rafIdRef.current = requestAnimationFrame(loop);
-    };
-
-    rafIdRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      finishedRef.current = true;
-      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    };
-  }, [isActive, onAdvance]);
-
-  const handleHover = (word: string) => {
-    setHovered(word);
-
-    if (hoveredTerms.has(word)) return;
-
-    const newTerms = new Set(hoveredTerms);
-    newTerms.add(word);
-    setHoveredTerms(newTerms);
-
-    const totalTime = Math.min(BASE_TIME + newTerms.size * HOVER_EXTENSION, MAX_TOTAL);
-    deadlineRef.current = startTimeRef.current + totalTime;
-  };
 
   return (
     <div
@@ -115,7 +62,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
         <div
           key={t.word}
           ref={(el) => { if (el) termRefs.current[idx] = el; }}
-          onMouseEnter={() => handleHover(t.word)}
+          onMouseEnter={() => setHovered(t.word)}
           onMouseLeave={() => setHovered(null)}
           style={{
             position: "absolute",
@@ -123,7 +70,7 @@ export default function Scene4_Technical({ onAdvance, isActive }: SceneProps) {
             left: `${t.pos.x}%`,
             padding: "20px",
             borderRadius: "8px",
-            background: "rgba(255,255,255,0.05)",
+            background: "#111111", 
             border: "1px solid rgba(255,255,255,0.2)",
             textAlign: "center",
             minWidth: "140px",

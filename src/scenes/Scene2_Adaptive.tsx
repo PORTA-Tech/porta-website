@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 
 type SceneProps = {
-  onAdvance: () => void;
   isActive: boolean;
 };
 
-// Panels and positions (fixed, avoids orb area)
 const panels = [
   { name: "Perception Layer", desc: "Captures physiological and behavioral signals", pos: { x: 25, y: 25 } }, 
   { name: "Inference Layer", desc: "Processes signals to infer internal state", pos: { x: 75, y: 25 } },     
@@ -13,21 +11,12 @@ const panels = [
   { name: "Environment Modulation", desc: "Continuously shapes user experience in real time", pos: { x: 75, y: 70 } },
 ];
 
-const BASE_DELAY = 4000;
-const HOVER_DELAY = 1500;
-const MAX_TOTAL = 10000;
-
-export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
+export default function Scene2_Adaptive({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const panelRefs = useRef<HTMLDivElement[]>([]);
   const bgRef = useRef<HTMLDivElement | null>(null);
 
-  const startTimeRef = useRef(0);
-  const deadlineRef = useRef(0);
-  const rafIdRef = useRef<number | null>(null);
-  const finishedRef = useRef(false);
-
-  // --- Background subtle gradient ---
+  // Background subtle gradient
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -44,7 +33,7 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // --- Panel gentle float ---
+  // Panel gentle float
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -64,37 +53,7 @@ export default function Scene2_Adaptive({ onAdvance, isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered]);
 
-  // --- Closed-loop advance controller ---
-  useEffect(() => {
-    if (!isActive) return;
-    finishedRef.current = false;
-    startTimeRef.current = Date.now();
-    deadlineRef.current = startTimeRef.current + BASE_DELAY;
-
-    const loop = () => {
-      if (finishedRef.current) return;
-      const now = Date.now();
-      const elapsed = now - startTimeRef.current;
-      if (now >= deadlineRef.current || elapsed >= MAX_TOTAL) {
-        finishedRef.current = true;
-        onAdvance();
-        return;
-      }
-      rafIdRef.current = requestAnimationFrame(loop);
-    };
-    rafIdRef.current = requestAnimationFrame(loop);
-    return () => {
-      finishedRef.current = true;
-      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    };
-  }, [isActive, onAdvance]);
-
-  const handlePanelHover = (panelName: string) => {
-    setHovered(panelName);
-    const now = Date.now();
-    if (now >= deadlineRef.current) return;
-    deadlineRef.current = Math.min(deadlineRef.current + HOVER_DELAY, startTimeRef.current + MAX_TOTAL);
-  };
+  const handlePanelHover = (panelName: string) => setHovered(panelName);
 
   return (
     <div

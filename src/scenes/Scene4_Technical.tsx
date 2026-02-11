@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 type SceneProps = {
   isActive: boolean;
-  onAdvance: () => void;
+  onAdvance?: () => void;
 };
 
 const terms = [
@@ -16,7 +17,7 @@ export default function Scene4_Technical({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const termRefs = useRef<HTMLDivElement[]>([]);
 
-  // --- Gentle drift ---
+  // --- Gentle drift animation ---
   useEffect(() => {
     if (!isActive) return;
     let frame = 0;
@@ -26,11 +27,11 @@ export default function Scene4_Technical({ isActive }: SceneProps) {
       termRefs.current.forEach((el, idx) => {
         if (!el) return;
         const offsetY = Math.sin(frame / 20 + idx) * 2;
-        const scale = hovered === terms[idx].word ? 1.05 : 1;
+        const scale = hovered === terms[idx].word ? PORTA_VISUAL_STYLE.ui.panelHoverScale : 1;
         el.style.transform = `translateY(${offsetY}px) scale(${scale})`;
         el.style.filter = hovered === terms[idx].word ? "brightness(1.3)" : "brightness(1)";
         el.style.boxShadow = hovered === terms[idx].word
-          ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+          ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : "0 0 8px rgba(68,68,255,0.2)";
       });
       frame++;
@@ -50,13 +51,22 @@ export default function Scene4_Technical({ isActive }: SceneProps) {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: "50px",
-        background: "linear-gradient(180deg, #000000, #111111)",
-        color: "white",
+        background: PORTA_VISUAL_STYLE.palette.background,
+        color: PORTA_VISUAL_STYLE.palette.text,
         overflow: "hidden",
         position: "relative",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Technical Foundation</h2>
+      <h2
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily: PORTA_VISUAL_STYLE.font.family,
+          fontWeight: PORTA_VISUAL_STYLE.font.weight,
+        }}
+      >
+        Technical Foundation
+      </h2>
 
       {terms.map((t, idx) => (
         <div
@@ -70,19 +80,20 @@ export default function Scene4_Technical({ isActive }: SceneProps) {
             left: `${t.pos.x}%`,
             padding: "20px",
             borderRadius: "8px",
-            background: "#111111", 
+            background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
-            textAlign: "center",
             minWidth: "140px",
+            textAlign: "center",
             cursor: "pointer",
-            color: "white",
             zIndex: 1,
-            transition: "all 0.3s",
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
+            color: PORTA_VISUAL_STYLE.palette.text,
           }}
         >
           {t.word}
           {hovered === t.word && (
-            <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
+            <div style={{ fontSize: "0.8em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
               {t.desc}
             </div>
           )}

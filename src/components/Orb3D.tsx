@@ -7,28 +7,22 @@ interface Orb3DProps {
   mode: number;
   radius?: number;
   position?: [number, number, number];
-  color?: string;
-  pulseAmplitude?: number;
-  rotationSpeedMultiplier?: number;
 }
 
 export default function Orb3D({
   mode,
   radius = 3.5,
   position = [0, 0, 0],
-  color = PORTA_VISUAL_STYLE.palette.coreOrb,
-  pulseAmplitude = 0.03,
-  rotationSpeedMultiplier = PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier,
 }: Orb3DProps) {
   const orbRef = useRef<THREE.Points>(null);
   const ringsRef = useRef<THREE.Group>(null);
   const starGroupRef = useRef<THREE.Group>(null);
 
-  // --- Orb particles ---
+  // Orb particles
   const orbParticles = useMemo(() => {
-    const particleCount = 1400;
-    const positions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
+    const count = 1400;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos(2 * Math.random() - 1);
       const r = radius * 0.5;
@@ -39,7 +33,7 @@ export default function Orb3D({
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     const material = new THREE.PointsMaterial({
-      color,
+      color: PORTA_VISUAL_STYLE.palette.coreOrb,
       size: 0.025,
       transparent: true,
       opacity: 0.9,
@@ -47,27 +41,22 @@ export default function Orb3D({
       blending: THREE.AdditiveBlending,
     });
     return new THREE.Points(geometry, material);
-  }, [radius, color]);
+  }, [radius]);
 
-  // --- Rings ---
+  // Rings
   const ringGeometries = useMemo(() => {
-    const rings = [];
-    for (let i = 0; i < 3; i++) {
+    return Array.from({ length: 3 }, (_, i) => {
       const inner = radius * (0.65 + i * 0.15);
       const outer = radius * (0.66 + i * 0.15);
-      rings.push(new THREE.RingGeometry(inner, outer, 64));
-    }
-    return rings;
+      return new THREE.RingGeometry(inner, outer, 64);
+    });
   }, [radius]);
 
   const ringMaterials = useMemo(() => {
     return ringGeometries.map(
       (_, idx) =>
         new THREE.MeshBasicMaterial({
-          color:
-            PORTA_VISUAL_STYLE.palette.rings[
-              idx % PORTA_VISUAL_STYLE.palette.rings.length
-            ],
+          color: PORTA_VISUAL_STYLE.palette.rings[idx % PORTA_VISUAL_STYLE.palette.rings.length],
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.45,
@@ -75,7 +64,7 @@ export default function Orb3D({
     );
   }, [ringGeometries]);
 
-  // --- Starfield ---
+  // Starfield
   const starLayers = useMemo(() => {
     const layers: { positions: Float32Array; sizes: Float32Array }[] = [];
     for (let l = 0; l < 3; l++) {
@@ -98,20 +87,17 @@ export default function Orb3D({
     return layers;
   }, []);
 
-  // --- Animations ---
+  // Animations
   useFrame(({ clock, mouse }) => {
     const t = clock.getElapsedTime();
-
     if (orbRef.current) {
-      const scale = 1 + pulseAmplitude * Math.sin(t * 3);
+      const scale = 1 + PORTA_VISUAL_STYLE.orb.pulseAmplitude * Math.sin(t * 3);
       orbRef.current.scale.set(scale, scale, scale);
     }
-
     if (ringsRef.current) {
-      ringsRef.current.rotation.y += rotationSpeedMultiplier * (mode + 1);
+      ringsRef.current.rotation.y += PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier * (mode + 1);
       ringsRef.current.rotation.x += PORTA_VISUAL_STYLE.orb.ringsRotationX * (mode + 1);
     }
-
     if (starGroupRef.current) {
       starGroupRef.current.rotation.y += PORTA_VISUAL_STYLE.starfield.rotationY;
       starGroupRef.current.rotation.x += PORTA_VISUAL_STYLE.starfield.rotationX;
@@ -122,7 +108,6 @@ export default function Orb3D({
 
   return (
     <group position={position} scale={[0.5, 0.5, 0.5]}>
-      {/* Starfield */}
       <group ref={starGroupRef}>
         {starLayers.map((layer, idx) => (
           <points key={idx}>
@@ -141,11 +126,7 @@ export default function Orb3D({
           </points>
         ))}
       </group>
-
-      {/* Orb particles */}
       <primitive object={orbParticles} ref={orbRef} />
-
-      {/* Rings */}
       <group ref={ringsRef}>
         {ringGeometries.map((geo, i) => (
           <mesh key={i} geometry={geo} material={ringMaterials[i]} />

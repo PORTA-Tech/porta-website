@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 type SceneProps = {
   onAdvance: () => void;
@@ -30,8 +31,12 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
   }, [isActive]);
 
   return (
-    <div ref={bgRef} className="scene" style={{ overflow: "hidden" }}>
-      {/* Canvas kept for lights or other 3D elements if needed */}
+    <div
+      ref={bgRef}
+      className="scene"
+      style={{ overflow: "hidden", background: PORTA_VISUAL_STYLE.palette.background }}
+    >
+      {/* Canvas for lights or 3D elements */}
       <Canvas
         style={{
           position: "absolute",
@@ -44,7 +49,6 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
       >
         <ambientLight intensity={0.3} />
         <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        {/* Orb3D removed from this scene */}
       </Canvas>
 
       {/* Overlay text + button */}
@@ -56,11 +60,17 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          fontFamily: PORTA_VISUAL_STYLE.font.family,
+          color: PORTA_VISUAL_STYLE.palette.text,
         }}
       >
-        <h1>PORTA</h1>
-        <h3>A neuro-adaptive emotional intelligence platform</h3>
-        <p>Senses. Infers. Responds. In real time.</p>
+        <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>PORTA</h1>
+        <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400 }}>
+          A neuro-adaptive emotional intelligence platform
+        </h3>
+        <p style={{ fontSize: "1.1em", marginBottom: "2em" }}>
+          Senses. Infers. Responds. In real time.
+        </p>
 
         <button
           onClick={onAdvance}
@@ -69,9 +79,15 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
             padding: "10px 20px",
             cursor: "pointer",
             transition: "all 0.3s",
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
+            fontSize: PORTA_VISUAL_STYLE.font.size,
+            color: PORTA_VISUAL_STYLE.palette.background,
+            backgroundColor: PORTA_VISUAL_STYLE.palette.cta,
+            border: "none",
+            borderRadius: "6px",
           }}
           onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 15px rgba(255,255,255,0.5)")
+            (e.currentTarget.style.boxShadow = `0 0 15px ${PORTA_VISUAL_STYLE.palette.cta}`)
           }
           onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
         >

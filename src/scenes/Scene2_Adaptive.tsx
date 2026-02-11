@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 type SceneProps = {
   isActive: boolean;
@@ -43,7 +44,9 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
         if (!el) return;
         const offsetX = Math.sin(frame / 100 + idx) * 8;
         const offsetY = Math.cos(frame / 120 + idx) * 5;
-        const scale = hovered === panels[idx].name ? 1.05 : 1;
+        const scale = hovered === panels[idx].name
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale
+          : 1;
         el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
       frame++;
@@ -65,13 +68,22 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: "50px",
-        background: "linear-gradient(180deg, #000000, #111111)",
-        color: "white",
+        background: PORTA_VISUAL_STYLE.palette.background,
+        color: PORTA_VISUAL_STYLE.palette.text,
         overflow: "hidden",
         position: "relative",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Adaptive Intelligence</h2>
+      <h2
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily: PORTA_VISUAL_STYLE.font.family,
+          fontWeight: PORTA_VISUAL_STYLE.font.weight,
+        }}
+      >
+        Adaptive Intelligence
+      </h2>
 
       {panels.map((p, idx) => (
         <div
@@ -85,22 +97,29 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
             left: `${p.pos.x}%`,
             padding: "20px",
             borderRadius: "8px",
-            background: "#111111", 
+            background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
-            color: "white",
+            color: PORTA_VISUAL_STYLE.palette.text,
             textAlign: "center",
             minWidth: "140px",
             cursor: "pointer",
             zIndex: 1,
             boxShadow: hovered === p.name
-              ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+              ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
               : "0 0 8px rgba(68,68,255,0.2)",
-            transition: "all 0.3s",
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
           }}
         >
           {p.name}
           {hovered === p.name && (
-            <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
+            <div
+              style={{
+                fontSize: "0.8em",
+                color: PORTA_VISUAL_STYLE.palette.tooltip,
+                marginTop: "5px",
+              }}
+            >
               {p.desc}
             </div>
           )}

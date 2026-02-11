@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 type SceneProps = {
   isActive: boolean;
@@ -52,7 +53,10 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
         if (!el) return;
         const offsetX = Math.sin(frame / 50 + idx) * 15;
         const offsetY = Math.cos(frame / 70 + idx) * 10;
-        const scale = hovered === signals[idx] ? 1.1 : 1;
+        const scale =
+          hovered === signals[idx]
+            ? PORTA_VISUAL_STYLE.ui.panelHoverScale
+            : 1;
         el.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       });
       frame++;
@@ -72,19 +76,30 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "flex-start",
-        background: "linear-gradient(180deg, #000000, #111111)",
-        color: "white",
+        background: PORTA_VISUAL_STYLE.palette.background,
+        color: PORTA_VISUAL_STYLE.palette.text,
         paddingTop: "50px",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Neuro-Scanning / Perception</h2>
+      <h2
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily: PORTA_VISUAL_STYLE.font.family,
+          fontWeight: PORTA_VISUAL_STYLE.font.weight,
+        }}
+      >
+        Neuro-Scanning / Perception
+      </h2>
 
       {signals.map((s, idx) => (
         <div
           key={s}
-          ref={(el) => { if (el) signalRefs.current[idx] = el; }}
+          ref={(el) => {
+            if (el) signalRefs.current[idx] = el;
+          }}
           onMouseEnter={() => setHovered(s)}
           onMouseLeave={() => setHovered(null)}
           style={{
@@ -93,27 +108,36 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
             left: `${positions[idx].x}%`,
             padding: "20px",
             borderRadius: "8px",
-            background: "#111111", 
+            background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
-            color: "white",
+            color: PORTA_VISUAL_STYLE.palette.text,
             textAlign: "center",
             minWidth: "140px",
             cursor: "pointer",
             zIndex: 1,
-            boxShadow: hovered === s
-              ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
-              : "0 0 8px rgba(68,68,255,0.2)",
-            transition: "all 0.3s",
+            boxShadow:
+              hovered === s
+                ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
+                : "0 0 8px rgba(68,68,255,0.2)",
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
           }}
         >
           {s}
           {hovered === s && (
-            <div style={{ fontSize: "0.85em", color: "lightgray", marginTop: "5px" }}>
+            <div
+              style={{
+                fontSize: "0.85em",
+                color: PORTA_VISUAL_STYLE.palette.tooltip,
+                marginTop: "5px",
+              }}
+            >
               {s === "EEG" && "Measures brain electrical activity"}
               {s === "Heart Rate" && "Tracks heartbeat"}
               {s === "Electrodermal Activity (EDA)" && "Tracks skin conductance"}
               {s === "Behavioral Signals" && "Monitors gestures and movement"}
-              {s === "Emotional Inference Engine" && "Computes inferred emotional state"}
+              {s === "Emotional Inference Engine" &&
+                "Computes inferred emotional state"}
             </div>
           )}
         </div>

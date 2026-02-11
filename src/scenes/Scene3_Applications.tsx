@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 type SceneProps = {
-  onAdvance: () => void;
   isActive: boolean;
 };
 
@@ -36,7 +36,9 @@ export default function Scene3_Applications({ isActive }: SceneProps) {
         const base = OFFSETS[idx];
         const offsetX = Math.sin(frame / 50 + idx) * 8;
         const offsetY = Math.cos(frame / 60 + idx) * 5;
-        const scale = hovered === apps[idx].name ? 1.05 : 1;
+        const scale = hovered === apps[idx].name
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale
+          : 1;
         el.style.transform = `translate(calc(50% + ${base.x + offsetX}px), calc(50% + ${base.y + offsetY}px)) scale(${scale})`;
         el.style.filter = hovered === apps[idx].name ? "brightness(1.3)" : "brightness(1)";
       });
@@ -57,13 +59,22 @@ export default function Scene3_Applications({ isActive }: SceneProps) {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: "50px",
-        background: "linear-gradient(180deg, #000000, #111111)",
-        color: "white",
+        background: PORTA_VISUAL_STYLE.palette.background,
+        color: PORTA_VISUAL_STYLE.palette.text,
         overflow: "hidden",
         position: "relative",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Platform Applications</h2>
+      <h2
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily: PORTA_VISUAL_STYLE.font.family,
+          fontWeight: PORTA_VISUAL_STYLE.font.weight,
+        }}
+      >
+        Platform Applications
+      </h2>
 
       {apps.map((a, idx) => (
         <div
@@ -75,21 +86,28 @@ export default function Scene3_Applications({ isActive }: SceneProps) {
             position: "absolute",
             padding: "20px",
             borderRadius: "8px",
-            background: "#111111",
+            background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
             minWidth: "140px",
             textAlign: "center",
             cursor: "pointer",
-            transition: "all 0.3s",
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
             zIndex: 1,
             boxShadow: hovered === a.name
-              ? "0 0 20px rgba(68,68,255,0.8), 0 0 40px rgba(68,68,255,0.4)"
+              ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
               : "0 0 8px rgba(68,68,255,0.2)",
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
           }}
         >
           {a.name}
           {hovered === a.name && (
-            <div style={{ fontSize: "0.8em", color: "lightgray", marginTop: "5px" }}>
+            <div
+              style={{
+                fontSize: "0.8em",
+                color: PORTA_VISUAL_STYLE.palette.tooltip,
+                marginTop: "5px",
+              }}
+            >
               {a.desc}
             </div>
           )}

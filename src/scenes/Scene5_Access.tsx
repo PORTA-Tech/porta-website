@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
+import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) {
   const [email, setEmail] = useState("");
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Pulse effect on hover
+  // Pulse effect on hover using existing ui.panelHoverScale
   useEffect(() => {
     if (!hovered || !buttonRef.current) return;
     let angle = 0;
@@ -13,7 +14,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
 
     const pulse = () => {
       angle += 0.1;
-      const scale = 1 + Math.sin(angle) * 0.03;
+      const scale = 1 + PORTA_VISUAL_STYLE.ui.panelHoverScale * Math.sin(angle);
       buttonRef.current!.style.transform = `scale(${scale})`;
       id = requestAnimationFrame(pulse);
     };
@@ -41,7 +42,14 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
       }}
     >
       <h2 style={{ position: "relative", zIndex: 1 }}>Early Access</h2>
-      <p style={{ textAlign: "center", maxWidth: "400px", position: "relative", zIndex: 1 }}>
+      <p
+        style={{
+          textAlign: "center",
+          maxWidth: "400px",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         Early testers and collaborators. Not mass-market users.
       </p>
 
@@ -79,7 +87,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
           boxShadow: hovered
             ? "0 0 20px #ff8844, 0 0 40px rgba(255,136,68,0.4)"
             : "0 0 8px rgba(255,136,68,0.2)",
-          transition: "all 0.3s",
+          transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
           fontWeight: "bold",
           position: "relative",
           zIndex: 1,

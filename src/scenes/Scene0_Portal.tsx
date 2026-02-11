@@ -66,7 +66,7 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
       >
         <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>PORTA</h1>
         <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400 }}>
-          A neuro-adaptive emotional intelligence platform
+          A neuro-adaptive emotional intelligence system
         </h3>
         <p style={{ fontSize: "1.1em", marginBottom: "2em" }}>
           Senses. Infers. Responds. In real time.

@@ -1,24 +1,32 @@
 import { useState, useRef, useEffect } from "react";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
-type SceneProps = {
-  isActive: boolean;
-  onAdvance?: () => void;
-};
+type SceneProps = { isActive: boolean };
 
-const terms = [
-  { word: "Software", desc: "PORTA is software, not hardware", pos: { x: 20, y: 20 } },
-  { word: "Hardware-Agnostic", desc: "Sits above sensors and devices", pos: { x: 70, y: 20 } },
-  { word: "Closed-Loop Regulation", desc: "Enables closed-loop emotional regulation", pos: { x: 20, y: 70 } },
-  { word: "VR", desc: "Starts with high-fidelity VR but not limited", pos: { x: 70, y: 70 } },
+const integrators = [
+  "Multimodal Fusion",
+  "Temporal Analysis",
+  "Predictive Modeling",
+  "Feedback Loops",
+  "Adaptive Control",
 ];
 
-export default function Scene4_Technical({ isActive }: SceneProps) {
-  const [hovered, setHovered] = useState<string | null>(null);
-  const termRefs = useRef<HTMLDivElement[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0 });
+const positions = [
+  { x: 20, y: 25 },
+  { x: 70, y: 25 },
+  { x: 25, y: 65 },
+  { x: 75, y: 65 },
+  { x: 50, y: 80 },
+];
 
-  // Mouse tracking (same logic as other scenes)
+export default function Scene4_Integration({ isActive }: SceneProps) {
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [entranceProgress, setEntranceProgress] = useState(0);
+  const panelRefs = useRef<HTMLDivElement[]>([]);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const depthRef = useRef<number[]>(integrators.map(() => Math.random() * 20 + 10));
+
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = {
@@ -26,120 +34,101 @@ export default function Scene4_Technical({ isActive }: SceneProps) {
         y: (e.clientY / window.innerHeight - 0.5) * 2,
       };
     };
-
     window.addEventListener("mousemove", handleMouse);
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
-  // Float + mouse parallax
+  useEffect(() => {
+    if (!isActive) { setEntranceProgress(0); return; }
+    let progress = 0, id: number;
+    const animate = () => {
+      progress += 0.02;
+      if (progress > 1) progress = 1;
+      setEntranceProgress(progress);
+      if (progress < 1) id = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
+
   useEffect(() => {
     if (!isActive) return;
+    let frame = 0, id: number;
+    const driftBG = () => {
+      if (bgRef.current) {
+        const hue = (frame % 360) / 360 * 10;
+        bgRef.current.style.background = `linear-gradient(180deg, hsl(${hue},0%,0%), hsl(${hue},0%,7%))`;
+      }
+      frame++;
+      id = requestAnimationFrame(driftBG);
+    };
+    driftBG();
+    return () => cancelAnimationFrame(id);
+  }, [isActive]);
 
-    let frame = 0;
-    let id: number;
-
+  useEffect(() => {
+    if (!isActive) return;
+    let frame = 0, id: number;
     const drift = () => {
-      termRefs.current.forEach((el, idx) => {
+      panelRefs.current.forEach((el, idx) => {
         if (!el) return;
+        const depth = depthRef.current[idx];
+        const depthFactor = depth / 20;
+        const floatX = Math.sin(frame / (50 + idx * 5)) * 15 * depthFactor;
+        const floatY = Math.cos(frame / (70 + idx * 7)) * 10 * depthFactor;
+        const entranceOffsetY = (1 - entranceProgress) * -100;
+        const entranceScale = 0.6 + 0.4 * entranceProgress;
+        const parallaxX = mouseRef.current.x * depthFactor * 20;
+        const parallaxY = mouseRef.current.y * depthFactor * 20;
+        const scale = hovered === integrators[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
 
-        // Original gentle float
-        const offsetY = Math.sin(frame / 20 + idx) * 2;
-        const offsetX = Math.cos(frame / 30 + idx) * 2;
-
-        // Mouse parallax (subtle)
-        const parallaxX = mouseRef.current.x * 10;
-        const parallaxY = mouseRef.current.y * 10;
-
-        const scale =
-          hovered === terms[idx].word
-            ? PORTA_VISUAL_STYLE.ui.panelHoverScale
-            : 1;
-
-        el.style.transform = `
-          translate(${offsetX + parallaxX}px, ${offsetY + parallaxY}px)
-          scale(${scale})
-        `;
-
-        el.style.filter =
-          hovered === terms[idx].word ? "brightness(1.3)" : "brightness(1)";
-
-        el.style.boxShadow =
-          hovered === terms[idx].word
-            ? `0 0 20px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 40px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
-            : "0 0 8px rgba(68,68,255,0.2)";
+        el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
+        el.style.boxShadow = hovered === integrators[idx]
+          ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
+          : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
+        el.style.zIndex = `${Math.floor(100 - depth)}`;
       });
-
       frame++;
       id = requestAnimationFrame(drift);
     };
-
     drift();
     return () => cancelAnimationFrame(id);
-  }, [isActive, hovered]);
+  }, [isActive, hovered, entranceProgress]);
 
   return (
-    <div
-      className="scene"
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: "50px",
-        background: PORTA_VISUAL_STYLE.palette.background,
-        color: PORTA_VISUAL_STYLE.palette.text,
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <h2
-        style={{
-          position: "relative",
-          zIndex: 1,
-          fontFamily: PORTA_VISUAL_STYLE.font.family,
-          fontWeight: PORTA_VISUAL_STYLE.font.weight,
-        }}
-      >
-        Technical Foundation
-      </h2>
+    <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
+      <div className="scene-header">
+        <h2>Technical Foundation</h2>
+      </div>
 
-      {terms.map((t, idx) => (
-        <div
-          key={t.word}
-          ref={(el) => {
-            if (el) termRefs.current[idx] = el;
-          }}
-          onMouseEnter={() => setHovered(t.word)}
+      {integrators.map((i, idx) => (
+        <div key={i} ref={(el) => { if (el) panelRefs.current[idx] = el; }}
+          onMouseEnter={() => setHovered(i)}
           onMouseLeave={() => setHovered(null)}
           style={{
             position: "absolute",
-            top: `${t.pos.y}%`,
-            left: `${t.pos.x}%`,
+            top: `${positions[idx].y}%`,
+            left: `${positions[idx].x}%`,
             padding: "20px",
             borderRadius: "8px",
             background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
-            minWidth: "140px",
-            textAlign: "center",
-            cursor: "pointer",
-            zIndex: 1,
-            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
-            fontFamily: PORTA_VISUAL_STYLE.font.family,
             color: PORTA_VISUAL_STYLE.palette.text,
+            textAlign: "center",
+            minWidth: "140px",
+            cursor: "pointer",
+            fontFamily: PORTA_VISUAL_STYLE.font.family,
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
           }}
         >
-          {t.word}
-          {hovered === t.word && (
-            <div
-              style={{
-                fontSize: "0.8em",
-                color: PORTA_VISUAL_STYLE.palette.tooltip,
-                marginTop: "5px",
-              }}
-            >
-              {t.desc}
-            </div>
-          )}
+          {i}
+          {hovered === i && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+            {i === "Multimodal Fusion" && "Combines signals from all sensors to create a unified state model."}
+            {i === "Temporal Analysis" && "Tracks changes over time for accurate predictions."}
+            {i === "Predictive Modeling" && "Forecasts emotional and cognitive responses for adaptive control."}
+            {i === "Feedback Loops" && "Continuous loop between sensing, processing, and response for stability."}
+            {i === "Adaptive Control" && "Modifies environment and cues in real-time based on user state."}
+          </div>}
         </div>
       ))}
     </div>

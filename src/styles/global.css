@@ -40,3 +40,53 @@ html, body, #root {
 
   gap: 16px;
 }
+
+.scene-header {
+  position: absolute;
+  top: 80px;
+  left: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none; /* header should not interfere with panel hover */
+}
+
+.scene-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  font-weight: 500;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.scene-title {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.scene-divider {
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.scene-header {
+  position: absolute;
+  top: 12%;          /* adjust for visual balance */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scene-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+

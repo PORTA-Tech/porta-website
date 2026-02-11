@@ -1,48 +1,46 @@
 import { useState, useRef, useEffect } from "react";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
-type SceneProps = {
-  isActive: boolean;
-};
+type SceneProps = { isActive: boolean };
 
-const panels = [
-  { name: "Perception Layer", desc: "Captures physiological and behavioral signals", pos: { x: 20, y: 25 } }, 
-  { name: "Inference Layer", desc: "Processes signals to infer internal state", pos: { x: 75, y: 20 } },     
-  { name: "Adaptive Control", desc: "Adjusts environments based on inferred state", pos: { x: 25, y: 70 } }, 
-  { name: "Environment Modulation", desc: "Continuously shapes user experience in real time", pos: { x: 70, y: 75 } },
+const processors = [
+  "Signal Filtering",
+  "Feature Extraction",
+  "Neural Network Inference",
+  "Behavioral Modeling",
+  "Emotional Mapping",
 ];
 
-export default function Scene2_Adaptive({ isActive }: SceneProps) {
+const positions = [
+  { x: 20, y: 20 },
+  { x: 70, y: 25 },
+  { x: 25, y: 65 },
+  { x: 75, y: 60 },
+  { x: 50, y: 80 },
+];
+
+export default function Scene2_Processing({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [entranceProgress, setEntranceProgress] = useState(0);
   const panelRefs = useRef<HTMLDivElement[]>([]);
-  const bgRef = useRef<HTMLDivElement | null>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const depthRef = useRef<number[]>(processors.map(() => Math.random() * 20 + 10));
 
-  // --- Pseudo-Z-depth per panel ---
-  const depthRef = useRef<number[]>(
-    panels.map(() => Math.random() * 20 + 10)
-  );
-
-  // Mouse tracking for parallax
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      mouseRef.current = { x, y };
+      mouseRef.current = {
+        x: (e.clientX / window.innerWidth - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2,
+      };
     };
     window.addEventListener("mousemove", handleMouse);
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
-  // Entrance animation
   useEffect(() => {
-    if (!isActive) {
-      setEntranceProgress(0);
-      return;
-    }
-    let progress = 0;
-    let id: number;
+    if (!isActive) { setEntranceProgress(0); return; }
+    let progress = 0, id: number;
     const animate = () => {
       progress += 0.02;
       if (progress > 1) progress = 1;
@@ -53,11 +51,9 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // Background subtle gradient
   useEffect(() => {
     if (!isActive) return;
-    let frame = 0;
-    let id: number;
+    let frame = 0, id: number;
     const driftBG = () => {
       if (bgRef.current) {
         const hue = (frame % 360) / 360 * 10;
@@ -70,93 +66,49 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
-  // Panels float + entrance + parallax
   useEffect(() => {
     if (!isActive) return;
-    let frame = 0;
-    let id: number;
-
+    let frame = 0, id: number;
     const drift = () => {
       panelRefs.current.forEach((el, idx) => {
         if (!el) return;
-
         const depth = depthRef.current[idx];
         const depthFactor = depth / 20;
-
-        // floating offsets
-        const floatX = Math.sin(frame / (60 + idx * 10)) * 10 * depthFactor;
-        const floatY = Math.cos(frame / (80 + idx * 12)) * 6 * depthFactor;
-
-        // entrance effect
+        const floatX = Math.sin(frame / (50 + idx * 5)) * 15 * depthFactor;
+        const floatY = Math.cos(frame / (70 + idx * 7)) * 10 * depthFactor;
         const entranceOffsetY = (1 - entranceProgress) * -100;
         const entranceScale = 0.6 + 0.4 * entranceProgress;
-
-        // parallax
-        const parallaxX = mouseRef.current.x * depthFactor * 15;
-        const parallaxY = mouseRef.current.y * depthFactor * 15;
-
-        const scale =
-          hovered === panels[idx].name
-            ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
-            : entranceScale;
+        const parallaxX = mouseRef.current.x * depthFactor * 20;
+        const parallaxY = mouseRef.current.y * depthFactor * 20;
+        const scale = hovered === processors[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
 
         el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
-
-        el.style.boxShadow =
-          hovered === panels[idx].name
-            ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
-            : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
-
+        el.style.boxShadow = hovered === processors[idx]
+          ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
+          : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
       });
-
       frame++;
       id = requestAnimationFrame(drift);
     };
-
     drift();
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered, entranceProgress]);
 
   return (
-    <div
-      ref={bgRef}
-      className="scene"
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: "50px",
-        background: PORTA_VISUAL_STYLE.palette.background,
-        color: PORTA_VISUAL_STYLE.palette.text,
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <h2
-        style={{
-          position: "relative",
-          zIndex: 1,
-          fontFamily: PORTA_VISUAL_STYLE.font.family,
-          fontWeight: PORTA_VISUAL_STYLE.font.weight,
-        }}
-      >
-        Adaptive Intelligence
-      </h2>
+    <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
+      <div className="scene-header">
+        <h2>Adaptive Intelligence</h2>
+      </div>
 
-      {panels.map((p, idx) => (
-        <div
-          key={p.name}
-          ref={(el) => {
-            if (el) panelRefs.current[idx] = el;
-          }}
-          onMouseEnter={() => setHovered(p.name)}
+      {processors.map((p, idx) => (
+        <div key={p} ref={(el) => { if (el) panelRefs.current[idx] = el; }}
+          onMouseEnter={() => setHovered(p)}
           onMouseLeave={() => setHovered(null)}
           style={{
             position: "absolute",
-            top: `${p.pos.y}%`,
-            left: `${p.pos.x}%`,
+            top: `${positions[idx].y}%`,
+            left: `${positions[idx].x}%`,
             padding: "20px",
             borderRadius: "8px",
             background: PORTA_VISUAL_STYLE.palette.panelBg,
@@ -169,18 +121,14 @@ export default function Scene2_Adaptive({ isActive }: SceneProps) {
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
           }}
         >
-          {p.name}
-          {hovered === p.name && (
-            <div
-              style={{
-                fontSize: "0.8em",
-                color: PORTA_VISUAL_STYLE.palette.tooltip,
-                marginTop: "5px",
-              }}
-            >
-              {p.desc}
-            </div>
-          )}
+          {p}
+          {hovered === p && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+            {p === "Signal Filtering" && "Noise removal and signal enhancement for accurate state inference."}
+            {p === "Feature Extraction" && "Transforming raw signals into relevant metrics for the inference engine."}
+            {p === "Neural Network Inference" && "Deep learning models estimate emotional and cognitive state."}
+            {p === "Behavioral Modeling" && "Analyzes interaction patterns to refine state predictions."}
+            {p === "Emotional Mapping" && "Maps multimodal signals to specific emotional and cognitive representations."}
+          </div>}
         </div>
       ))}
     </div>

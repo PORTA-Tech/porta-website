@@ -4,11 +4,10 @@ import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 type SceneProps = { isActive: boolean };
 
 const processors = [
-  "Signal Filtering",
-  "Feature Extraction",
-  "Neural Network Inference",
-  "Behavioral Modeling",
-  "Emotional Mapping",
+  "Perception Layer",
+  "Inference Layer",
+  "Adaptive Control Layer",
+  "Environment Modulation",
 ];
 
 const positions = [
@@ -123,11 +122,10 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
         >
           {p}
           {hovered === p && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {p === "Signal Filtering" && "Noise removal and signal enhancement for accurate state inference."}
-            {p === "Feature Extraction" && "Transforming raw signals into relevant metrics for the inference engine."}
-            {p === "Neural Network Inference" && "Deep learning models estimate emotional and cognitive state."}
-            {p === "Behavioral Modeling" && "Analyzes interaction patterns to refine state predictions."}
-            {p === "Emotional Mapping" && "Maps multimodal signals to specific emotional and cognitive representations."}
+            {p === "Perception Layer" && "Acquires and synchronizes physiological and behavioral data streams."}
+            {p === "Inference Layer" && "Processes signals to estimate internal state."}
+            {p === "Adaptive Control Layer" && "Determines environment adjustments based on inferred state and system goals."}
+            {p === "Environment Modulation" && "Applies continuous, real-time changes to digital environments."}
           </div>}
         </div>
       ))}

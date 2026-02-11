@@ -4,11 +4,10 @@ import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 type SceneProps = { isActive: boolean };
 
 const integrators = [
-  "Multimodal Fusion",
-  "Temporal Analysis",
-  "Predictive Modeling",
-  "Feedback Loops",
-  "Adaptive Control",
+  "Software Intelligence Layer",
+  "Closed-Loop Regulation",
+  "Hardware-Agnostic Architecture",
+  "Immersive-First, Not Limited",
 ];
 
 const positions = [
@@ -123,11 +122,10 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
         >
           {i}
           {hovered === i && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {i === "Multimodal Fusion" && "Combines signals from all sensors to create a unified state model."}
-            {i === "Temporal Analysis" && "Tracks changes over time for accurate predictions."}
-            {i === "Predictive Modeling" && "Forecasts emotional and cognitive responses for adaptive control."}
-            {i === "Feedback Loops" && "Continuous loop between sensing, processing, and response for stability."}
-            {i === "Adaptive Control" && "Modifies environment and cues in real-time based on user state."}
+            {i === "Software Intelligence Layer" && "PORTA is a software-based intelligence system, not a hardware device."}
+            {i === "Closed-Loop Regulation" && "Continuously senses, infers, and adapts environments in real time."}
+            {i === "Hardware-Agnostic Architecture" && "Operates above sensors, devices, and platforms without hardware dependency."}
+            {i === "Immersive-First, Not Limited" && "Initial focus on high-fidelity VR without platform lock-in."}
           </div>}
         </div>
       ))}

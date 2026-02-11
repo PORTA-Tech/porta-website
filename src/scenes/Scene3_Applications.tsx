@@ -4,11 +4,10 @@ import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 type SceneProps = { isActive: boolean };
 
 const actuators = [
-  "Visual Modulation",
-  "Auditory Feedback",
-  "Haptic Interaction",
-  "Environmental Adaptation",
-  "Cognitive Guidance",
+  "Immersive Training",
+  "High-Stakes Performance",
+  "Therapeutic Environments",
+  "Research & Experimental Interfaces",
 ];
 
 const positions = [
@@ -123,11 +122,10 @@ export default function Scene3_Response({ isActive }: SceneProps) {
         >
           {a}
           {hovered === a && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {a === "Visual Modulation" && "Dynamic visual adjustments to enhance engagement and emotional regulation."}
-            {a === "Auditory Feedback" && "Adaptive sounds and music to guide mood and cognitive focus."}
-            {a === "Haptic Interaction" && "Tactile cues and feedback through controllers or devices."}
-            {a === "Environmental Adaptation" && "Alters virtual environment parameters based on user state."}
-            {a === "Cognitive Guidance" && "Subtle cues to influence attention, focus, and emotional state."}
+            {a === "Immersive Training" && "Adaptive environments that maintain optimal focus and learning conditions."}
+            {a === "High-Stakes Performance" && "Real-time regulation where cognitive failure carries a high cost."}
+            {a === "Therapeutic Environments" && "Digitally mediated spaces supporting emotional regulation."}
+            {a === "Research & Experimental Interfaces" && "Controlled platforms for studying human state and adaptive systems."}
           </div>}
         </div>
       ))}

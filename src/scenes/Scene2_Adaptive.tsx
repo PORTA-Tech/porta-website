@@ -10,12 +10,13 @@ const processors = [
   "Environment Modulation",
 ];
 
+// Safe radial layout, centered
 const positions = [
-  { x: 20, y: 20 },
-  { x: 70, y: 25 },
-  { x: 25, y: 65 },
-  { x: 75, y: 60 },
-  { x: 50, y: 80 },
+  { x: 30, y: 30 },
+  { x: 70, y: 30 },
+  { x: 35, y: 65 },
+  { x: 75, y: 65 },
+  { x: 50, y: 82 }, // optional center bottom
 ];
 
 export default function Scene2_Processing({ isActive }: SceneProps) {
@@ -87,7 +88,8 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
-        el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
+        // Center the panel
+        el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
         el.style.boxShadow = hovered === processors[idx]
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
@@ -131,15 +133,16 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
             position: "absolute",
             top: `${positions[idx].y}%`,
             left: `${positions[idx].x}%`,
-            padding: "20px",
-            borderRadius: "8px",
+            padding: "clamp(12px, 1.5vw, 24px)",
+            borderRadius: "clamp(8px, 1vw, 16px)",
             background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
             color: PORTA_VISUAL_STYLE.palette.text,
             textAlign: "center",
-            minWidth: "140px",
+            minWidth: "clamp(140px, 14vw, 220px)",
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
+            fontSize: "clamp(14px, 1.2vw, 20px)",
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
             touchAction: "manipulation",
           }}

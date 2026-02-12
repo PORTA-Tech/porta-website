@@ -10,12 +10,13 @@ const integrators = [
   "Immersive-First, Not Limited",
 ];
 
+// Safe radial layout, centered
 const positions = [
-  { x: 20, y: 25 },
-  { x: 70, y: 25 },
-  { x: 25, y: 65 },
+  { x: 35, y: 30 },
+  { x: 80, y: 30 },
+  { x: 30, y: 65 },
   { x: 75, y: 65 },
-  { x: 50, y: 80 },
+  { x: 50, y: 82 },
 ];
 
 export default function Scene4_Integration({ isActive }: SceneProps) {
@@ -26,6 +27,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
   const mouseRef = useRef({ x: 0, y: 0 });
   const depthRef = useRef<number[]>(integrators.map(() => Math.random() * 20 + 10));
 
+  // Mouse tracking for parallax
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = {
@@ -37,6 +39,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
+  // Entrance animation
   useEffect(() => {
     if (!isActive) { setEntranceProgress(0); return; }
     let progress = 0, id: number;
@@ -50,6 +53,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Background drift
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -65,6 +69,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Panel drift + parallax
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -79,9 +84,12 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === integrators[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
+        const scale = hovered === integrators[idx]
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+          : entranceScale;
 
-        el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
+        // Center the panel
+        el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
         el.style.boxShadow = hovered === integrators[idx]
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
@@ -125,15 +133,16 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
             position: "absolute",
             top: `${positions[idx].y}%`,
             left: `${positions[idx].x}%`,
-            padding: "20px",
-            borderRadius: "8px",
+            padding: "clamp(12px, 1.5vw, 24px)",
+            borderRadius: "clamp(8px, 1vw, 16px)",
             background: PORTA_VISUAL_STYLE.palette.panelBg,
             border: "1px solid rgba(255,255,255,0.2)",
             color: PORTA_VISUAL_STYLE.palette.text,
             textAlign: "center",
-            minWidth: "140px",
+            minWidth: "clamp(140px, 14vw, 220px)",
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
+            fontSize: "clamp(14px, 1.2vw, 20px)",
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
             touchAction: "manipulation",
           }}

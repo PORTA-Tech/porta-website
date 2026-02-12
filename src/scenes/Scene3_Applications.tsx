@@ -26,6 +26,7 @@ export default function Scene3_Response({ isActive }: SceneProps) {
   const mouseRef = useRef({ x: 0, y: 0 });
   const depthRef = useRef<number[]>(actuators.map(() => Math.random() * 20 + 10));
 
+  // Mouse tracking for parallax
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = {
@@ -37,6 +38,7 @@ export default function Scene3_Response({ isActive }: SceneProps) {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
+  // Entrance animation
   useEffect(() => {
     if (!isActive) { setEntranceProgress(0); return; }
     let progress = 0, id: number;
@@ -50,6 +52,7 @@ export default function Scene3_Response({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Background drift
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -65,6 +68,7 @@ export default function Scene3_Response({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Panel drift + parallax
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -79,7 +83,9 @@ export default function Scene3_Response({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === actuators[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
+        const scale = hovered === actuators[idx]
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+          : entranceScale;
 
         el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
         el.style.boxShadow = hovered === actuators[idx]
@@ -94,6 +100,17 @@ export default function Scene3_Response({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered, entranceProgress]);
 
+  // Close tooltip on outside tap (mobile)
+  useEffect(() => {
+    const handleOutside = (e: TouchEvent) => {
+      if (!panelRefs.current.some(el => el && el.contains(e.target as Node))) {
+        setHovered(null);
+      }
+    };
+    document.addEventListener("touchstart", handleOutside);
+    return () => document.removeEventListener("touchstart", handleOutside);
+  }, []);
+
   return (
     <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
       <div className="scene-header">
@@ -101,9 +118,15 @@ export default function Scene3_Response({ isActive }: SceneProps) {
       </div>
 
       {actuators.map((a, idx) => (
-        <div key={a} ref={(el) => { if (el) panelRefs.current[idx] = el; }}
+        <div
+          key={a}
+          ref={(el) => { if (el) panelRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(a)}
           onMouseLeave={() => setHovered(null)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setHovered(prev => (prev === a ? null : a));
+          }}
           style={{
             position: "absolute",
             top: `${positions[idx].y}%`,
@@ -118,15 +141,18 @@ export default function Scene3_Response({ isActive }: SceneProps) {
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            touchAction: "manipulation",
           }}
         >
           {a}
-          {hovered === a && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {a === "Immersive Training" && "Adaptive environments that maintain optimal focus and learning conditions."}
-            {a === "High-Stakes Performance" && "Real-time regulation where cognitive failure carries a high cost."}
-            {a === "Therapeutic Environments" && "Digitally mediated spaces supporting emotional regulation."}
-            {a === "Research & Experimental Interfaces" && "Controlled platforms for studying human state and adaptive systems."}
-          </div>}
+          {hovered === a && (
+            <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+              {a === "Immersive Training" && "Adaptive environments that maintain optimal focus and learning conditions."}
+              {a === "High-Stakes Performance" && "Real-time regulation where cognitive failure carries a high cost."}
+              {a === "Therapeutic Environments" && "Digitally mediated spaces supporting emotional regulation."}
+              {a === "Research & Experimental Interfaces" && "Controlled platforms for studying human state and adaptive systems."}
+            </div>
+          )}
         </div>
       ))}
     </div>

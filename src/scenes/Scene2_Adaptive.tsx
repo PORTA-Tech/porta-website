@@ -26,6 +26,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
   const mouseRef = useRef({ x: 0, y: 0 });
   const depthRef = useRef<number[]>(processors.map(() => Math.random() * 20 + 10));
 
+  // Mouse tracking for parallax
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = {
@@ -37,6 +38,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
+  // Entrance animation
   useEffect(() => {
     if (!isActive) { setEntranceProgress(0); return; }
     let progress = 0, id: number;
@@ -50,6 +52,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Background drift
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -65,6 +68,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Panel drift + parallax
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -79,7 +83,9 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === processors[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
+        const scale = hovered === processors[idx]
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+          : entranceScale;
 
         el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
         el.style.boxShadow = hovered === processors[idx]
@@ -94,6 +100,17 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered, entranceProgress]);
 
+  // Close tooltip on outside tap (mobile)
+  useEffect(() => {
+    const handleOutside = (e: TouchEvent) => {
+      if (!panelRefs.current.some(el => el && el.contains(e.target as Node))) {
+        setHovered(null);
+      }
+    };
+    document.addEventListener("touchstart", handleOutside);
+    return () => document.removeEventListener("touchstart", handleOutside);
+  }, []);
+
   return (
     <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
       <div className="scene-header">
@@ -101,9 +118,15 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
       </div>
 
       {processors.map((p, idx) => (
-        <div key={p} ref={(el) => { if (el) panelRefs.current[idx] = el; }}
+        <div
+          key={p}
+          ref={(el) => { if (el) panelRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(p)}
           onMouseLeave={() => setHovered(null)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setHovered(prev => (prev === p ? null : p));
+          }}
           style={{
             position: "absolute",
             top: `${positions[idx].y}%`,
@@ -118,15 +141,18 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            touchAction: "manipulation",
           }}
         >
           {p}
-          {hovered === p && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {p === "Perception Layer" && "Acquires and synchronizes physiological and behavioral data streams."}
-            {p === "Inference Layer" && "Processes signals to estimate internal state."}
-            {p === "Adaptive Control Layer" && "Determines environment adjustments based on inferred state and system goals."}
-            {p === "Environment Modulation" && "Applies continuous, real-time changes to digital environments."}
-          </div>}
+          {hovered === p && (
+            <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+              {p === "Perception Layer" && "Acquires and synchronizes physiological and behavioral data streams."}
+              {p === "Inference Layer" && "Processes signals to estimate internal state."}
+              {p === "Adaptive Control Layer" && "Determines environment adjustments based on inferred state and system goals."}
+              {p === "Environment Modulation" && "Applies continuous, real-time changes to digital environments."}
+            </div>
+          )}
         </div>
       ))}
     </div>

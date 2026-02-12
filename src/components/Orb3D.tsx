@@ -1,7 +1,8 @@
 import { useRef, useMemo } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
+import { useResponsiveScale } from "../hooks/useResponsiveScale";
 
 interface Orb3DProps {
   mode: number;
@@ -18,10 +19,8 @@ export default function Orb3D({
   const ringsRef = useRef<THREE.Group>(null);
   const starGroupRef = useRef<THREE.Group>(null);
 
-  // Responsive viewport scale
-  const viewport = useThree((state) => state.viewport);
-  const aspect = viewport.aspect;
-  const responsiveScale = aspect < 0.75 ? 0.4 : 0.5; // shrink for tall/narrow screens
+  // Use responsive scale hook
+  const { orb: orbScale } = useResponsiveScale();
 
   // Orb particles
   const orbParticles = useMemo(() => {
@@ -124,7 +123,7 @@ export default function Orb3D({
   });
 
   return (
-    <group position={position} scale={[responsiveScale, responsiveScale, responsiveScale]}>
+    <group position={position} scale={[orbScale, orbScale, orbScale]}>
       <group ref={starGroupRef}>
         {starLayers.map((layer, idx) => (
           <points key={idx}>

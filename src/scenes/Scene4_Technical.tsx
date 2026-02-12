@@ -94,6 +94,17 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered, entranceProgress]);
 
+  // Mobile tap toggle + outside-tap close
+  useEffect(() => {
+    const handleOutside = (e: TouchEvent) => {
+      if (!panelRefs.current.some(el => el && el.contains(e.target as Node))) {
+        setHovered(null);
+      }
+    };
+    document.addEventListener("touchstart", handleOutside);
+    return () => document.removeEventListener("touchstart", handleOutside);
+  }, []);
+
   return (
     <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
       <div className="scene-header">
@@ -101,9 +112,15 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
       </div>
 
       {integrators.map((i, idx) => (
-        <div key={i} ref={(el) => { if (el) panelRefs.current[idx] = el; }}
+        <div
+          key={i}
+          ref={(el) => { if (el) panelRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(i)}
           onMouseLeave={() => setHovered(null)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setHovered(prev => (prev === i ? null : i));
+          }}
           style={{
             position: "absolute",
             top: `${positions[idx].y}%`,
@@ -118,15 +135,18 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            touchAction: "manipulation",
           }}
         >
           {i}
-          {hovered === i && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {i === "Software Intelligence Layer" && "PORTA is a software-based intelligence system, not a hardware device."}
-            {i === "Closed-Loop Regulation" && "Continuously senses, infers, and adapts environments in real time."}
-            {i === "Hardware-Agnostic Architecture" && "Operates above sensors, devices, and platforms without hardware dependency."}
-            {i === "Immersive-First, Not Limited" && "Initial focus on high-fidelity VR without platform lock-in."}
-          </div>}
+          {hovered === i && (
+            <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+              {i === "Software Intelligence Layer" && "PORTA is a software-based intelligence system, not a hardware device."}
+              {i === "Closed-Loop Regulation" && "Continuously senses, infers, and adapts environments in real time."}
+              {i === "Hardware-Agnostic Architecture" && "Operates above sensors, devices, and platforms without hardware dependency."}
+              {i === "Immersive-First, Not Limited" && "Initial focus on high-fidelity VR without platform lock-in."}
+            </div>
+          )}
         </div>
       ))}
     </div>

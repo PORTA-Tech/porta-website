@@ -27,6 +27,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
   const mouseRef = useRef({ x: 0, y: 0 });
   const depthRef = useRef<number[]>(signals.map(() => Math.random() * 20 + 10));
 
+  // Mouse tracking for parallax
   useEffect(() => {
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = {
@@ -38,6 +39,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
+  // Entrance animation
   useEffect(() => {
     if (!isActive) { setEntranceProgress(0); return; }
     let progress = 0, id: number;
@@ -51,6 +53,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Background drift
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -66,6 +69,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive]);
 
+  // Signal drift + parallax
   useEffect(() => {
     if (!isActive) return;
     let frame = 0, id: number;
@@ -80,7 +84,9 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === signals[idx] ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale : entranceScale;
+        const scale = hovered === signals[idx]
+          ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
+          : entranceScale;
 
         el.style.transform = `translate(${floatX + parallaxX}px, ${floatY + entranceOffsetY + parallaxY}px) scale(${scale})`;
         el.style.boxShadow = hovered === signals[idx]
@@ -95,6 +101,17 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
     return () => cancelAnimationFrame(id);
   }, [isActive, hovered, entranceProgress]);
 
+  // Close tooltip on outside tap (mobile)
+  useEffect(() => {
+    const handleOutside = (e: TouchEvent) => {
+      if (!signalRefs.current.some(el => el && el.contains(e.target as Node))) {
+        setHovered(null);
+      }
+    };
+    document.addEventListener("touchstart", handleOutside);
+    return () => document.removeEventListener("touchstart", handleOutside);
+  }, []);
+
   return (
     <div ref={bgRef} className="scene" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
       <div className="scene-header">
@@ -102,9 +119,15 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
       </div>
 
       {signals.map((s, idx) => (
-        <div key={s} ref={(el) => { if (el) signalRefs.current[idx] = el; }}
+        <div
+          key={s}
+          ref={(el) => { if (el) signalRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(s)}
           onMouseLeave={() => setHovered(null)}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            setHovered(prev => (prev === s ? null : s));
+          }}
           style={{
             position: "absolute",
             top: `${positions[idx].y}%`,
@@ -119,16 +142,19 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
             cursor: "pointer",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
             transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            touchAction: "manipulation",
           }}
         >
           {s}
-          {hovered === s && <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
-            {s === "EEG" && "Electrical patterns associated with cognitive load, attention, and neural dynamics."}
-            {s === "Heart Rate" && "Cardiovascular indicators related to arousal and stress response."}
-            {s === "Electrodermal Activity (EDA)" && "Skin conductance changes reflecting sympathetic nervous system activity."}
-            {s === "Behavioral Signals" && "Interaction timing, motion patterns, and response dynamics."}
-            {s === "Emotional Inference Engine" && "Integrates multimodal signals to estimate internal cognitive and emotional state."}
-          </div>}
+          {hovered === s && (
+            <div style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "5px" }}>
+              {s === "EEG" && "Electrical patterns associated with cognitive load, attention, and neural dynamics."}
+              {s === "Heart Rate" && "Cardiovascular indicators related to arousal and stress response."}
+              {s === "Electrodermal Activity (EDA)" && "Skin conductance changes reflecting sympathetic nervous system activity."}
+              {s === "Behavioral Signals" && "Interaction timing, motion patterns, and response dynamics."}
+              {s === "Emotional Inference Engine" && "Integrates multimodal signals to estimate internal cognitive and emotional state."}
+            </div>
+          )}
         </div>
       ))}
     </div>

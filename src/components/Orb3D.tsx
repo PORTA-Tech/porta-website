@@ -1,5 +1,5 @@
 import { useRef, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
@@ -17,6 +17,11 @@ export default function Orb3D({
   const orbRef = useRef<THREE.Points>(null);
   const ringsRef = useRef<THREE.Group>(null);
   const starGroupRef = useRef<THREE.Group>(null);
+
+  // Responsive viewport scale
+  const viewport = useThree((state) => state.viewport);
+  const aspect = viewport.aspect;
+  const responsiveScale = aspect < 0.75 ? 0.4 : 0.5; // shrink for tall/narrow screens
 
   // Orb particles
   const orbParticles = useMemo(() => {
@@ -56,7 +61,10 @@ export default function Orb3D({
     return ringGeometries.map(
       (_, idx) =>
         new THREE.MeshBasicMaterial({
-          color: PORTA_VISUAL_STYLE.palette.rings[idx % PORTA_VISUAL_STYLE.palette.rings.length],
+          color:
+            PORTA_VISUAL_STYLE.palette.rings[
+              idx % PORTA_VISUAL_STYLE.palette.rings.length
+            ],
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.45,
@@ -80,9 +88,14 @@ export default function Orb3D({
           radiusStar * Math.sin(phi) * Math.sin(theta),
           radiusStar * Math.cos(phi)
         );
-        sizes.push(Math.random() * 0.05 + 0.02 + (Math.random() < 0.02 ? 0.1 : 0));
+        sizes.push(
+          Math.random() * 0.05 + 0.02 + (Math.random() < 0.02 ? 0.1 : 0)
+        );
       }
-      layers.push({ positions: new Float32Array(positions), sizes: new Float32Array(sizes) });
+      layers.push({
+        positions: new Float32Array(positions),
+        sizes: new Float32Array(sizes),
+      });
     }
     return layers;
   }, []);
@@ -95,24 +108,31 @@ export default function Orb3D({
       orbRef.current.scale.set(scale, scale, scale);
     }
     if (ringsRef.current) {
-      ringsRef.current.rotation.y += PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier * (mode + 1);
-      ringsRef.current.rotation.x += PORTA_VISUAL_STYLE.orb.ringsRotationX * (mode + 1);
+      ringsRef.current.rotation.y +=
+        PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier * (mode + 1);
+      ringsRef.current.rotation.x +=
+        PORTA_VISUAL_STYLE.orb.ringsRotationX * (mode + 1);
     }
     if (starGroupRef.current) {
       starGroupRef.current.rotation.y += PORTA_VISUAL_STYLE.starfield.rotationY;
       starGroupRef.current.rotation.x += PORTA_VISUAL_STYLE.starfield.rotationX;
-      starGroupRef.current.rotation.y += mouse.x * PORTA_VISUAL_STYLE.starfield.mouseInfluence;
-      starGroupRef.current.rotation.x += mouse.y * PORTA_VISUAL_STYLE.starfield.mouseInfluence;
+      starGroupRef.current.rotation.y +=
+        mouse.x * PORTA_VISUAL_STYLE.starfield.mouseInfluence;
+      starGroupRef.current.rotation.x +=
+        mouse.y * PORTA_VISUAL_STYLE.starfield.mouseInfluence;
     }
   });
 
   return (
-    <group position={position} scale={[0.5, 0.5, 0.5]}>
+    <group position={position} scale={[responsiveScale, responsiveScale, responsiveScale]}>
       <group ref={starGroupRef}>
         {starLayers.map((layer, idx) => (
           <points key={idx}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" args={[layer.positions, 3]} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[layer.positions, 3]}
+              />
               <bufferAttribute attach="attributes-size" args={[layer.sizes, 1]} />
             </bufferGeometry>
             <pointsMaterial

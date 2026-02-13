@@ -13,9 +13,9 @@ const integrators = [
 // Safe radial layout, centered
 const positions = [
   { x: 35, y: 30 },
-  { x: 80, y: 30 },
+  { x: 70, y: 45 },
   { x: 30, y: 65 },
-  { x: 75, y: 65 },
+  { x: 75, y: 80 },
   { x: 50, y: 82 },
 ];
 

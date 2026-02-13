@@ -12,10 +12,10 @@ const actuators = [
 
 // Safe radial layout, centered
 const positions = [
-  { x: 35, y: 30 },
-  { x: 70, y: 30 },
+  { x: 35, y: 25 },
+  { x: 70, y: 45 },
   { x: 35, y: 65 },
-  { x: 75, y: 65 },
+  { x: 70, y: 80 },
   { x: 50, y: 82 },
 ];
 

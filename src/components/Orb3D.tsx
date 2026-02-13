@@ -15,11 +15,11 @@ export default function Orb3D({
   radius = 3.5,
   position = [0, 0, 0],
 }: Orb3DProps) {
+  const rootRef = useRef<THREE.Group>(null); // Scene-level rotation
   const orbRef = useRef<THREE.Points>(null);
   const ringsRef = useRef<THREE.Group>(null);
   const starGroupRef = useRef<THREE.Group>(null);
 
-  // Use responsive scale hook
   const { orb: orbScale } = useResponsiveScale();
 
   // Orb particles
@@ -102,16 +102,28 @@ export default function Orb3D({
   // Animations
   useFrame(({ clock, mouse }) => {
     const t = clock.getElapsedTime();
+
+    // Subtle scene rotation
+    if (rootRef.current) {
+      rootRef.current.rotation.y += 0.0001; // 1–2° drift
+      rootRef.current.rotation.x += 0.00009;
+    }
+
+    // Orb pulse
     if (orbRef.current) {
       const scale = 1 + PORTA_VISUAL_STYLE.orb.pulseAmplitude * Math.sin(t * 3);
       orbRef.current.scale.set(scale, scale, scale);
     }
+
+    // Rings rotation (simple, synchronized like your second snippet)
     if (ringsRef.current) {
       ringsRef.current.rotation.y +=
         PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier * (mode + 1);
       ringsRef.current.rotation.x +=
         PORTA_VISUAL_STYLE.orb.ringsRotationX * (mode + 1);
     }
+
+    // Starfield
     if (starGroupRef.current) {
       starGroupRef.current.rotation.y += PORTA_VISUAL_STYLE.starfield.rotationY;
       starGroupRef.current.rotation.x += PORTA_VISUAL_STYLE.starfield.rotationX;
@@ -123,15 +135,16 @@ export default function Orb3D({
   });
 
   return (
-    <group position={position} scale={[orbScale, orbScale, orbScale]}>
+    <group
+      ref={rootRef}
+      position={position}
+      scale={[orbScale, orbScale, orbScale]}
+    >
       <group ref={starGroupRef}>
         {starLayers.map((layer, idx) => (
           <points key={idx}>
             <bufferGeometry>
-              <bufferAttribute
-                attach="attributes-position"
-                args={[layer.positions, 3]}
-              />
+              <bufferAttribute attach="attributes-position" args={[layer.positions, 3]} />
               <bufferAttribute attach="attributes-size" args={[layer.sizes, 1]} />
             </bufferGeometry>
             <pointsMaterial
@@ -145,7 +158,9 @@ export default function Orb3D({
           </points>
         ))}
       </group>
+
       <primitive object={orbParticles} ref={orbRef} />
+
       <group ref={ringsRef}>
         {ringGeometries.map((geo, i) => (
           <mesh key={i} geometry={geo} material={ringMaterials[i]} />

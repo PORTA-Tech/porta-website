@@ -3,6 +3,7 @@ import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState(""); // new
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -25,6 +26,30 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
       if (buttonRef.current) buttonRef.current.style.transform = "scale(1)";
     };
   }, [hovered]);
+
+  // New submit function
+  const handleSubmit = async () => {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setStatus("Please enter a valid email.");
+      return;
+    }
+    setStatus("Sending...");
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.ok) {
+        setStatus("Sent successfully!");
+        setEmail(""); // clear input
+      } else {
+        setStatus("Failed to send.");
+      }
+    } catch {
+      setStatus("Network error.");
+    }
+  };
 
   return (
     <div
@@ -76,7 +101,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
         ref={buttonRef}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={onAdvance}
+        onClick={handleSubmit} // replaced
         style={{
           padding: "12px 24px",
           cursor: "pointer",
@@ -95,6 +120,12 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
       >
         Request Access
       </button>
+
+      {status && (
+        <p style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
+          {status}
+        </p>
+      )}
     </div>
   );
 }

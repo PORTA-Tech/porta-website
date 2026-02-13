@@ -11,13 +11,11 @@ interface Orb3DProps {
 }
 
 export default function Orb3D({
-  mode,
   radius = 3.5,
   position = [0, 0, 0],
 }: Orb3DProps) {
   const rootRef = useRef<THREE.Group>(null); // Scene-level rotation
   const orbRef = useRef<THREE.Points>(null);
-  const ringsRef = useRef<THREE.Group>(null);
   const starGroupRef = useRef<THREE.Group>(null);
 
   const { orb: orbScale } = useResponsiveScale();
@@ -46,30 +44,6 @@ export default function Orb3D({
     });
     return new THREE.Points(geometry, material);
   }, [radius]);
-
-  // Rings
-  const ringGeometries = useMemo(() => {
-    return Array.from({ length: 3 }, (_, i) => {
-      const inner = radius * (0.65 + i * 0.15);
-      const outer = radius * (0.66 + i * 0.15);
-      return new THREE.RingGeometry(inner, outer, 64);
-    });
-  }, [radius]);
-
-  const ringMaterials = useMemo(() => {
-    return ringGeometries.map(
-      (_, idx) =>
-        new THREE.MeshBasicMaterial({
-          color:
-            PORTA_VISUAL_STYLE.palette.rings[
-              idx % PORTA_VISUAL_STYLE.palette.rings.length
-            ],
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.45,
-        })
-    );
-  }, [ringGeometries]);
 
   // Starfield
   const starLayers = useMemo(() => {
@@ -115,14 +89,6 @@ export default function Orb3D({
       orbRef.current.scale.set(scale, scale, scale);
     }
 
-    // Rings rotation (simple, synchronized like your second snippet)
-    if (ringsRef.current) {
-      ringsRef.current.rotation.y +=
-        PORTA_VISUAL_STYLE.orb.rotationSpeedMultiplier * (mode + 1);
-      ringsRef.current.rotation.x +=
-        PORTA_VISUAL_STYLE.orb.ringsRotationX * (mode + 1);
-    }
-
     // Starfield
     if (starGroupRef.current) {
       starGroupRef.current.rotation.y += PORTA_VISUAL_STYLE.starfield.rotationY;
@@ -160,12 +126,6 @@ export default function Orb3D({
       </group>
 
       <primitive object={orbParticles} ref={orbRef} />
-
-      <group ref={ringsRef}>
-        {ringGeometries.map((geo, i) => (
-          <mesh key={i} geometry={geo} material={ringMaterials[i]} />
-        ))}
-      </group>
     </group>
   );
 }

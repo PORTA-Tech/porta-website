@@ -2,7 +2,6 @@ export const PORTA_VISUAL_STYLE = {
   palette: {
     coreOrb: "#00FFFF",
     star: "#FFFFFF",
-    rings: ["#00FFFF", "#00FFFF", "#00FFFF"],
 
     // UI text & panels
     text: "#FFFFFF",
@@ -19,7 +18,6 @@ export const PORTA_VISUAL_STYLE = {
   },
   orb: {
     rotationSpeedMultiplier: 0.001,
-    ringsRotationX: 0.001,
     pulseAmplitude: 0.09,
   },
   starfield: {

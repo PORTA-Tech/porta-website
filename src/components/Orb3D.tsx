@@ -80,7 +80,7 @@ export default function Orb3D({
     // Subtle scene rotation
     if (rootRef.current) {
       rootRef.current.rotation.y += 0.0001; // 1–2° drift
-      rootRef.current.rotation.x += 0.00009;
+      rootRef.current.rotation.x += 0.0001;
     }
 
     // Orb pulse

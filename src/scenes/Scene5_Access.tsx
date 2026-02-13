@@ -3,11 +3,11 @@ import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
 export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState(""); // new
+  const [status, setStatus] = useState("");
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Pulse effect on hover using existing ui.panelHoverScale
+  // Pulse effect on hover
   useEffect(() => {
     if (!hovered || !buttonRef.current) return;
     let angle = 0;
@@ -27,7 +27,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
     };
   }, [hovered]);
 
-  // New submit function
+  // Submit email to backend
   const handleSubmit = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setStatus("Please enter a valid email.");
@@ -35,18 +35,20 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
     }
     setStatus("Sending...");
     try {
-      const res = await fetch("/api/send-email", {
+      const res = await fetch("http://localhost:3001/send-email", {
         method: "POST",
         body: JSON.stringify({ email }),
         headers: { "Content-Type": "application/json" },
       });
+      const data = await res.json();
       if (res.ok) {
-        setStatus("Sent successfully!");
-        setEmail(""); // clear input
+        setStatus(data.message || "Sent successfully!");
+        setEmail("");
       } else {
-        setStatus("Failed to send.");
+        setStatus(data.error || "Failed to send.");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus("Network error.");
     }
   };
@@ -101,7 +103,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
         ref={buttonRef}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={handleSubmit} // replaced
+        onClick={handleSubmit}
         style={{
           padding: "12px 24px",
           cursor: "pointer",

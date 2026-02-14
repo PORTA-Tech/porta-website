@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
 
-export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) {
+export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [hovered, setHovered] = useState(false);
@@ -44,6 +44,8 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
       if (res.ok) {
         setStatus(data.message || "Sent successfully!");
         setEmail("");
+        // Optional: advance to next scene if onAdvance exists
+        onAdvance?.();
       } else {
         setStatus(data.error || "Failed to send.");
       }

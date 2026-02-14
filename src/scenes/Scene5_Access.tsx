@@ -68,7 +68,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
         overflow: "hidden",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Early Access</h2>
+      <h2 style={{ position: "relative", zIndex: 1 }}>Request Access</h2>
       <p
         style={{
           textAlign: "center",
@@ -77,7 +77,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
           zIndex: 1,
         }}
       >
-        Early testers and collaborators. Not mass-market users.
+        Submit interest for experimental use and collaboration.
       </p>
 
       <input

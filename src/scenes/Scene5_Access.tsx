@@ -35,7 +35,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance: () => void }) 
     }
     setStatus("Sending...");
     try {
-      const res = await fetch("http://localhost:3001/send-email", {
+      const res = await fetch("https://porta-api-yywn.onrender.com", {
         method: "POST",
         body: JSON.stringify({ email }),
         headers: { "Content-Type": "application/json" },

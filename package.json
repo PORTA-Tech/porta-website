@@ -7,13 +7,23 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "video:sync": "node ./scripts/sync-ari-video-assets.mjs",
+    "video:dev": "npm run video:sync && vite",
+    "video:studio": "npm run video:sync && remotion studio remotion/index.ts",
+    "video:render": "npm run video:sync && remotion render remotion/index.ts AriRecordedStory out/ari-recorded-story.mp4"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/instrument-serif": "^5.2.8",
+    "@fontsource/space-grotesk": "^5.2.10",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
+    "@remotion/cli": "^4.0.436",
+    "@remotion/player": "^4.0.436",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "remotion": "^4.0.436",
     "three": "^0.182.0"
   },
   "devDependencies": {

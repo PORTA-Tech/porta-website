@@ -9,12 +9,14 @@ export interface AriVideoManifest {
   tracePublicPath: string;
   beatMapPublicPath: string;
   summaryPublicPath: string;
+  voiceoverPublicPath: string;
 }
 
 export interface AriVideoData {
   trace: AriVideoTrace;
   beatMap: AriVideoBeatMap;
   summary: AriVideoSummary | null;
+  voiceover: AriVoiceoverManifest | null;
 }
 
 export interface AriVideoTrace {
@@ -201,4 +203,18 @@ export interface AriVideoSummary {
     triggerState: string;
     triggerValue: number;
   };
+}
+
+export interface AriVoiceoverManifest {
+  schema: string;
+  voiceName: string;
+  segments: AriVoiceoverSegment[];
+}
+
+export interface AriVoiceoverSegment {
+  segmentId: string;
+  startSec: number;
+  rate: number;
+  volume: number;
+  text: string;
 }

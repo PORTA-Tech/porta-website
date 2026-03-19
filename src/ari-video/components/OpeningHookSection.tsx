@@ -40,7 +40,7 @@ export function OpeningHookSection({
         <div
           style={{
             fontFamily: videoTokens.font.mono,
-            fontSize: 18,
+            fontSize: 22,
             letterSpacing: "0.26em",
             textTransform: "uppercase",
             color: videoTokens.color.accent,
@@ -52,8 +52,8 @@ export function OpeningHookSection({
           style={{
             maxWidth: 1320,
             fontFamily: videoTokens.font.display,
-            fontSize: 138,
-            lineHeight: 0.9,
+            fontSize: 156,
+            lineHeight: 0.92,
             letterSpacing: "-0.03em",
             color: videoTokens.color.ink,
           }}
@@ -66,12 +66,12 @@ export function OpeningHookSection({
           style={{
             maxWidth: 820,
             fontFamily: videoTokens.font.sans,
-            fontSize: 28,
-            lineHeight: 1.52,
+            fontSize: 34,
+            lineHeight: 1.48,
             color: videoTokens.color.mutedInk,
           }}
         >
-          This film is built from a curated recorded Ari trace. Every state shift, threshold crossing, and intervention cue shown here comes from the exact session behind the video.
+          This video comes from one real Ari session. Every change you see comes from that exact session.
         </div>
       </div>
 
@@ -89,7 +89,7 @@ export function OpeningHookSection({
         <div
           style={{
             fontFamily: videoTokens.font.mono,
-            fontSize: 16,
+            fontSize: 18,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             color: videoTokens.color.softInk,
@@ -100,13 +100,13 @@ export function OpeningHookSection({
         <div
           style={{
             fontFamily: videoTokens.font.sans,
-            fontSize: 40,
+            fontSize: 48,
             fontWeight: 600,
             lineHeight: 1.14,
             color: videoTokens.color.ink,
           }}
         >
-          Built from one recorded session, then art-directed for clarity.
+          One real session, shaped so it is easy to follow.
         </div>
         <div
           style={{
@@ -137,7 +137,7 @@ export function OpeningHookSection({
             <div
               style={{
                 fontFamily: videoTokens.font.mono,
-                fontSize: 14,
+                fontSize: 16,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 color: videoTokens.color.softInk,
@@ -148,7 +148,7 @@ export function OpeningHookSection({
             <div
               style={{
                 fontFamily: videoTokens.font.sans,
-                fontSize: 22,
+                fontSize: 26,
                 lineHeight: 1.4,
                 color: videoTokens.color.ink,
                 overflowWrap: "anywhere",
@@ -186,7 +186,7 @@ function FactCard({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -197,8 +197,8 @@ function FactCard({
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: compact ? 20 : 24,
-          lineHeight: 1.35,
+          fontSize: compact ? 24 : 28,
+          lineHeight: 1.32,
           fontWeight: 500,
           color: videoTokens.color.ink,
           overflowWrap: "anywhere",

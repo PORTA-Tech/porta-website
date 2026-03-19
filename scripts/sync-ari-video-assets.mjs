@@ -44,6 +44,7 @@ const manifestSource = `export const ARI_VIDEO_TRACE_MANIFEST = {
   tracePublicPath: "/ari-video/ari-video-trace.json",
   beatMapPublicPath: "/ari-video/ari-video-beat-map.json",
   summaryPublicPath: "/ari-video/curation-summary.json",
+  voiceoverPublicPath: "/ari-video/voice/ari-video-voiceover.json",
 } as const;
 `;
 

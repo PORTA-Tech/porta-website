@@ -4,8 +4,10 @@ import { spawn } from "node:child_process";
 
 const projectRoot = process.cwd();
 const syncScriptPath = path.join(projectRoot, "scripts", "sync-ari-video-assets.mjs");
+const voiceoverScriptPath = path.join(projectRoot, "scripts", "generate-ari-voiceover.py");
 const remotionCliPath = path.join(projectRoot, "node_modules", "@remotion", "cli", "remotion-cli.js");
 const tracePath = path.join(projectRoot, "public", "ari-video", "ari-video-trace.json");
+const voiceoverManifestPath = path.join(projectRoot, "public", "ari-video", "voice", "ari-video-voiceover.json");
 const exportPublicDir = path.join(projectRoot, "public", "ari-video", "exports");
 const outputDir = path.join(projectRoot, "out", "ari-video");
 const masterDir = path.join(outputDir, "master");
@@ -17,6 +19,7 @@ const skipSync = hasFlag(args, "--skip-sync");
 const skipMaster = hasFlag(args, "--skip-master");
 const skipWebm = hasFlag(args, "--skip-webm");
 const skipHomepageCut = hasFlag(args, "--skip-homepage-cut");
+const skipVoiceover = hasFlag(args, "--skip-voiceover");
 
 await main();
 
@@ -32,6 +35,13 @@ async function main() {
 
   if (!fs.existsSync(tracePath)) {
     throw new Error(`Trace file was not found: ${tracePath}`);
+  }
+
+  if (!skipVoiceover && fs.existsSync(voiceoverManifestPath)) {
+    await run("py", [
+      voiceoverScriptPath,
+      voiceoverManifestPath,
+    ], "Generating synced Ari voiceover");
   }
 
   const trace = JSON.parse(fs.readFileSync(tracePath, "utf8"));

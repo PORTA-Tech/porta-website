@@ -9,6 +9,7 @@ import type {
   AriVideoData,
   AriVideoSummary,
   AriVideoTrace,
+  AriVoiceoverManifest,
 } from "./types";
 import { ARI_VIDEO_TRACE_MANIFEST } from "../data/traceManifest";
 
@@ -20,11 +21,13 @@ export const loadAriVideoData = async () => {
       fetchJson(staticFile(ARI_VIDEO_TRACE_MANIFEST.tracePublicPath.replace(/^\//, ""))),
       fetchJson(staticFile(ARI_VIDEO_TRACE_MANIFEST.beatMapPublicPath.replace(/^\//, ""))),
       fetchJson(staticFile(ARI_VIDEO_TRACE_MANIFEST.summaryPublicPath.replace(/^\//, ""))).catch(() => null),
-    ]).then(([tracePayload, beatMapPayload, summaryPayload]) => {
+      fetchJson(staticFile(ARI_VIDEO_TRACE_MANIFEST.voiceoverPublicPath.replace(/^\//, ""))).catch(() => null),
+    ]).then(([tracePayload, beatMapPayload, summaryPayload, voiceoverPayload]) => {
       return {
         trace: normalizeTrace(tracePayload),
         beatMap: normalizeBeatMap(beatMapPayload),
         summary: normalizeSummary(summaryPayload),
+        voiceover: normalizeVoiceover(voiceoverPayload),
       };
     });
   }
@@ -253,6 +256,28 @@ const normalizeSummary = (payload: unknown): AriVideoSummary | null => {
       triggerState: String(selectedEvent.trigger_state ?? ""),
       triggerValue: Number(selectedEvent.trigger_value ?? 0),
     },
+  };
+};
+
+const normalizeVoiceover = (payload: unknown): AriVoiceoverManifest | null => {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const manifest = payload as Record<string, unknown>;
+  return {
+    schema: String(manifest.schema ?? ""),
+    voiceName: String(manifest.voiceName ?? ""),
+    segments: ((manifest.segments as unknown[]) ?? []).map((segment) => {
+      const rawSegment = segment as Record<string, unknown>;
+      return {
+        segmentId: String(rawSegment.segmentId ?? ""),
+        startSec: Number(rawSegment.startSec ?? 0),
+        rate: Number(rawSegment.rate ?? 0),
+        volume: Number(rawSegment.volume ?? 1),
+        text: String(rawSegment.text ?? ""),
+      };
+    }),
   };
 };
 

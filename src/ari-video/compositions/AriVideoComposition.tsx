@@ -12,6 +12,7 @@ import { SignalTrackingSection } from "../components/SignalTrackingSection";
 import { StateInferenceSection } from "../components/StateInferenceSection";
 import { TimelineRail } from "../components/TimelineRail";
 import { VideoHud } from "../components/VideoHud";
+import { VoiceoverTrack } from "../components/VoiceoverTrack";
 import {
   clamp01,
   findActiveBeat,
@@ -34,7 +35,7 @@ export function AriVideoComposition() {
   }
 
   const currentSec = frame / fps;
-  const { trace, beatMap, summary } = data;
+  const { trace, beatMap, summary, voiceover } = data;
   const anchorEvent = findAnchorEvent(trace.events);
   const currentSignal = getCurrentSignal(trace.signals, currentSec);
   const currentSnapshot =
@@ -78,6 +79,8 @@ export function AriVideoComposition() {
       }}
     >
       <Backdrop />
+
+      <VoiceoverTrack voiceover={voiceover} fps={fps} />
 
       <VideoHud
         activeBeat={activeBeat}

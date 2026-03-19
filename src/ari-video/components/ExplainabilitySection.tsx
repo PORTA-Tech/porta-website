@@ -40,38 +40,38 @@ export function ExplainabilitySection({
         }}
       >
         <div
-          style={{
-            fontFamily: videoTokens.font.mono,
-            fontSize: 18,
-            letterSpacing: "0.24em",
-            textTransform: "uppercase",
-            color: videoTokens.color.cyan,
+            style={{
+              fontFamily: videoTokens.font.mono,
+              fontSize: 22,
+              letterSpacing: "0.24em",
+              textTransform: "uppercase",
+              color: videoTokens.color.cyan,
           }}
         >
           Explain
         </div>
         <div
-          style={{
-            maxWidth: 760,
-            fontFamily: videoTokens.font.display,
-            fontSize: 92,
-            lineHeight: 0.94,
-            letterSpacing: "-0.03em",
-            color: videoTokens.color.ink,
-          }}
+            style={{
+              maxWidth: 760,
+              fontFamily: videoTokens.font.display,
+              fontSize: 108,
+              lineHeight: 0.96,
+              letterSpacing: "-0.03em",
+              color: videoTokens.color.ink,
+            }}
         >
-          Trust comes from showing why the system moved.
+          Trust comes from showing why Ari acted.
         </div>
         <div
-          style={{
-            maxWidth: 640,
-            fontFamily: videoTokens.font.sans,
-            fontSize: 24,
-            lineHeight: 1.5,
-            color: videoTokens.color.mutedInk,
-          }}
+            style={{
+              maxWidth: 640,
+              fontFamily: videoTokens.font.sans,
+              fontSize: 30,
+              lineHeight: 1.44,
+              color: videoTokens.color.mutedInk,
+            }}
         >
-          The close makes the action legible: which state triggered it, how confident the system was, and how the intervention resolves when context changes.
+          The ending shows what triggered the action, how sure Ari was, and how the system goes back to normal.
         </div>
       </div>
 
@@ -122,7 +122,7 @@ function ExplainCard({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -133,8 +133,8 @@ function ExplainCard({
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: wide ? 24 : 28,
-          lineHeight: 1.45,
+          fontSize: wide ? 28 : 34,
+          lineHeight: 1.38,
           fontWeight: wide ? 400 : 500,
           color: videoTokens.color.ink,
           overflowWrap: "anywhere",

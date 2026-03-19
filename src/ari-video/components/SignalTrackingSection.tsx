@@ -46,8 +46,8 @@ export function SignalTrackingSection({
       >
         <SectionLead
           eyebrow="Observe"
-          title="Ari starts with behavior patterns it can actually measure."
-          body="Typing cadence, scroll energy, app switching, and idle fragmentation are tracked as behavioral telemetry. No content, no transcripts, no invented emotion layer."
+          title="Ari starts with simple behavior signals."
+          body="It looks at typing, scrolling, app switching, and idle time. It does not read what you type."
         />
         <div
           style={{
@@ -74,7 +74,7 @@ export function SignalTrackingSection({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 13,
+              fontSize: 15,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: videoTokens.color.softInk,
@@ -85,12 +85,12 @@ export function SignalTrackingSection({
           </div>
           <div
             style={{
-              fontSize: 20,
-              lineHeight: 1.5,
+              fontSize: 24,
+              lineHeight: 1.48,
               color: videoTokens.color.ink,
             }}
           >
-            Recorded interaction patterns only. The system sees rhythm and change, not message content.
+            Ari watches patterns only. It does not read message content.
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ export function SignalTrackingSection({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 15,
+              fontSize: 18,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: videoTokens.color.softInk,
@@ -161,13 +161,13 @@ export function SignalTrackingSection({
         >
           <div
             style={{
-              fontSize: 19,
-              lineHeight: 1.5,
+              fontSize: 24,
+              lineHeight: 1.44,
               color: videoTokens.color.mutedInk,
               maxWidth: 760,
             }}
           >
-            Each vertical column is a recorded behavior window. The highlighted marker follows the current observed interval through the trace.
+            Each column is one real moment from the session. The marker shows where we are in time.
           </div>
           <div
             style={{
@@ -176,7 +176,7 @@ export function SignalTrackingSection({
               background: "rgba(244,239,231,0.04)",
               color: videoTokens.color.ink,
               fontFamily: videoTokens.font.mono,
-              fontSize: 13,
+              fontSize: 15,
               letterSpacing: "0.16em",
               textTransform: "uppercase",
             }}
@@ -203,7 +203,7 @@ function SectionLead({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 18,
+          fontSize: 22,
           letterSpacing: "0.24em",
           textTransform: "uppercase",
           color: videoTokens.color.accent,
@@ -215,8 +215,8 @@ function SectionLead({
         style={{
           maxWidth: 840,
           fontFamily: videoTokens.font.display,
-          fontSize: 90,
-          lineHeight: 0.94,
+          fontSize: 106,
+          lineHeight: 0.96,
           letterSpacing: "-0.03em",
           color: videoTokens.color.ink,
         }}
@@ -227,8 +227,8 @@ function SectionLead({
         style={{
           maxWidth: 680,
           fontFamily: videoTokens.font.sans,
-          fontSize: 24,
-          lineHeight: 1.5,
+          fontSize: 30,
+          lineHeight: 1.44,
           color: videoTokens.color.mutedInk,
         }}
       >
@@ -253,7 +253,7 @@ function SignalFact({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -264,7 +264,7 @@ function SignalFact({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 28,
+          fontSize: 34,
           lineHeight: 1.3,
           fontWeight: 500,
           color: videoTokens.color.ink,

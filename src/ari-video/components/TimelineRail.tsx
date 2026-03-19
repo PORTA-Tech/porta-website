@@ -94,7 +94,7 @@ export function TimelineRail({
               <div
                 style={{
                   fontFamily: videoTokens.font.mono,
-                  fontSize: 13,
+                  fontSize: 15,
                   letterSpacing: "0.14em",
                   textTransform: "uppercase",
                   color: isActive ? videoTokens.color.accent : videoTokens.color.softInk,
@@ -105,7 +105,7 @@ export function TimelineRail({
               <div
                 style={{
                   fontFamily: videoTokens.font.sans,
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: 500,
                   color: isActive ? videoTokens.color.ink : videoTokens.color.mutedInk,
                   lineHeight: 1.28,

@@ -48,7 +48,7 @@ export function StateInferenceSection({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 18,
+              fontSize: 22,
               letterSpacing: "0.24em",
               textTransform: "uppercase",
               color: videoTokens.color.cyan,
@@ -60,24 +60,24 @@ export function StateInferenceSection({
             style={{
               maxWidth: 900,
               fontFamily: videoTokens.font.display,
-              fontSize: 90,
-              lineHeight: 0.94,
+              fontSize: 106,
+              lineHeight: 0.96,
               letterSpacing: "-0.03em",
               color: videoTokens.color.ink,
             }}
           >
-            Signals become state before Ari ever acts.
+            From those signals, Ari builds a live picture.
           </div>
           <div
             style={{
               maxWidth: 720,
               fontFamily: videoTokens.font.sans,
-              fontSize: 24,
-              lineHeight: 1.5,
+              fontSize: 30,
+              lineHeight: 1.44,
               color: videoTokens.color.mutedInk,
             }}
           >
-            The recorded trace is converted into a state trajectory: focus, overload, fatigue, stability, and confidence move first, then policy evaluates what to do next.
+            Ari estimates focus, overload, fatigue, stability, and confidence before it decides what to do next.
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export function StateInferenceSection({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 15,
+              fontSize: 18,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: videoTokens.color.softInk,
@@ -139,13 +139,13 @@ export function StateInferenceSection({
         }}
       >
         <SummaryPanel
-          label="Current reading"
+          label="Current state"
           primary={humanizeToken(currentSnapshot.dominantStateName)}
           secondary={`Confidence ${formatPercent(currentSnapshot.confidence, 1)}`}
         />
-        <DetailPanel label="Last action" value={currentSnapshot.lastAction === "none" ? "Observation only" : humanizeToken(currentSnapshot.lastAction)} />
-        <DetailPanel label="Sustained attention" value={formatSeconds(currentSnapshot.sustainedAttentionDurationSec)} />
-        <DetailPanel label="Activation window" value={currentSnapshot.activationWindowOpen ? "Open" : "Closed"} />
+        <DetailPanel label="Last step" value={currentSnapshot.lastAction === "none" ? "Watching only" : humanizeToken(currentSnapshot.lastAction)} />
+        <DetailPanel label="Focus time" value={formatSeconds(currentSnapshot.sustainedAttentionDurationSec)} />
+        <DetailPanel label="Decision window" value={currentSnapshot.activationWindowOpen ? "Open" : "Closed"} />
       </div>
     </div>
   );
@@ -181,7 +181,7 @@ function MetricStat({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -192,7 +192,7 @@ function MetricStat({
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 28,
+          fontSize: 34,
           fontWeight: 600,
           color: videoTokens.color.ink,
         }}
@@ -226,7 +226,7 @@ function SummaryPanel({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 14,
+          fontSize: 16,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -237,7 +237,7 @@ function SummaryPanel({
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 50,
+          fontSize: 60,
           fontWeight: 600,
           lineHeight: 1.08,
           color: videoTokens.color.ink,
@@ -247,8 +247,8 @@ function SummaryPanel({
       </div>
       <div
         style={{
-          fontSize: 24,
-          lineHeight: 1.4,
+          fontSize: 28,
+          lineHeight: 1.38,
           color: videoTokens.color.mutedInk,
         }}
       >
@@ -273,7 +273,7 @@ function DetailPanel({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -284,7 +284,7 @@ function DetailPanel({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 30,
+          fontSize: 36,
           lineHeight: 1.3,
           fontWeight: 500,
           color: videoTokens.color.ink,

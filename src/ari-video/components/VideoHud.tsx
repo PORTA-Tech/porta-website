@@ -27,7 +27,7 @@ export function VideoHud({
         left: 120,
         right: 120,
         display: "grid",
-        gridTemplateColumns: "1.15fr 0.85fr",
+        gridTemplateColumns: "1.08fr 0.92fr",
         gap: 18,
         opacity,
       }}
@@ -54,7 +54,7 @@ export function VideoHud({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 14,
+              fontSize: 16,
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               color: videoTokens.color.softInk,
@@ -69,7 +69,7 @@ export function VideoHud({
               background: "rgba(244,239,231,0.04)",
               color: videoTokens.color.accent,
               fontFamily: videoTokens.font.mono,
-              fontSize: 13,
+              fontSize: 15,
               letterSpacing: "0.16em",
               textTransform: "uppercase",
             }}
@@ -78,22 +78,22 @@ export function VideoHud({
           </div>
         </div>
         <div
-          style={{
-            fontFamily: videoTokens.font.sans,
-            fontSize: 34,
-            fontWeight: 600,
-            color: videoTokens.color.ink,
-          }}
+        style={{
+          fontFamily: videoTokens.font.sans,
+          fontSize: 42,
+          fontWeight: 600,
+          color: videoTokens.color.ink,
+        }}
         >
           {activeBeat?.title ?? "Recorded Ari Story"}
         </div>
         <div
-          style={{
-            fontFamily: videoTokens.font.sans,
-            fontSize: 20,
-            lineHeight: 1.45,
-            color: videoTokens.color.mutedInk,
-          }}
+        style={{
+          fontFamily: videoTokens.font.sans,
+          fontSize: 24,
+          lineHeight: 1.42,
+          color: videoTokens.color.mutedInk,
+        }}
         >
           {activeBeat?.purpose ?? "Curated recorded Ari behavior."}
         </div>
@@ -145,7 +145,7 @@ function HudMetric({
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -156,7 +156,7 @@ function HudMetric({
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 26,
+          fontSize: 32,
           fontWeight: 600,
           color: videoTokens.color.ink,
         }}

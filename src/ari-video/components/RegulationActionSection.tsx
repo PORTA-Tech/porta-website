@@ -47,7 +47,7 @@ export function RegulationActionSection({
           <div
             style={{
               fontFamily: videoTokens.font.mono,
-              fontSize: 18,
+              fontSize: 22,
               letterSpacing: "0.24em",
               textTransform: "uppercase",
               color: videoTokens.color.accent,
@@ -59,24 +59,24 @@ export function RegulationActionSection({
             style={{
               maxWidth: 760,
               fontFamily: videoTokens.font.display,
-              fontSize: 98,
-              lineHeight: 0.94,
+              fontSize: 114,
+              lineHeight: 0.96,
               letterSpacing: "-0.03em",
               color: videoTokens.color.ink,
             }}
           >
-            Ari crosses a threshold and commits to a real action.
+            When a limit is hit, Ari takes a real step.
           </div>
           <div
             style={{
               maxWidth: 620,
               fontFamily: videoTokens.font.sans,
-              fontSize: 24,
-              lineHeight: 1.5,
+              fontSize: 30,
+              lineHeight: 1.44,
               color: videoTokens.color.mutedInk,
             }}
           >
-            The action card is sourced from the recorded intervention event. Trigger state, confidence, and system outcome are shown as captured, not storyboarded.
+            This card shows the real action Ari took in the recorded session.
           </div>
         </div>
 
@@ -102,7 +102,7 @@ export function RegulationActionSection({
             <div
               style={{
                 fontFamily: videoTokens.font.mono,
-                fontSize: 16,
+                fontSize: 18,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
                 color: videoTokens.color.softInk,
@@ -113,7 +113,7 @@ export function RegulationActionSection({
             <div
               style={{
                 fontFamily: videoTokens.font.mono,
-                fontSize: 16,
+                fontSize: 18,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 color: videoTokens.color.accent,
@@ -125,7 +125,7 @@ export function RegulationActionSection({
           <div
             style={{
               fontFamily: videoTokens.font.sans,
-              fontSize: 64,
+              fontSize: 72,
               fontWeight: 700,
               lineHeight: 1.04,
               color: videoTokens.color.ink,
@@ -156,19 +156,19 @@ export function RegulationActionSection({
             <div
               style={{
                 fontFamily: videoTokens.font.mono,
-                fontSize: 14,
+                fontSize: 16,
                 letterSpacing: "0.16em",
                 textTransform: "uppercase",
                 color: videoTokens.color.softInk,
               }}
             >
-              What changed
+              What Ari did
             </div>
             <div
               style={{
                 fontFamily: videoTokens.font.sans,
-                fontSize: 26,
-                lineHeight: 1.42,
+                fontSize: 30,
+                lineHeight: 1.4,
                 color: videoTokens.color.ink,
               }}
             >
@@ -209,7 +209,7 @@ function ActionStat({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 15,
           letterSpacing: "0.14em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
@@ -220,7 +220,7 @@ function ActionStat({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 26,
+          fontSize: 32,
           fontWeight: 500,
           color: videoTokens.color.ink,
           lineHeight: 1.3,

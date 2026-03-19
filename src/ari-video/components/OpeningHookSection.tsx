@@ -15,91 +15,179 @@ export function OpeningHookSection({
   opacity,
   translateY,
 }: OpeningHookSectionProps) {
+  const primaryCapture = meta.sourceCaptures[0] ?? null;
+
   return (
     <div
       style={{
         position: "absolute",
-        left: 120,
-        top: 110,
-        width: 1440,
+        inset: 0,
+        padding: "248px 140px 242px",
         display: "grid",
-        gap: 26,
+        gridTemplateColumns: "1.08fr 0.92fr",
+        gap: 48,
+        alignItems: "center",
         opacity,
         transform: `translateY(${translateY}px)`,
       }}
     >
       <div
         style={{
-          fontFamily: videoTokens.font.mono,
-          fontSize: 24,
-          letterSpacing: "0.28em",
-          textTransform: "uppercase",
-          color: videoTokens.color.accent,
+          display: "grid",
+          gap: 24,
         }}
       >
-        Recorded Ari behavior
+        <div
+          style={{
+            fontFamily: videoTokens.font.mono,
+            fontSize: 18,
+            letterSpacing: "0.26em",
+            textTransform: "uppercase",
+            color: videoTokens.color.accent,
+          }}
+        >
+          Recorded Ari behavior
+        </div>
+        <div
+          style={{
+            maxWidth: 1320,
+            fontFamily: videoTokens.font.display,
+            fontSize: 138,
+            lineHeight: 0.9,
+            letterSpacing: "-0.03em",
+            color: videoTokens.color.ink,
+          }}
+        >
+          Ari watches the rhythm,
+          <br />
+          not the content.
+        </div>
+        <div
+          style={{
+            maxWidth: 820,
+            fontFamily: videoTokens.font.sans,
+            fontSize: 28,
+            lineHeight: 1.52,
+            color: videoTokens.color.mutedInk,
+          }}
+        >
+          This film is built from a curated recorded Ari trace. Every state shift, threshold crossing, and intervention cue shown here comes from the exact session behind the video.
+        </div>
       </div>
+
       <div
         style={{
-          maxWidth: 1220,
-          fontFamily: videoTokens.font.display,
-          fontSize: 158,
-          lineHeight: 0.9,
-          color: videoTokens.color.ink,
+          display: "grid",
+          gap: 18,
+          padding: "30px 32px",
+          borderRadius: 38,
+          border: `1px solid ${videoTokens.color.line}`,
+          background: "rgba(11,17,23,0.74)",
+          boxShadow: videoTokens.shadow.soft,
         }}
       >
-        Ari watches the rhythm,
-        <br />
-        not the content.
-      </div>
-      <div
-        style={{
-          maxWidth: 900,
-          fontFamily: videoTokens.font.sans,
-          fontSize: 36,
-          lineHeight: 1.38,
-          color: videoTokens.color.mutedInk,
-        }}
-      >
-        This film is built from one curated recorded trace. Every state rise, threshold, and intervention cue comes from the exact Ari session behind the video.
-      </div>
-      <div
-        style={{
-          display: "flex",
-          gap: 22,
-          marginTop: 8,
-        }}
-      >
-        <MetricPill label="Story Arc" value={meta.storyArc} />
-        {anchorEvent ? (
-          <MetricPill
+        <div
+          style={{
+            fontFamily: videoTokens.font.mono,
+            fontSize: 16,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: videoTokens.color.softInk,
+          }}
+        >
+          Truth layer
+        </div>
+        <div
+          style={{
+            fontFamily: videoTokens.font.sans,
+            fontSize: 40,
+            fontWeight: 600,
+            lineHeight: 1.14,
+            color: videoTokens.color.ink,
+          }}
+        >
+          Built from one recorded session, then art-directed for clarity.
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 14,
+          }}
+        >
+          <FactCard label="Runtime" value={`${meta.durationSec}s`} />
+          <FactCard label="Boundary" value="Behavioral signals only" />
+          <FactCard label="Story Arc" value={meta.storyArc} compact />
+          <FactCard
             label="Anchor Event"
-            value={`${humanizeToken(anchorEvent.action)}  ${formatPercent(anchorEvent.confidence, 1)}`}
+            value={anchorEvent ? `${humanizeToken(anchorEvent.action)} ${formatPercent(anchorEvent.confidence, 1)}` : "Awaiting event"}
+            compact
           />
+        </div>
+        {primaryCapture ? (
+          <div
+            style={{
+              display: "grid",
+              gap: 8,
+              padding: "18px 20px",
+              borderRadius: 24,
+              background: "rgba(244,239,231,0.04)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: videoTokens.font.mono,
+                fontSize: 14,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: videoTokens.color.softInk,
+              }}
+            >
+              Source capture
+            </div>
+            <div
+              style={{
+                fontFamily: videoTokens.font.sans,
+                fontSize: 22,
+                lineHeight: 1.4,
+                color: videoTokens.color.ink,
+                overflowWrap: "anywhere",
+              }}
+            >
+              {primaryCapture.label}
+            </div>
+          </div>
         ) : null}
       </div>
     </div>
   );
 }
 
-function MetricPill({ label, value }: { label: string; value: string }) {
+function FactCard({
+  label,
+  value,
+  compact = false,
+}: {
+  label: string;
+  value: string;
+  compact?: boolean;
+}) {
   return (
     <div
       style={{
         display: "grid",
         gap: 8,
-        padding: "18px 22px",
-        borderRadius: videoTokens.radius.md,
+        padding: compact ? "18px 18px 16px" : "20px 18px 18px",
+        borderRadius: 24,
         border: `1px solid ${videoTokens.color.line}`,
-        background: "rgba(11,17,23,0.5)",
-        boxShadow: videoTokens.shadow.crisp,
+        background: "rgba(11,17,23,0.44)",
       }}
     >
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 18,
-          letterSpacing: "0.18em",
+          fontSize: 13,
+          letterSpacing: "0.16em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
         }}
@@ -109,9 +197,11 @@ function MetricPill({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: videoTokens.font.sans,
-          fontSize: 28,
+          fontSize: compact ? 20 : 24,
+          lineHeight: 1.35,
           fontWeight: 500,
           color: videoTokens.color.ink,
+          overflowWrap: "anywhere",
         }}
       >
         {value}

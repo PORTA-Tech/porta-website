@@ -6,24 +6,32 @@ interface TimelineRailProps {
   beats: AriBeat[];
   durationSec: number;
   currentSec: number;
+  opacity?: number;
 }
 
-export function TimelineRail({ chapters, beats, durationSec, currentSec }: TimelineRailProps) {
+export function TimelineRail({
+  chapters,
+  beats,
+  durationSec,
+  currentSec,
+  opacity = 1,
+}: TimelineRailProps) {
   return (
     <div
       style={{
         position: "absolute",
-        left: 120,
-        right: 120,
-        bottom: 94,
+        left: 140,
+        right: 140,
+        bottom: 62,
         display: "grid",
-        gap: 20,
+        gap: 16,
+        opacity,
       }}
     >
       <div
         style={{
           position: "relative",
-          height: 7,
+          height: 6,
           borderRadius: 999,
           background: "rgba(244, 239, 231, 0.08)",
           overflow: "hidden",
@@ -55,10 +63,10 @@ export function TimelineRail({ chapters, beats, durationSec, currentSec }: Timel
         <div
           style={{
             position: "absolute",
-            left: `calc(${(currentSec / durationSec) * 100}% - 10px)`,
-            top: -7,
-            width: 20,
-            height: 20,
+            left: `calc(${(currentSec / durationSec) * 100}% - 8px)`,
+            top: -5,
+            width: 16,
+            height: 16,
             borderRadius: "50%",
             background: videoTokens.color.ink,
             boxShadow: "0 0 28px rgba(244,239,231,0.38)",
@@ -86,8 +94,8 @@ export function TimelineRail({ chapters, beats, durationSec, currentSec }: Timel
               <div
                 style={{
                   fontFamily: videoTokens.font.mono,
-                  fontSize: 18,
-                  letterSpacing: "0.08em",
+                  fontSize: 13,
+                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
                   color: isActive ? videoTokens.color.accent : videoTokens.color.softInk,
                 }}
@@ -97,9 +105,10 @@ export function TimelineRail({ chapters, beats, durationSec, currentSec }: Timel
               <div
                 style={{
                   fontFamily: videoTokens.font.sans,
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: 500,
                   color: isActive ? videoTokens.color.ink : videoTokens.color.mutedInk,
+                  lineHeight: 1.28,
                 }}
               >
                 {beat.title}

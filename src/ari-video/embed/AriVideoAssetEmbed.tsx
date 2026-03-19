@@ -7,18 +7,20 @@ export function AriVideoAssetEmbed({
   controls = true,
   loop = false,
   muted = true,
+  objectFit = "contain",
 }: {
   variant?: "full" | "homepage";
   autoplay?: boolean;
   controls?: boolean;
   loop?: boolean;
   muted?: boolean;
+  objectFit?: "contain" | "cover";
 }) {
   const sources = variant === "homepage"
     ? [{ src: ARI_VIDEO_EXPORT_ASSETS.homepageMp4PublicPath, type: "video/mp4" }]
     : [
-        { src: ARI_VIDEO_EXPORT_ASSETS.webWebmPublicPath, type: "video/webm" },
         { src: ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath, type: "video/mp4" },
+        { src: ARI_VIDEO_EXPORT_ASSETS.webWebmPublicPath, type: "video/webm" },
       ];
 
   return (
@@ -44,11 +46,13 @@ export function AriVideoAssetEmbed({
           width: "100%",
           aspectRatio: "16 / 9",
           background: videoTokens.color.canvas,
+          objectFit,
         }}
       >
         {sources.map((source) => (
           <source key={source.src} src={source.src} type={source.type} />
         ))}
+        Your browser could not load the Ari video.
       </video>
     </div>
   );

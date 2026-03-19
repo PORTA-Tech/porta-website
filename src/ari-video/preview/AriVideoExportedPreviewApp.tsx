@@ -9,207 +9,262 @@ export default function AriVideoExportedPreviewApp() {
     <div
       style={{
         minHeight: "100%",
-        background: "linear-gradient(180deg, #071018 0%, #0c151b 100%)",
+        background:
+          "radial-gradient(circle at top, rgba(47,76,122,0.3) 0%, rgba(9,14,18,0) 36%), linear-gradient(180deg, #060b10 0%, #0b1217 100%)",
         color: videoTokens.color.ink,
         fontFamily: videoTokens.font.sans,
+        overflowY: "auto",
       }}
     >
-      <div
+      <main
         style={{
-          minHeight: "100%",
+          width: "min(1480px, calc(100vw - 64px))",
+          margin: "0 auto",
+          padding: "42px 0 64px",
           display: "grid",
-          gridTemplateRows: "auto 1fr",
-          gap: 28,
-          padding: "36px 42px 42px",
+          gap: 26,
         }}
       >
-        <header
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 28,
-          }}
-        >
-          <div style={{ display: "grid", gap: 12 }}>
-            <div
-              style={{
-                fontFamily: videoTokens.font.mono,
-                fontSize: 14,
-                letterSpacing: "0.24em",
-                textTransform: "uppercase",
-                color: videoTokens.color.accent,
-              }}
-            >
-              Exported website video
-            </div>
-            <div
-              style={{
-                fontFamily: videoTokens.font.display,
-                fontSize: 62,
-                lineHeight: 0.94,
-                color: videoTokens.color.ink,
-              }}
-            >
-              Delivery assets ready for embed
-            </div>
-            <div
-              style={{
-                maxWidth: 760,
-                fontSize: 18,
-                lineHeight: 1.55,
-                color: videoTokens.color.mutedInk,
-              }}
-            >
-              This route reviews the exported files the real website will use. It loads the poster and encoded delivery assets, not the Remotion composition runtime.
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gap: 10,
-              minWidth: 360,
-              padding: "20px 22px",
-              borderRadius: 24,
-              border: `1px solid ${videoTokens.color.line}`,
-              background: "rgba(11,17,23,0.56)",
-            }}
-          >
-            <InfoLine label="Trace" value={ARI_VIDEO_TRACE_MANIFEST.label} />
-            <InfoLine label="Master" value="4K H.264 45s" />
-            <InfoLine label="Web" value="1080p MP4 + WebM" />
-            <InfoLine label="Poster" value={ARI_VIDEO_EXPORT_ASSETS.posterPublicPath} />
-          </div>
-        </header>
-
-        <main
+        <section
           style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr) 360px",
-            gap: 24,
+            gap: 14,
+            padding: "0 4px",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: videoTokens.font.mono,
+              fontSize: 14,
+              letterSpacing: "0.24em",
+              textTransform: "uppercase",
+              color: videoTokens.color.accent,
+            }}
+          >
+            Ari exported website video
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "end",
+              gap: 24,
+              flexWrap: "wrap",
+            }}
+          >
+            <div style={{ display: "grid", gap: 10, maxWidth: 920 }}>
+              <h1
+                style={{
+                  fontFamily: videoTokens.font.display,
+                  fontSize: 76,
+                  lineHeight: 0.94,
+                  fontWeight: 400,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Ari, as an actual website video.
+              </h1>
+              <p
+                style={{
+                  fontSize: 20,
+                  lineHeight: 1.55,
+                  color: videoTokens.color.mutedInk,
+                }}
+              >
+                This page is only for viewing the final encoded output. It uses the exported MP4/WebM files, not the Remotion composition runtime.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                flexWrap: "wrap",
+              }}
+            >
+              <ActionLink href={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath} label="Open MP4" />
+              <ActionLink href={ARI_VIDEO_EXPORT_ASSETS.homepageMp4PublicPath} label="Open 30s Cut" />
+              <ActionLink href="/ari-video" label="Open Composition Review" />
+            </div>
+          </div>
+        </section>
+
+        <section
+          style={{
+            display: "grid",
+            gap: 16,
+          }}
+        >
+          <AriVideoAssetEmbed autoplay controls loop muted objectFit="cover" />
+        </section>
+
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            gap: 16,
+          }}
+        >
+          <MetricCard label="Trace" value={ARI_VIDEO_TRACE_MANIFEST.label} />
+          <MetricCard label="Duration" value={`${ARI_VIDEO_TRACE_MANIFEST.durationSec}s`} />
+          <MetricCard label="Delivery" value="1080p MP4 + WebM" />
+          <MetricCard label="Poster" value="Frame 828" />
+        </section>
+
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 420px)",
+            gap: 20,
             alignItems: "start",
           }}
         >
-          <div style={{ display: "grid", gap: 24 }}>
-            <section style={{ display: "grid", gap: 14 }}>
-              <SectionLabel>Full website delivery</SectionLabel>
-              <AriVideoAssetEmbed controls />
-            </section>
-
-            <section style={{ display: "grid", gap: 14 }}>
-              <SectionLabel>Homepage cut</SectionLabel>
-              <AriVideoAssetEmbed
-                variant="homepage"
-                autoplay
-                controls={false}
-                loop
-                muted
-              />
-            </section>
-          </div>
-
-          <aside
+          <article
             style={{
               display: "grid",
-              gap: 16,
+              gap: 14,
+              padding: "22px 24px",
+              borderRadius: 28,
+              border: `1px solid ${videoTokens.color.line}`,
+              background: "rgba(11,17,23,0.58)",
             }}
           >
-            <SidebarCard
-              title="Asset paths"
-              body={[
-                ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath,
-                ARI_VIDEO_EXPORT_ASSETS.webWebmPublicPath,
-                ARI_VIDEO_EXPORT_ASSETS.homepageMp4PublicPath,
-              ].join("\n")}
+            <div
+              style={{
+                fontFamily: videoTokens.font.mono,
+                fontSize: 13,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: videoTokens.color.softInk,
+              }}
+            >
+              What you are seeing
+            </div>
+            <p
+              style={{
+                fontSize: 18,
+                lineHeight: 1.65,
+                color: videoTokens.color.ink,
+              }}
+            >
+              The full player above is the final website delivery file. The shorter cut below is the 30-second homepage asset. Both are encoded from the same recorded Ari trace.
+            </p>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              <InlinePath path={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath} />
+              <InlinePath path={ARI_VIDEO_EXPORT_ASSETS.webWebmPublicPath} />
+              <InlinePath path={ARI_VIDEO_EXPORT_ASSETS.homepageMp4PublicPath} />
+            </div>
+          </article>
+
+          <section style={{ display: "grid", gap: 14 }}>
+            <div
+              style={{
+                fontFamily: videoTokens.font.mono,
+                fontSize: 13,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: videoTokens.color.softInk,
+                paddingLeft: 4,
+              }}
+            >
+              Homepage cut
+            </div>
+            <AriVideoAssetEmbed
+              variant="homepage"
+              autoplay
+              controls
+              loop
+              muted
+              objectFit="cover"
             />
-            <SidebarCard
-              title="Embed note"
-              body="Use the exported files for the real website surface. Keep the Remotion composition and the preview route as production tooling, not live runtime dependencies."
-            />
-            <SidebarCard
-              title="Preview routes"
-              body="/ari-video for composition review\n/ari-video/exported for final asset review"
-            />
-          </aside>
-        </main>
-      </div>
+          </section>
+        </section>
+      </main>
     </div>
   );
 }
 
-function SectionLabel({ children }: { children: string }) {
+function ActionLink({ href, label }: { href: string; label: string }) {
   return (
-    <div
+    <a
+      href={href}
+      target={href.startsWith("http") ? "_blank" : undefined}
+      rel={href.startsWith("http") ? "noreferrer" : undefined}
       style={{
-        fontFamily: videoTokens.font.mono,
-        fontSize: 14,
-        letterSpacing: "0.22em",
-        textTransform: "uppercase",
-        color: videoTokens.color.softInk,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 48,
+        padding: "0 18px",
+        borderRadius: 999,
+        border: `1px solid ${videoTokens.color.line}`,
+        background: "rgba(11,17,23,0.54)",
+        color: videoTokens.color.ink,
+        textDecoration: "none",
+        fontSize: 15,
+        fontWeight: 500,
       }}
     >
-      {children}
-    </div>
+      {label}
+    </a>
   );
 }
 
-function SidebarCard({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
+function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
         display: "grid",
-        gap: 8,
+        gap: 10,
         padding: "18px 20px",
         borderRadius: 24,
         border: `1px solid ${videoTokens.color.line}`,
-        background: "rgba(11,17,23,0.56)",
+        background: "rgba(11,17,23,0.52)",
       }}
     >
       <div
         style={{
           fontFamily: videoTokens.font.mono,
-          fontSize: 13,
+          fontSize: 12,
           letterSpacing: "0.2em",
           textTransform: "uppercase",
           color: videoTokens.color.softInk,
         }}
       >
-        {title}
+        {label}
       </div>
       <div
         style={{
-          fontSize: 16,
-          lineHeight: 1.55,
+          fontSize: 20,
+          lineHeight: 1.4,
           color: videoTokens.color.ink,
-          whiteSpace: "pre-line",
         }}
       >
-        {body}
+        {value}
       </div>
     </div>
   );
 }
 
-function InfoLine({ label, value }: { label: string; value: string }) {
+function InlinePath({ path }: { path: string }) {
   return (
-    <div
+    <span
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        fontSize: 14,
-        lineHeight: 1.4,
+        padding: "8px 12px",
+        borderRadius: 999,
+        background: "rgba(255,255,255,0.04)",
+        color: videoTokens.color.softInk,
+        fontFamily: videoTokens.font.mono,
+        fontSize: 12,
       }}
     >
-      <span style={{ color: videoTokens.color.softInk }}>{label}</span>
-      <span style={{ color: videoTokens.color.ink, fontFamily: videoTokens.font.mono }}>{value}</span>
-    </div>
+      {path}
+    </span>
   );
 }

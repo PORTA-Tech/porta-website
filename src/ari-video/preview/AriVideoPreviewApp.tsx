@@ -142,7 +142,7 @@ export default function AriVideoPreviewApp() {
           >
             <SidebarCard
               title="Browser Review"
-              body="The preview route is /ari-video. Sync a new trace with npm run video:sync before reviewing another cut."
+              body="The composition review route is /ari-video. After running npm run video:render, review the encoded delivery assets on /ari-video/exported."
             />
             {summary ? (
               <SidebarCard

@@ -24,3 +24,9 @@ out
 *.sln
 *.sw?
 public/ari-video/*.json
+!public/ari-video/exports/
+!public/ari-video/exports/.gitkeep
+!public/ari-video/exports/*.json
+!public/ari-video/exports/*.png
+!public/ari-video/exports/*.mp4
+!public/ari-video/exports/*.webm

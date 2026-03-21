@@ -92,12 +92,6 @@ body {
   font-size: clamp(1.65rem, 3vw, 2.75rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  display: inline-block;
-  padding: 12px 18px;
-  border-radius: 18px;
-  background: rgba(10, 10, 16, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
 
 .scene-divider {
@@ -119,38 +113,6 @@ body {
   line-height: 1.45;
   max-width: 16rem;
   text-wrap: balance;
-}
-
-.scene-hero-panel {
-  width: min(100%, 44rem);
-  padding: 28px 30px;
-  border-radius: 28px;
-  background: rgba(10, 10, 16, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.34);
-}
-
-.scene-hero-title {
-  font-size: clamp(3rem, 7vw, 4.75rem);
-  line-height: 0.95;
-}
-
-.scene-hero-subtitle {
-  font-size: clamp(1.35rem, 2.6vw, 2rem);
-}
-
-.scene-hero-copy {
-  font-size: clamp(1rem, 1.35vw, 1.2rem);
-}
-
-.scene-hero-button {
-  margin-top: 8px;
-  min-height: 52px;
-  padding: 14px 26px;
-  font-size: 1rem;
-  font-weight: 600;
 }
 
 .scene-access-layout {
@@ -233,8 +195,6 @@ body {
 
   .scene-header h2 {
     font-size: clamp(1.5rem, 6vw, 2rem);
-    padding: 10px 14px;
-    border-radius: 16px;
   }
 
   .scene.scene-floating-layout {
@@ -255,12 +215,6 @@ body {
 
   .scene.scene-floating-layout .scene-floating-card-detail {
     font-size: 0.92em;
-  }
-
-  .scene-hero-panel {
-    width: 100%;
-    padding: 24px 18px;
-    border-radius: 24px;
   }
 
   .scene-access-layout {

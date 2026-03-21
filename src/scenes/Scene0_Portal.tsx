@@ -53,7 +53,6 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
 
       {/* Overlay text + button */}
       <div
-        className="scene-hero-panel"
         style={{
           position: "relative",
           zIndex: 1,
@@ -65,26 +64,28 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
           color: PORTA_VISUAL_STYLE.palette.text,
         }}
       >
-        <h1 className="scene-hero-title" style={{ marginBottom: "0.2em" }}>Ari</h1>
-        <h3 className="scene-hero-subtitle" style={{ marginBottom: "0.5em", fontWeight: 400, maxWidth: "22em" }}>
+        <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>Ari</h1>
+        <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400, maxWidth: "22em" }}>
           See when your day starts slipping out of focus.
         </h3>
-        <p className="scene-hero-copy" style={{ marginBottom: "2em", maxWidth: "34rem", lineHeight: 1.5 }}>
+        <p style={{ fontSize: "1.1em", marginBottom: "2em", maxWidth: "34rem", lineHeight: 1.5 }}>
           Ari helps you catch the moment focus starts to slip and overload starts to rise,
           then suggests simple steps to protect focus or take a break.
         </p>
 
         <button
-          className="scene-hero-button"
           onClick={onAdvance}
           style={{
+            marginTop: "30px",
+            padding: "10px 20px",
             cursor: "pointer",
             transition: "all 0.3s",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
+            fontSize: PORTA_VISUAL_STYLE.font.size,
             color: PORTA_VISUAL_STYLE.palette.background,
             backgroundColor: PORTA_VISUAL_STYLE.palette.cta,
             border: "none",
-            borderRadius: "10px",
+            borderRadius: "6px",
           }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.boxShadow = `0 0 15px ${PORTA_VISUAL_STYLE.palette.cta}`)

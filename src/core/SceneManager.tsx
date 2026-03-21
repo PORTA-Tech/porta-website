@@ -155,9 +155,15 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     session.currentY = touch.clientY;
   }, []);
 
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = useCallback((event: TouchEvent<HTMLDivElement>) => {
     const session = touchSessionRef.current;
     touchSessionRef.current = null;
+
+    const finalTouch = event.changedTouches[0];
+    if (session && finalTouch) {
+      session.currentX = finalTouch.clientX;
+      session.currentY = finalTouch.clientY;
+    }
 
     if (!session || session.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
       return;

@@ -55,7 +55,6 @@ export default function World3D({ sceneIndex }: World3DProps) {
   const targetRotationYRef = useRef(0);
   const angularVelocityRef = useRef(0);
   const dragSessionRef = useRef<DragSession | null>(null);
-  const lastPointerTypeRef = useRef<string>("mouse");
   const interactionRef = useRef<OrbInteractionState>({
     normalizedX: 0,
     normalizedY: 0,
@@ -78,12 +77,17 @@ export default function World3D({ sceneIndex }: World3DProps) {
       interaction.normalizedY = normalizedY;
     };
 
+    const recenterPointerPosition = () => {
+      const interaction = interactionRef.current;
+      interaction.normalizedX = 0;
+      interaction.normalizedY = 0;
+    };
+
     const handlePointerDown = (event: PointerEvent) => {
       if (!event.isPrimary || isInteractiveTarget(event.target)) {
         return;
       }
 
-      lastPointerTypeRef.current = event.pointerType || "mouse";
       dragSessionRef.current = {
         pointerId: event.pointerId,
         lastX: event.clientX,
@@ -98,13 +102,12 @@ export default function World3D({ sceneIndex }: World3DProps) {
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      lastPointerTypeRef.current = event.pointerType || lastPointerTypeRef.current;
-      updatePointerPosition(event.clientX, event.clientY);
-
       const drag = dragSessionRef.current;
       if (!drag || drag.pointerId !== event.pointerId) {
         return;
       }
+
+      updatePointerPosition(event.clientX, event.clientY);
 
       const deltaXFromStart = event.clientX - drag.startX;
       const deltaYFromStart = event.clientY - drag.startY;
@@ -146,10 +149,7 @@ export default function World3D({ sceneIndex }: World3DProps) {
 
       dragSessionRef.current = null;
       interactionRef.current.isDragging = false;
-      if ((event.pointerType || lastPointerTypeRef.current) !== "mouse") {
-        interactionRef.current.normalizedX = 0;
-        interactionRef.current.normalizedY = 0;
-      }
+      recenterPointerPosition();
     };
 
     const handlePointerCancel = (event: PointerEvent) => {
@@ -162,8 +162,7 @@ export default function World3D({ sceneIndex }: World3DProps) {
       }
 
       interactionRef.current.isDragging = false;
-      interactionRef.current.normalizedX = 0;
-      interactionRef.current.normalizedY = 0;
+      recenterPointerPosition();
     };
 
     window.addEventListener("pointerdown", handlePointerDown, { passive: true });

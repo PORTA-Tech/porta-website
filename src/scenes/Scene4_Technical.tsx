@@ -5,13 +5,28 @@ import { useResponsiveScale } from "../hooks/useResponsiveScale";
 type SceneProps = { isActive: boolean };
 
 const integrators = [
-  "Software Intelligence Layer",
-  "Closed-Loop Regulation",
-  "Hardware-Agnostic Architecture",
-  "Immersive-First, Not Limited",
+  {
+    title: "Pause or resume",
+    detail: "You can stop Ari when you want and turn it back on when you are ready.",
+  },
+  {
+    title: "Export your data",
+    detail: "You can export the local data Ari has recorded for your session history.",
+  },
+  {
+    title: "Delete local data",
+    detail: "You can clear Ari's local history from the machine.",
+  },
+  {
+    title: "Revoke consent",
+    detail: "You can revoke consent so Ari stops working from that point on.",
+  },
+  {
+    title: "No typed text or screenshots",
+    detail: "Ari does not read typed text, capture screenshots, or copy clipboard contents.",
+  },
 ];
 
-// Safe radial layout, centered
 const positions = [
   { x: 35, y: 30 },
   { x: 70, y: 45 },
@@ -98,13 +113,12 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === integrators[idx]
+        const scale = hovered === integrators[idx].title
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
-        // Center the panel
         el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
-        el.style.boxShadow = hovered === integrators[idx]
+        el.style.boxShadow = hovered === integrators[idx].title
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
@@ -135,18 +149,18 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>Technical Foundation</h2>
+        <h2>You stay in control</h2>
       </div>
 
-      {integrators.map((i, idx) => (
+      {integrators.map((control, idx) => (
         <div
-          key={i}
+          key={control.title}
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
-          onMouseEnter={() => setHovered(i)}
+          onMouseEnter={() => setHovered(control.title)}
           onMouseLeave={() => setHovered(null)}
           onTouchStart={(e) => {
             e.preventDefault();
-            setHovered(prev => (prev === i ? null : i));
+            setHovered(prev => (prev === control.title ? null : control.title));
           }}
           className="scene-floating-card"
           style={{
@@ -175,16 +189,13 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
             marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
           }}
         >
-          {i}
-          {hovered === i && (
+          {control.title}
+          {hovered === control.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
             >
-              {i === "Software Intelligence Layer" && "PORTA is a software-based intelligence system, not a hardware device."}
-              {i === "Closed-Loop Regulation" && "Continuously senses, infers, and adapts environments in real time."}
-              {i === "Hardware-Agnostic Architecture" && "Operates above sensors, devices, and platforms without hardware dependency."}
-              {i === "Immersive-First, Not Limited" && "Initial focus on high-fidelity VR without platform lock-in."}
+              {control.detail}
             </div>
           )}
         </div>

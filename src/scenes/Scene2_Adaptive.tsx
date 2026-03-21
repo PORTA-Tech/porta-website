@@ -5,19 +5,29 @@ import { useResponsiveScale } from "../hooks/useResponsiveScale";
 type SceneProps = { isActive: boolean };
 
 const processors = [
-  "Perception Layer",
-  "Inference Layer",
-  "Adaptive Control Layer",
-  "Environment Modulation",
+  {
+    title: "Focus",
+    detail: "Whether your work looks steady or keeps getting broken apart.",
+  },
+  {
+    title: "Overload",
+    detail: "When your pattern looks strained, scattered, or hard to sustain.",
+  },
+  {
+    title: "Trust",
+    detail: "How reliable Ari thinks the current reading is.",
+  },
+  {
+    title: "Calibration",
+    detail: "How ready Ari is to make stronger suggestions with confidence.",
+  },
 ];
 
-// Safe radial layout, centered
 const positions = [
   { x: 30, y: 30 },
   { x: 70, y: 30 },
   { x: 35, y: 75 },
   { x: 75, y: 75 },
-  { x: 50, y: 82 }, // optional center bottom
 ];
 
 export default function Scene2_Processing({ isActive }: SceneProps) {
@@ -98,13 +108,12 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === processors[idx]
+        const scale = hovered === processors[idx].title
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
-        // Center the panel
         el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
-        el.style.boxShadow = hovered === processors[idx]
+        el.style.boxShadow = hovered === processors[idx].title
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
@@ -135,18 +144,18 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>Adaptive Intelligence</h2>
+        <h2>What Ari figures out</h2>
       </div>
 
-      {processors.map((p, idx) => (
+      {processors.map((processor, idx) => (
         <div
-          key={p}
+          key={processor.title}
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
-          onMouseEnter={() => setHovered(p)}
+          onMouseEnter={() => setHovered(processor.title)}
           onMouseLeave={() => setHovered(null)}
           onTouchStart={(e) => {
             e.preventDefault();
-            setHovered(prev => (prev === p ? null : p));
+            setHovered(prev => (prev === processor.title ? null : processor.title));
           }}
           className="scene-floating-card"
           style={{
@@ -175,16 +184,13 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
             marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
           }}
         >
-          {p}
-          {hovered === p && (
+          {processor.title}
+          {hovered === processor.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
             >
-              {p === "Perception Layer" && "Acquires and synchronizes physiological and behavioral data streams."}
-              {p === "Inference Layer" && "Processes signals to estimate internal state."}
-              {p === "Adaptive Control Layer" && "Determines environment adjustments based on inferred state and system goals."}
-              {p === "Environment Modulation" && "Applies continuous, real-time changes to digital environments."}
+              {processor.detail}
             </div>
           )}
         </div>

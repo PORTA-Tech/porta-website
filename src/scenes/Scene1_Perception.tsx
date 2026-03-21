@@ -5,20 +5,29 @@ import { useResponsiveScale } from "../hooks/useResponsiveScale";
 type SceneProps = { isActive: boolean };
 
 const signals = [
-  "EEG",
-  "Heart Rate",
-  "Electrodermal Activity (EDA)",
-  "Behavioral Signals",
-  "Emotional Inference Engine",
+  {
+    title: "Keyboard activity",
+    detail: "How your typing speeds up, slows down, or gets more uneven.",
+  },
+  {
+    title: "Mouse activity",
+    detail: "How much you move, scroll, and make quick corrections.",
+  },
+  {
+    title: "App switching",
+    detail: "How often your attention jumps from one app to another.",
+  },
+  {
+    title: "Idle time",
+    detail: "Short pauses, longer breaks, and stop-start patterns in your day.",
+  },
 ];
 
-// Safe radial layout, centered
 const positions = [
   { x: 35, y: 30 },
   { x: 75, y: 30 },
   { x: 34, y: 65 },
-  { x: 80, y: 65 },
-  { x: 50, y: 82 },
+  { x: 76, y: 66 },
 ];
 
 export default function Scene1_Perception({ isActive }: SceneProps) {
@@ -99,13 +108,12 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === signals[idx]
+        const scale = hovered === signals[idx].title
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
-        // Center the panel using transform(-50%, -50%) logic
         el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
-        el.style.boxShadow = hovered === signals[idx]
+        el.style.boxShadow = hovered === signals[idx].title
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
@@ -136,18 +144,18 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>Perception</h2>
+        <h2>What Ari sees</h2>
       </div>
 
-      {signals.map((s, idx) => (
+      {signals.map((signal, idx) => (
         <div
-          key={s}
+          key={signal.title}
           ref={(el) => { if (el) signalRefs.current[idx] = el; }}
-          onMouseEnter={() => setHovered(s)}
+          onMouseEnter={() => setHovered(signal.title)}
           onMouseLeave={() => setHovered(null)}
           onTouchStart={(e) => {
             e.preventDefault();
-            setHovered(prev => (prev === s ? null : s));
+            setHovered(prev => (prev === signal.title ? null : signal.title));
           }}
           className="scene-floating-card"
           style={{
@@ -176,17 +184,13 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
             marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
           }}
         >
-          {s}
-          {hovered === s && (
+          {signal.title}
+          {hovered === signal.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
             >
-              {s === "EEG" && "Electrical patterns associated with cognitive load, attention, and neural dynamics."}
-              {s === "Heart Rate" && "Cardiovascular indicators related to arousal and stress response."}
-              {s === "Electrodermal Activity (EDA)" && "Skin conductance changes reflecting sympathetic nervous system activity."}
-              {s === "Behavioral Signals" && "Interaction timing, motion patterns, and response dynamics."}
-              {s === "Emotional Inference Engine" && "Integrates multimodal signals to estimate internal cognitive and emotional state."}
+              {signal.detail}
             </div>
           )}
         </div>

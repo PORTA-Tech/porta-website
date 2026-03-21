@@ -5,19 +5,44 @@ import { useResponsiveScale } from "../hooks/useResponsiveScale";
 type SceneProps = { isActive: boolean };
 
 const actuators = [
-  "Immersive Training",
-  "High-Stakes Performance",
-  "Therapeutic Environments",
-  "Research & Experimental Interfaces",
+  {
+    title: "Founders",
+    detail: "For people carrying decisions, meetings, and constant context switching.",
+  },
+  {
+    title: "Startup employees",
+    detail: "For fast-moving teams where too many tabs and pings can break the day apart.",
+  },
+  {
+    title: "PMs",
+    detail: "For people balancing planning, docs, chat, and cross-team follow-up.",
+  },
+  {
+    title: "Engineers",
+    detail: "For people who need longer stretches of steady focus to do good work.",
+  },
+  {
+    title: "Consultants",
+    detail: "For people moving between clients, calls, decks, and deadlines.",
+  },
+  {
+    title: "Analysts",
+    detail: "For people whose day depends on careful attention across tools and data.",
+  },
+  {
+    title: "Designers",
+    detail: "For people switching between ideas, files, feedback, and review loops.",
+  },
 ];
 
-// Safe radial layout, centered
 const positions = [
-  { x: 35, y: 25 },
-  { x: 70, y: 45 },
-  { x: 35, y: 65 },
-  { x: 70, y: 80 },
-  { x: 50, y: 82 },
+  { x: 24, y: 24 },
+  { x: 52, y: 22 },
+  { x: 79, y: 26 },
+  { x: 25, y: 54 },
+  { x: 78, y: 54 },
+  { x: 36, y: 80 },
+  { x: 67, y: 80 },
 ];
 
 export default function Scene3_Response({ isActive }: SceneProps) {
@@ -98,13 +123,12 @@ export default function Scene3_Response({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === actuators[idx]
+        const scale = hovered === actuators[idx].title
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
-        // Center the panel
         el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
-        el.style.boxShadow = hovered === actuators[idx]
+        el.style.boxShadow = hovered === actuators[idx].title
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
@@ -135,18 +159,18 @@ export default function Scene3_Response({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>Application Contexts</h2>
+        <h2>Who Ari is for</h2>
       </div>
 
-      {actuators.map((a, idx) => (
+      {actuators.map((audience, idx) => (
         <div
-          key={a}
+          key={audience.title}
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
-          onMouseEnter={() => setHovered(a)}
+          onMouseEnter={() => setHovered(audience.title)}
           onMouseLeave={() => setHovered(null)}
           onTouchStart={(e) => {
             e.preventDefault();
-            setHovered(prev => (prev === a ? null : a));
+            setHovered(prev => (prev === audience.title ? null : audience.title));
           }}
           className="scene-floating-card"
           style={{
@@ -175,16 +199,13 @@ export default function Scene3_Response({ isActive }: SceneProps) {
             marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
           }}
         >
-          {a}
-          {hovered === a && (
+          {audience.title}
+          {hovered === audience.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
             >
-              {a === "Immersive Training" && "Adaptive environments that maintain optimal focus and learning conditions."}
-              {a === "High-Stakes Performance" && "Real-time regulation where cognitive failure carries a high cost."}
-              {a === "Therapeutic Environments" && "Digitally mediated spaces supporting emotional regulation."}
-              {a === "Research & Experimental Interfaces" && "Controlled platforms for studying human state and adaptive systems."}
+              {audience.detail}
             </div>
           )}
         </div>

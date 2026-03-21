@@ -85,7 +85,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
           gap: `${Math.max(12, spacing)}px`,
         }}
       >
-        <h2 style={{ position: "relative", zIndex: 1 }}>Request Access</h2>
+        <h2 style={{ position: "relative", zIndex: 1 }}>Request access to the Windows beta</h2>
         <p
           style={{
             textAlign: "center",
@@ -95,7 +95,8 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
             lineHeight: 1.5,
           }}
         >
-          Submit interest for experimental use and collaboration.
+          Ari is currently available as a Windows beta. Leave your email and we will
+          reach out when new access spots open.
         </p>
 
         <input
@@ -103,7 +104,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your email"
+          placeholder="Work email"
           style={{
             position: "relative",
             zIndex: 1,
@@ -138,7 +139,7 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
             zIndex: 1,
           }}
         >
-          Request Access
+          Request beta access
         </button>
       </div>
 

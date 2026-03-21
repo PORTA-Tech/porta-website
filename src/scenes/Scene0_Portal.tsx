@@ -64,12 +64,13 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
           color: PORTA_VISUAL_STYLE.palette.text,
         }}
       >
-        <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>PORTA</h1>
-        <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400 }}>
-          A neuro-adaptive emotional intelligence system
+        <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>Ari</h1>
+        <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400, maxWidth: "22em" }}>
+          See when your day starts slipping out of focus.
         </h3>
-        <p style={{ fontSize: "1.1em", marginBottom: "2em" }}>
-          Senses. Infers. Responds. In real time.
+        <p style={{ fontSize: "1.1em", marginBottom: "2em", maxWidth: "34rem", lineHeight: 1.5 }}>
+          Ari helps you catch the moment focus starts to slip and overload starts to rise,
+          then suggests simple steps to protect focus or take a break.
         </p>
 
         <button

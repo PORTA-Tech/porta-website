@@ -19,7 +19,6 @@ const scenes = [
   Scene5_Access,
 ];
 
-const SCENE_NAV_LOCK_MS = 420;
 const SWIPE_TRIGGER_PX = 72;
 const SWIPE_HORIZONTAL_TOLERANCE = 1.15;
 const MOBILE_MEDIA_QUERY = "(max-width: 900px), (pointer: coarse)";
@@ -60,57 +59,22 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [isMobileNavigation, setIsMobileNavigation] = useState(false);
   const scrollLockRef = useRef(false);
   const touchSessionRef = useRef<TouchSession | null>(null);
-  const lockTimerRef = useRef<number | null>(null);
-
-  const releaseNavigationLock = useCallback(() => {
-    scrollLockRef.current = false;
-    if (lockTimerRef.current !== null) {
-      window.clearTimeout(lockTimerRef.current);
-      lockTimerRef.current = null;
-    }
-  }, []);
-
-  const armNavigationLock = useCallback(() => {
-    scrollLockRef.current = true;
-    if (lockTimerRef.current !== null) {
-      window.clearTimeout(lockTimerRef.current);
-    }
-
-    lockTimerRef.current = window.setTimeout(() => {
-      scrollLockRef.current = false;
-      lockTimerRef.current = null;
-    }, SCENE_NAV_LOCK_MS);
-  }, []);
-
-  const setSceneIndex = useCallback((nextIndex: number) => {
-    setActiveIndex(() => Math.max(0, Math.min(nextIndex, scenes.length - 1)));
-  }, []);
-
-  const navigateToIndex = useCallback((nextIndex: number) => {
-    if (scrollLockRef.current) {
-      return;
-    }
-
-    const boundedIndex = Math.max(0, Math.min(nextIndex, scenes.length - 1));
-    if (boundedIndex === activeIndex) {
-      return;
-    }
-
-    armNavigationLock();
-    setSceneIndex(boundedIndex);
-  }, [activeIndex, armNavigationLock, setSceneIndex]);
 
   const handleAdvance = useCallback(() => {
-    navigateToIndex(activeIndex + 1);
-  }, [activeIndex, navigateToIndex]);
+    setActiveIndex((prev) => {
+      const next = Math.min(prev + 1, scenes.length - 1);
+      onSceneChange(next);
+      return next;
+    });
+  }, [onSceneChange]);
 
   const handleBack = useCallback(() => {
-    navigateToIndex(activeIndex - 1);
-  }, [activeIndex, navigateToIndex]);
-
-  useEffect(() => {
-    onSceneChange(activeIndex);
-  }, [activeIndex, onSceneChange]);
+    setActiveIndex((prev) => {
+      const next = Math.max(prev - 1, 0);
+      onSceneChange(next);
+      return next;
+    });
+  }, [onSceneChange]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
@@ -136,15 +100,13 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
-      if (scrollLockRef.current) {
-        return;
-      }
-
-      if (event.key === "n" || event.key === "ArrowDown" || event.key === "PageDown") {
-        event.preventDefault();
+      if (scrollLockRef.current) return;
+      if (event.key === "n") {
+        scrollLockRef.current = true;
         handleAdvance();
-      } else if (event.key === "p" || event.key === "ArrowUp" || event.key === "PageUp") {
-        event.preventDefault();
+      }
+      if (event.key === "p") {
+        scrollLockRef.current = true;
         handleBack();
       }
     };
@@ -154,44 +116,40 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   }, [handleAdvance, handleBack]);
 
   useEffect(() => {
-    let wheelTimeout: number | null = null;
+    const releaseLock = () => {
+      scrollLockRef.current = false;
+    };
 
-    const handleWheel = (event: WheelEvent) => {
-      if (scrollLockRef.current) {
-        return;
-      }
+    const handleScroll = (event: WheelEvent) => {
+      if (scrollLockRef.current) return;
 
-      if (Math.abs(event.deltaY) < 18 || Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
-        return;
-      }
-
-      if (event.deltaY > 0) {
+      if (event.deltaY > 0 && activeIndex < scenes.length - 1) {
+        scrollLockRef.current = true;
         handleAdvance();
-      } else {
+      } else if (event.deltaY < 0 && activeIndex > 0) {
+        scrollLockRef.current = true;
         handleBack();
       }
+    };
 
+    let wheelTimeout: number | null = null;
+    const wrappedWheel = (event: WheelEvent) => {
+      handleScroll(event);
       if (wheelTimeout !== null) {
         window.clearTimeout(wheelTimeout);
       }
 
-      wheelTimeout = window.setTimeout(releaseNavigationLock, SCENE_NAV_LOCK_MS);
+      wheelTimeout = window.setTimeout(releaseLock, 200);
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", wrappedWheel, { passive: true });
     return () => {
-      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("wheel", wrappedWheel);
       if (wheelTimeout !== null) {
         window.clearTimeout(wheelTimeout);
       }
     };
-  }, [handleAdvance, handleBack, releaseNavigationLock]);
-
-  useEffect(() => {
-    return () => {
-      releaseNavigationLock();
-    };
-  }, [releaseNavigationLock]);
+  }, [activeIndex, handleAdvance, handleBack]);
 
   const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
@@ -204,9 +162,9 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       startY: touch.clientY,
       currentX: touch.clientX,
       currentY: touch.clientY,
-      ignoreSwipe: isInteractiveTarget(event.target),
+      ignoreSwipe: activeIndex === 0 || isInteractiveTarget(event.target),
     };
-  }, []);
+  }, [activeIndex]);
 
   const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
@@ -271,7 +229,20 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
                 key={index}
                 type="button"
                 className={`scene-mobile-nav__dot${index === activeIndex ? " is-active" : ""}`}
-                onClick={() => navigateToIndex(index)}
+                onClick={() => {
+                  if (scrollLockRef.current || index === activeIndex) {
+                    return;
+                  }
+
+                  scrollLockRef.current = true;
+                  setActiveIndex(() => {
+                    onSceneChange(index);
+                    return index;
+                  });
+                  window.setTimeout(() => {
+                    scrollLockRef.current = false;
+                  }, 200);
+                }}
                 aria-label={`Go to scene ${index + 1}`}
                 aria-current={index === activeIndex ? "true" : undefined}
               />

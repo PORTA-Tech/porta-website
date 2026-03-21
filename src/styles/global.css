@@ -3,7 +3,6 @@
   --color-text: #FFFFFF;
   --font-family: 'Inter', sans-serif;
   --font-size: 16px;
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Reset */
@@ -36,10 +35,8 @@ body {
 .scene-root {
   position: relative;
   width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
+  height: calc(var(--vh) * 100);
   overflow: hidden;
-  isolation: isolate;
 }
 
 /* Scene Container */
@@ -90,21 +87,5 @@ body {
   width: 60px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
-}
-
-@media (max-width: 900px) {
-  .scene-root {
-    touch-action: pan-x pan-y;
-  }
-
-  .scene-header {
-    top: max(24px, calc(24px + env(safe-area-inset-top, 0px)));
-    width: min(88vw, 520px);
-  }
-
-  .scene-header h2,
-  .scene-title {
-    font-size: clamp(1.8rem, 6vw, 2.5rem);
-  }
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, type TouchEvent } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Scene0_Portal from "../scenes/Scene0_Portal";
 import Scene1_Perception from "../scenes/Scene1_Perception";
 import Scene2_Adaptive from "../scenes/Scene2_Adaptive";
@@ -91,10 +91,11 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [handleAdvance, handleBack]);
 
-  // Scroll navigation
+  // Vertical wheel navigation only. Horizontal trackpad movement is reserved for orb rotation.
   useEffect(() => {
     const handleScroll = (e: WheelEvent) => {
       if (scrollLockRef.current) return;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
 
       if (e.deltaY > 0 && activeIndex < scenes.length - 1) {
         scrollLockRef.current = true;
@@ -109,7 +110,6 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       scrollLockRef.current = false;
     };
 
-    // Listen to wheel + release lock after scroll ends
     let wheelTimeout: number | null = null;
     const wrappedWheel = (e: WheelEvent) => {
       handleScroll(e);
@@ -129,70 +129,87 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     };
   }, [activeIndex, handleAdvance, handleBack]);
 
-  const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    if (!touch) {
-      return;
-    }
-
-    touchSessionRef.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      currentX: touch.clientX,
-      currentY: touch.clientY,
-      ignoreSwipe: activeIndex === 0 || isInteractiveTarget(event.target),
+  // Phone swipe navigation starts only after scene 0.
+  useEffect(() => {
+    const releaseLockSoon = () => {
+      window.setTimeout(() => {
+        scrollLockRef.current = false;
+      }, 200);
     };
-  }, [activeIndex]);
 
-  const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    const session = touchSessionRef.current;
-    if (!touch || !session || session.ignoreSwipe) {
-      return;
-    }
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) {
+        return;
+      }
 
-    session.currentX = touch.clientX;
-    session.currentY = touch.clientY;
-  }, []);
+      touchSessionRef.current = {
+        startX: touch.clientX,
+        startY: touch.clientY,
+        currentX: touch.clientX,
+        currentY: touch.clientY,
+        ignoreSwipe: activeIndex === 0 || isInteractiveTarget(event.target),
+      };
+    };
 
-  const handleTouchEnd = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    const session = touchSessionRef.current;
-    touchSessionRef.current = null;
+    const handleTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      const session = touchSessionRef.current;
+      if (!touch || !session || session.ignoreSwipe) {
+        return;
+      }
 
-    const finalTouch = event.changedTouches[0];
-    if (session && finalTouch) {
-      session.currentX = finalTouch.clientX;
-      session.currentY = finalTouch.clientY;
-    }
+      session.currentX = touch.clientX;
+      session.currentY = touch.clientY;
 
-    if (!session || session.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
-      return;
-    }
+      if (canUseTouchNavigation(session) && event.cancelable) {
+        event.preventDefault();
+      }
+    };
 
-    scrollLockRef.current = true;
+    const handleTouchEnd = (event: TouchEvent) => {
+      const session = touchSessionRef.current;
+      touchSessionRef.current = null;
 
-    const deltaY = session.currentY - session.startY;
-    if (deltaY < 0 && activeIndex < scenes.length - 1) {
-      handleAdvance();
-    } else if (deltaY > 0 && activeIndex > 0) {
-      handleBack();
-    }
+      const finalTouch = event.changedTouches[0];
+      if (session && finalTouch) {
+        session.currentX = finalTouch.clientX;
+        session.currentY = finalTouch.clientY;
+      }
 
-    window.setTimeout(() => {
-      scrollLockRef.current = false;
-    }, 200);
+      if (!session || session.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
+        return;
+      }
+
+      scrollLockRef.current = true;
+
+      const deltaY = session.currentY - session.startY;
+      if (deltaY < 0 && activeIndex < scenes.length - 1) {
+        handleAdvance();
+      } else if (deltaY > 0 && activeIndex > 0) {
+        handleBack();
+      }
+
+      releaseLockSoon();
+    };
+
+    const handleTouchCancel = () => {
+      touchSessionRef.current = null;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", handleTouchCancel, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchCancel);
+    };
   }, [activeIndex, handleAdvance, handleBack]);
 
   const ActiveScene = scenes[activeIndex];
-
-  return (
-    <div
-      className="scene-root"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <ActiveScene isActive={true} onAdvance={handleAdvance} />
-    </div>
-  );
+  return <ActiveScene isActive={true} onAdvance={handleAdvance} />;
 }

@@ -29,6 +29,8 @@ type DragSession = {
 const SCENE_Z = [0, 1, 2.5, 4, 5.5, 7];
 const DRAG_ROTATION_FACTOR = 0.0095;
 const DRAG_VELOCITY_FACTOR = 0.0013;
+const TRACKPAD_ROTATION_FACTOR = 0.0042;
+const TRACKPAD_VELOCITY_FACTOR = 0.00055;
 const DRAG_AXIS_LOCK_PX = 14;
 const INERTIA_DAMPING = 0.92;
 const IDLE_POINTER_DAMPING = 0.92;
@@ -178,6 +180,28 @@ export default function World3D({ sceneIndex }: World3DProps) {
       window.removeEventListener("pointercancel", handlePointerCancel);
       window.removeEventListener("pointerleave", handlePointerLeave);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      if (isInteractiveTarget(event.target)) {
+        return;
+      }
+
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
+        return;
+      }
+
+      targetRotationYRef.current += event.deltaX * TRACKPAD_ROTATION_FACTOR;
+      angularVelocityRef.current = THREE.MathUtils.clamp(
+        event.deltaX * TRACKPAD_VELOCITY_FACTOR,
+        -0.12,
+        0.12
+      );
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
   }, []);
 
   useFrame(() => {

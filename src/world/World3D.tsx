@@ -32,6 +32,7 @@ const DRAG_VELOCITY_FACTOR = 0.0013;
 const DRAG_AXIS_LOCK_PX = 14;
 const INERTIA_DAMPING = 0.92;
 const IDLE_POINTER_DAMPING = 0.92;
+const AMBIENT_ROTATION_Y = 0.0011;
 
 function clampNormalized(value: number) {
   return THREE.MathUtils.clamp(value, -1, 1);
@@ -189,6 +190,8 @@ export default function World3D({ sceneIndex }: World3DProps) {
     const currentZ = groupRef.current.position.z;
     const targetZ = SCENE_Z[sceneIndex];
     groupRef.current.position.z += (targetZ - currentZ) * 0.1;
+
+    targetRotationYRef.current += AMBIENT_ROTATION_Y;
 
     if (!interaction.isDragging) {
       targetRotationYRef.current += angularVelocityRef.current;

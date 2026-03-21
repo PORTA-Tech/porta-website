@@ -93,6 +93,8 @@ export default function Orb3D({
       const modeTilt = mode * 0.012;
       const targetTiltX = -smoothedPointer.y * 0.16;
       const targetTiltY = smoothedPointer.x * 0.2 + modeTilt;
+      rootRef.current.rotation.y += 0.00045;
+      rootRef.current.rotation.x += 0.00016;
       rootRef.current.rotation.x += (targetTiltX - rootRef.current.rotation.x) * 0.08;
       rootRef.current.rotation.y += (targetTiltY - rootRef.current.rotation.y) * 0.06;
       rootRef.current.rotation.z += (-smoothedPointer.x * 0.05 - rootRef.current.rotation.z) * 0.05;

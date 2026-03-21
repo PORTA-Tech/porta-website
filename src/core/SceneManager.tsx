@@ -29,6 +29,7 @@ type TouchSession = {
   startY: number;
   currentX: number;
   currentY: number;
+  ignoreSwipe: boolean;
 };
 
 function canUseTouchNavigation(touch: TouchSession | null) {
@@ -42,6 +43,16 @@ function canUseTouchNavigation(touch: TouchSession | null) {
   const absY = Math.abs(deltaY);
 
   return absY >= SWIPE_TRIGGER_PX && absY > absX * SWIPE_HORIZONTAL_TOLERANCE;
+}
+
+function isInteractiveTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest("button, input, textarea, select, a, label, [role='button']")
+  );
 }
 
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
@@ -193,6 +204,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       startY: touch.clientY,
       currentX: touch.clientX,
       currentY: touch.clientY,
+      ignoreSwipe: isInteractiveTarget(event.target),
     };
   }, []);
 
@@ -200,6 +212,10 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     const touch = event.touches[0];
     const session = touchSessionRef.current;
     if (!touch || !session) {
+      return;
+    }
+
+    if (session.ignoreSwipe) {
       return;
     }
 
@@ -211,7 +227,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     const session = touchSessionRef.current;
     touchSessionRef.current = null;
 
-    if (scrollLockRef.current || !canUseTouchNavigation(session)) {
+    if (session?.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
       return;
     }
 
@@ -235,7 +251,9 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     >
       <ActiveScene isActive={true} onAdvance={handleAdvance} />
 
-      <div className={`scene-mobile-nav${isMobileNavigation ? " is-visible" : ""}`}>
+      <div
+        className={`scene-mobile-nav${isMobileNavigation && activeIndex > 0 ? " is-visible" : ""}`}
+      >
         <div className="scene-mobile-nav__buttons">
           <button
             type="button"

@@ -11,7 +11,7 @@ const processors = [
   },
   {
     title: "Overload",
-    detail: "When your pattern looks strained, scattered, or hard to sustain.",
+    detail: "When your pattern looks strained, scattered, or hard to keep up.",
   },
   {
     title: "Trust",

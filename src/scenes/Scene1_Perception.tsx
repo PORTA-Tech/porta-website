@@ -7,7 +7,7 @@ type SceneProps = { isActive: boolean };
 const signals = [
   {
     title: "Keyboard activity",
-    detail: "How your typing speeds up, slows down, or gets more uneven.",
+    detail: "How your typing speeds up, slows down, or becomes less steady.",
   },
   {
     title: "Mouse activity",

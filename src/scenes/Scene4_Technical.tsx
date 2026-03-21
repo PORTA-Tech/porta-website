@@ -7,31 +7,31 @@ type SceneProps = { isActive: boolean };
 const integrators = [
   {
     title: "Pause or resume",
-    detail: "You can stop Ari when you want and turn it back on when you are ready.",
+    detail: "Stop Ari when you want and turn it back on when you are ready.",
   },
   {
-    title: "Export your data",
-    detail: "You can export the local data Ari has recorded for your session history.",
+    title: "Export local data",
+    detail: "Download the local session data Ari has stored on your machine.",
   },
   {
     title: "Delete local data",
-    detail: "You can clear Ari's local history from the machine.",
+    detail: "Clear Ari's local history from the machine whenever you want.",
   },
   {
     title: "Revoke consent",
-    detail: "You can revoke consent so Ari stops working from that point on.",
+    detail: "Revoke consent so Ari stops working from that point on.",
   },
   {
-    title: "No typed text or screenshots",
-    detail: "Ari does not read typed text, capture screenshots, or copy clipboard contents.",
+    title: "Privacy boundaries",
+    detail: "Ari does not read typed text, take screenshots, or copy the clipboard.",
   },
 ];
 
 const positions = [
-  { x: 35, y: 30 },
-  { x: 70, y: 45 },
-  { x: 30, y: 65 },
-  { x: 75, y: 80 },
+  { x: 27, y: 30 },
+  { x: 73, y: 30 },
+  { x: 26, y: 64 },
+  { x: 73, y: 64 },
   { x: 50, y: 82 },
 ];
 

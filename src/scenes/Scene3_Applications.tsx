@@ -7,42 +7,42 @@ type SceneProps = { isActive: boolean };
 const actuators = [
   {
     title: "Founders",
-    detail: "For people carrying decisions, meetings, and constant context switching.",
+    detail: "Big decisions, meetings, and constant switching through the day.",
   },
   {
-    title: "Startup employees",
-    detail: "For fast-moving teams where too many tabs and pings can break the day apart.",
+    title: "Startup teams",
+    detail: "Fast-moving work where too many tabs and pings break focus apart.",
   },
   {
     title: "PMs",
-    detail: "For people balancing planning, docs, chat, and cross-team follow-up.",
+    detail: "Planning, docs, chat, and constant follow-up across teams.",
   },
   {
     title: "Engineers",
-    detail: "For people who need longer stretches of steady focus to do good work.",
+    detail: "Long stretches of steady focus to build, debug, and think clearly.",
   },
   {
     title: "Consultants",
-    detail: "For people moving between clients, calls, decks, and deadlines.",
+    detail: "Clients, calls, decks, and deadlines pulling in different directions.",
   },
   {
     title: "Analysts",
-    detail: "For people whose day depends on careful attention across tools and data.",
+    detail: "Careful attention across tools, spreadsheets, dashboards, and data.",
   },
   {
     title: "Designers",
-    detail: "For people switching between ideas, files, feedback, and review loops.",
+    detail: "Ideas, files, feedback, and review loops all competing for attention.",
   },
 ];
 
 const positions = [
-  { x: 24, y: 24 },
-  { x: 52, y: 22 },
-  { x: 79, y: 26 },
-  { x: 25, y: 54 },
-  { x: 78, y: 54 },
-  { x: 36, y: 80 },
-  { x: 67, y: 80 },
+  { x: 22, y: 24 },
+  { x: 50, y: 22 },
+  { x: 78, y: 24 },
+  { x: 22, y: 53 },
+  { x: 78, y: 53 },
+  { x: 35, y: 79 },
+  { x: 65, y: 79 },
 ];
 
 export default function Scene3_Response({ isActive }: SceneProps) {

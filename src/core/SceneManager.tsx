@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 import Scene0_Portal from "../scenes/Scene0_Portal";
 import Scene1_Perception from "../scenes/Scene1_Perception";
 import Scene2_Adaptive from "../scenes/Scene2_Adaptive";
@@ -21,7 +21,6 @@ const scenes = [
 
 const SWIPE_TRIGGER_PX = 72;
 const SWIPE_HORIZONTAL_TOLERANCE = 1.15;
-const MOBILE_MEDIA_QUERY = "(max-width: 900px), (pointer: coarse)";
 
 type TouchSession = {
   startX: number;
@@ -56,7 +55,6 @@ function isInteractiveTarget(target: EventTarget | null) {
 
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isMobileNavigation, setIsMobileNavigation] = useState(false);
   const scrollLockRef = useRef(false);
   const touchSessionRef = useRef<TouchSession | null>(null);
 
@@ -77,28 +75,6 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   }, [onSceneChange]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
-
-    const syncMobileNavigation = (query: MediaQueryList | MediaQueryListEvent) => {
-      setIsMobileNavigation(query.matches);
-    };
-
-    syncMobileNavigation(mediaQuery);
-    if ("addEventListener" in mediaQuery) {
-      mediaQuery.addEventListener("change", syncMobileNavigation);
-      return () => mediaQuery.removeEventListener("change", syncMobileNavigation);
-    }
-
-    const legacyMediaQuery = mediaQuery as MediaQueryList & {
-      addListener?: (listener: (query: MediaQueryListEvent) => void) => void;
-      removeListener?: (listener: (query: MediaQueryListEvent) => void) => void;
-    };
-
-    legacyMediaQuery.addListener?.(syncMobileNavigation);
-    return () => legacyMediaQuery.removeListener?.(syncMobileNavigation);
-  }, []);
-
-  useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (scrollLockRef.current) return;
       if (event.key === "n") {
@@ -116,10 +92,6 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   }, [handleAdvance, handleBack]);
 
   useEffect(() => {
-    const releaseLock = () => {
-      scrollLockRef.current = false;
-    };
-
     const handleScroll = (event: WheelEvent) => {
       if (scrollLockRef.current) return;
 
@@ -130,6 +102,10 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
         scrollLockRef.current = true;
         handleBack();
       }
+    };
+
+    const releaseLock = () => {
+      scrollLockRef.current = false;
     };
 
     let wheelTimeout: number | null = null;
@@ -169,11 +145,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
     const session = touchSessionRef.current;
-    if (!touch || !session) {
-      return;
-    }
-
-    if (session.ignoreSwipe) {
+    if (!touch || !session || session.ignoreSwipe) {
       return;
     }
 
@@ -185,20 +157,25 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     const session = touchSessionRef.current;
     touchSessionRef.current = null;
 
-    if (session?.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
+    if (!session || session.ignoreSwipe || scrollLockRef.current || !canUseTouchNavigation(session)) {
       return;
     }
 
-    const deltaY = (session?.currentY ?? 0) - (session?.startY ?? 0);
-    if (deltaY < 0) {
+    scrollLockRef.current = true;
+
+    const deltaY = (session.currentY ?? 0) - (session.startY ?? 0);
+    if (deltaY < 0 && activeIndex < scenes.length - 1) {
       handleAdvance();
-    } else {
+    } else if (deltaY > 0 && activeIndex > 0) {
       handleBack();
     }
-  }, [handleAdvance, handleBack]);
+
+    window.setTimeout(() => {
+      scrollLockRef.current = false;
+    }, 200);
+  }, [activeIndex, handleAdvance, handleBack]);
 
   const ActiveScene = scenes[activeIndex];
-  const sceneDots = useMemo(() => scenes.map((_, index) => index), []);
 
   return (
     <div
@@ -208,62 +185,6 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       onTouchEnd={handleTouchEnd}
     >
       <ActiveScene isActive={true} onAdvance={handleAdvance} />
-
-      <div
-        className={`scene-mobile-nav${isMobileNavigation && activeIndex > 0 ? " is-visible" : ""}`}
-      >
-        <div className="scene-mobile-nav__buttons">
-          <button
-            type="button"
-            className="scene-mobile-nav__button"
-            onClick={handleBack}
-            disabled={activeIndex === 0}
-            aria-label="Go to previous scene"
-          >
-            Back
-          </button>
-
-          <div className="scene-mobile-nav__dots" aria-label="Scene navigation">
-            {sceneDots.map((index) => (
-              <button
-                key={index}
-                type="button"
-                className={`scene-mobile-nav__dot${index === activeIndex ? " is-active" : ""}`}
-                onClick={() => {
-                  if (scrollLockRef.current || index === activeIndex) {
-                    return;
-                  }
-
-                  scrollLockRef.current = true;
-                  setActiveIndex(() => {
-                    onSceneChange(index);
-                    return index;
-                  });
-                  window.setTimeout(() => {
-                    scrollLockRef.current = false;
-                  }, 200);
-                }}
-                aria-label={`Go to scene ${index + 1}`}
-                aria-current={index === activeIndex ? "true" : undefined}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="scene-mobile-nav__button"
-            onClick={handleAdvance}
-            disabled={activeIndex === scenes.length - 1}
-            aria-label="Go to next scene"
-          >
-            Next
-          </button>
-        </div>
-
-        <div className="scene-mobile-nav__hint">
-          Swipe up or down to move through Ari.
-        </div>
-      </div>
     </div>
   );
 }

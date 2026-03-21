@@ -1,23 +1,26 @@
 :root {
   --color-background: #000000;
-  --color-text: #FFFFFF;
-  --font-family: 'Inter', sans-serif;
+  --color-text: #ffffff;
+  --font-family: "Inter", sans-serif;
   --font-size: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Viewport Lock */
 html,
 body,
 #root {
   width: 100%;
-  height: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
   overflow: hidden;
   background: var(--color-background);
   color: var(--color-text);
@@ -31,7 +34,6 @@ body {
   -webkit-overflow-scrolling: auto;
 }
 
-/* Scene Root (Dynamic Mobile-Safe Height) */
 .scene-root {
   position: relative;
   width: 100%;
@@ -39,31 +41,34 @@ body {
   overflow: hidden;
 }
 
-/* Scene Container */
 .scene {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   gap: 16px;
+  padding:
+    calc(var(--safe-top) + 28px)
+    calc(var(--safe-right) + 28px)
+    calc(var(--safe-bottom) + 28px)
+    calc(var(--safe-left) + 28px);
 }
 
-/* Scene Header (Centered Version Only) */
 .scene-header {
   position: absolute;
-  top: 12%;
+  top: calc(var(--safe-top) + 9vh);
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
   z-index: 10;
   pointer-events: none;
+  width: min(100%, 42rem);
+  padding-inline: 16px;
 }
 
 .scene-tag {
@@ -83,9 +88,142 @@ body {
   font-family: var(--font-family);
 }
 
+.scene-header h2 {
+  font-size: clamp(1.65rem, 3vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
 .scene-divider {
   width: 60px;
   height: 1px;
   background: rgba(255, 255, 255, 0.25);
+}
+
+.scene-floating-card {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.scene-floating-card-detail {
+  line-height: 1.45;
+}
+
+.scene-access-layout {
+  padding-top: calc(var(--safe-top) + 36px);
+  padding-bottom: calc(var(--safe-bottom) + 36px);
+}
+
+.scene-access-panel {
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(10, 10, 16, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.scene-access-input,
+.scene-access-button {
+  min-height: 52px;
+  width: min(100%, 28rem);
+  padding: 14px 18px;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.scene-access-input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.scene-access-button {
+  min-width: 12rem;
+}
+
+.scene-access-status {
+  max-width: 32rem;
+  text-align: center;
+  line-height: 1.45;
+}
+
+@supports not (height: 100dvh) {
+  html,
+  body,
+  #root,
+  .scene {
+    height: 100vh;
+    min-height: 100vh;
+  }
+}
+
+@media (max-width: 1024px) {
+  .scene {
+    padding:
+      calc(var(--safe-top) + 24px)
+      calc(var(--safe-right) + 22px)
+      calc(var(--safe-bottom) + 24px)
+      calc(var(--safe-left) + 22px);
+  }
+
+  .scene-header {
+    top: calc(var(--safe-top) + 7vh);
+  }
+}
+
+@media (max-width: 767px) {
+  .scene {
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 12px;
+    padding:
+      calc(var(--safe-top) + 18px)
+      calc(var(--safe-right) + 16px)
+      calc(var(--safe-bottom) + 18px)
+      calc(var(--safe-left) + 16px);
+  }
+
+  .scene-header {
+    top: calc(var(--safe-top) + 14px);
+    width: min(100%, 24rem);
+    padding-inline: 8px;
+  }
+
+  .scene-header h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .scene.scene-floating-layout {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .scene.scene-floating-layout .scene-floating-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: min(100%, 22rem) !important;
+    max-width: 100%;
+    min-width: 0 !important;
+  }
+
+  .scene.scene-floating-layout .scene-floating-card-detail {
+    font-size: 0.92em;
+  }
+
+  .scene-access-layout {
+    justify-content: center;
+  }
+
+  .scene-access-panel {
+    width: 100%;
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .scene-access-input,
+  .scene-access-button {
+    width: 100%;
+  }
 }
 

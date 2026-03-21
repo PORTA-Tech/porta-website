@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
+import { useResponsiveScale } from "../hooks/useResponsiveScale";
 
 export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { panel, spacing, isPhone } = useResponsiveScale();
 
   // Pulse effect on hover
   useEffect(() => {
@@ -57,9 +59,8 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
 
   return (
     <div
-      className="scene"
+      className="scene scene-access-layout"
       style={{
-        height: "100vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -70,63 +71,79 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
         overflow: "hidden",
       }}
     >
-      <h2 style={{ position: "relative", zIndex: 1 }}>Request Access</h2>
-      <p
+      <div
+        className="scene-access-panel"
         style={{
-          textAlign: "center",
-          maxWidth: "400px",
           position: "relative",
           zIndex: 1,
+          textAlign: "center",
+          width: isPhone ? "100%" : `min(100%, ${Math.round(520 * panel)}px)`,
+          maxWidth: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: `${Math.max(12, spacing)}px`,
         }}
       >
-        Submit interest for experimental use and collaboration.
-      </p>
+        <h2 style={{ position: "relative", zIndex: 1 }}>Request Access</h2>
+        <p
+          style={{
+            textAlign: "center",
+            maxWidth: "32rem",
+            position: "relative",
+            zIndex: 1,
+            lineHeight: 1.5,
+          }}
+        >
+          Submit interest for experimental use and collaboration.
+        </p>
 
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Your email"
-        style={{
-          padding: "10px",
-          margin: "10px",
-          width: "250px",
-          position: "relative",
-          zIndex: 1,
-          borderRadius: "6px",
-          border: "1px solid rgba(255,255,255,0.2)",
-          background: "rgba(255,255,255,0.05)",
-          color: "white",
-          textAlign: "center",
-        }}
-      />
+        <input
+          className="scene-access-input"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Your email"
+          style={{
+            position: "relative",
+            zIndex: 1,
+            borderRadius: "14px",
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: "rgba(255,255,255,0.05)",
+            color: "white",
+            textAlign: "center",
+            width: "100%",
+            maxWidth: isPhone ? "100%" : "28rem",
+          }}
+        />
 
-      <button
-        ref={buttonRef}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={handleSubmit}
-        style={{
-          padding: "12px 24px",
-          cursor: "pointer",
-          borderRadius: "8px",
-          border: "none",
-          background: "#ff8844",
-          color: "#fff",
-          boxShadow: hovered
-            ? "0 0 20px #ff8844, 0 0 40px rgba(255,136,68,0.4)"
-            : "0 0 8px rgba(255,136,68,0.2)",
-          transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
-          fontWeight: "bold",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        Request Access
-      </button>
+        <button
+          className="scene-access-button"
+          ref={buttonRef}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onClick={handleSubmit}
+          style={{
+            cursor: "pointer",
+            borderRadius: "14px",
+            border: "none",
+            background: "#ff8844",
+            color: "#fff",
+            boxShadow: hovered
+              ? "0 0 20px #ff8844, 0 0 40px rgba(255,136,68,0.4)"
+              : "0 0 8px rgba(255,136,68,0.2)",
+            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
+            fontWeight: "bold",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          Request Access
+        </button>
+      </div>
 
       {status && (
-        <p style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
+        <p className="scene-access-status" style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
           {status}
         </p>
       )}

@@ -101,18 +101,60 @@ body {
 }
 
 .scene-floating-card {
+  position: absolute;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: clamp(12px, 1.5vw, 24px);
+  border-radius: clamp(8px, 1vw, 16px);
+  background: rgba(17, 17, 17, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+  text-align: center;
+  min-width: clamp(140px, 14vw, 220px);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: clamp(14px, 1.2vw, 20px);
+  line-height: 1.35;
+  transition: all 0.3s;
+  touch-action: manipulation;
   max-width: 17rem;
 }
 
 .scene-floating-card-detail {
+  margin-top: 10px;
+  font-size: 0.85em;
+  color: #aaaaaa;
   line-height: 1.45;
   max-width: 16rem;
   text-wrap: balance;
+}
+
+.scene-perception-layout {
+  position: relative;
+  overflow: hidden;
+}
+
+.scene-perception-card[data-slot="0"] {
+  top: 30%;
+  left: 35%;
+}
+
+.scene-perception-card[data-slot="1"] {
+  top: 30%;
+  left: 75%;
+}
+
+.scene-perception-card[data-slot="2"] {
+  top: 65%;
+  left: 34%;
+}
+
+.scene-perception-card[data-slot="3"] {
+  top: 66%;
+  left: 76%;
 }
 
 .scene-access-layout {
@@ -120,12 +162,63 @@ body {
   padding-bottom: calc(var(--safe-bottom) + 36px);
 }
 
+.scene-access-scene {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #222222, #333333);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
 .scene-access-panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 32rem);
+  max-width: 100%;
   padding: 28px;
   border-radius: 24px;
   background: rgba(10, 10, 16, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.scene-access-title,
+.scene-access-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.scene-access-copy {
+  max-width: 32rem;
+  line-height: 1.5;
+}
+
+.scene-access-form {
+  width: 100%;
+  max-width: 30rem;
+  display: grid;
+  gap: 14px;
+  text-align: left;
+}
+
+.scene-access-field {
+  display: grid;
+  gap: 8px;
+}
+
+.scene-access-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .scene-access-input,
@@ -137,18 +230,80 @@ body {
   touch-action: manipulation;
 }
 
+.scene-access-input {
+  appearance: none;
+  position: relative;
+  z-index: 1;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  width: 100%;
+  max-width: 100%;
+}
+
 .scene-access-input::placeholder {
   color: rgba(255, 255, 255, 0.58);
 }
 
+.scene-access-input:focus,
+.scene-access-textarea:focus,
+.scene-access-select:focus {
+  outline: 2px solid rgba(0, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
+.scene-access-textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.scene-access-select option {
+  color: #111111;
+}
+
 .scene-access-button {
   min-width: 12rem;
+  cursor: pointer;
+  border-radius: 14px;
+  border: none;
+  background: #ff8844;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 136, 68, 0.2);
+  transition: all 0.3s;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+.scene-access-button:hover:not(:disabled) {
+  box-shadow: 0 0 20px #ff8844, 0 0 40px rgba(255, 136, 68, 0.4);
+}
+
+.scene-access-button:disabled {
+  cursor: progress;
+  opacity: 0.8;
 }
 
 .scene-access-status {
+  margin-top: 12px;
   max-width: 32rem;
   text-align: center;
   line-height: 1.45;
+  position: relative;
+  z-index: 1;
+}
+
+.scene-access-status[data-tone="success"] {
+  color: #83f0ae;
+}
+
+.scene-access-status[data-tone="error"] {
+  color: #ffb4a7;
+}
+
+.scene-access-status[data-tone="loading"] {
+  color: rgba(255, 255, 255, 0.82);
 }
 
 @supports not (height: 100dvh) {
@@ -215,6 +370,10 @@ body {
 
   .scene.scene-floating-layout .scene-floating-card-detail {
     font-size: 0.92em;
+  }
+
+  .scene-perception-layout .scene-perception-card:first-of-type {
+    margin-top: 63px;
   }
 
   .scene-access-layout {

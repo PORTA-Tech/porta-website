@@ -1,13 +1,37 @@
 import { useState, useRef, useEffect } from "react";
 import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
-import { useResponsiveScale } from "../hooks/useResponsiveScale";
+import { submitBetaRequest, type BetaRequestPayload } from "../lib/betaRequestApi";
+
+type RequestState =
+  | { tone: "idle"; message: string }
+  | { tone: "loading"; message: string }
+  | { tone: "success"; message: string }
+  | { tone: "error"; message: string };
+
+const INITIAL_FORM: BetaRequestPayload = {
+  workEmail: "",
+  role: "",
+  scatterSource: "",
+  hoursPerDay: "",
+};
+
+const HOURS_OPTIONS = [
+  "Less than 4 hours",
+  "4 to 6 hours",
+  "6 to 8 hours",
+  "8 to 10 hours",
+  "10+ hours",
+];
 
 export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void }) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [requestState, setRequestState] = useState<RequestState>({
+    tone: "idle",
+    message: "",
+  });
   const [hovered, setHovered] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { panel, spacing, isPhone } = useResponsiveScale();
+  const isSubmitting = requestState.tone === "loading";
 
   // Pulse effect on hover
   useEffect(() => {
@@ -29,94 +53,121 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
     };
   }, [hovered]);
 
-  // Submit email to backend
-  const handleSubmit = async () => {
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setStatus("Please enter a valid email.");
-      return;
-    }
-    setStatus("Sending...");
-    try {
-      const res = await fetch("https://porta-api-yywn.onrender.com/send-email", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStatus(data.message || "Sent successfully!");
-        setEmail("");
-        // Optional: advance to next scene if onAdvance exists
-        onAdvance?.();
-      } else {
-        setStatus(data.error || "Failed to send.");
-      }
-    } catch (err) {
-      console.error(err);
-      setStatus("Network error.");
+  const updateField = (field: keyof BetaRequestPayload, value: string) => {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+
+    if (requestState.tone !== "idle") {
+      setRequestState({ tone: "idle", message: "" });
     }
   };
 
+  const validateForm = () => {
+    if (!/\S+@\S+\.\S+/.test(form.workEmail)) {
+      return "Please enter a valid work email.";
+    }
+
+    if (!form.role.trim()) {
+      return "Please tell us your role.";
+    }
+
+    if (!form.scatterSource.trim()) {
+      return "Please describe the biggest thing that scatters your day.";
+    }
+
+    if (!form.hoursPerDay) {
+      return "Please choose how many hours per day you work on a computer.";
+    }
+
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      setRequestState({ tone: "error", message: validationError });
+      return;
+    }
+
+    setRequestState({
+      tone: "loading",
+      message: "Sending your beta request...",
+    });
+
+    const result = await submitBetaRequest(form);
+    if (!result.ok) {
+      setRequestState({ tone: "error", message: result.error });
+      return;
+    }
+
+    setRequestState({ tone: "success", message: result.message });
+    setForm(INITIAL_FORM);
+    onAdvance?.();
+  };
+
   return (
-    <div
-      className="scene scene-access-layout"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "linear-gradient(180deg, #222, #333)",
-        color: "white",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        className="scene-access-panel"
-        style={{
-          position: "relative",
-          zIndex: 1,
-          textAlign: "center",
-          width: isPhone ? "100%" : `min(100%, ${Math.round(520 * panel)}px)`,
-          maxWidth: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: `${Math.max(12, spacing)}px`,
-        }}
-      >
-        <h2 style={{ position: "relative", zIndex: 1 }}>Request access to the Windows beta</h2>
-        <p
-          style={{
-            textAlign: "center",
-            maxWidth: "32rem",
-            position: "relative",
-            zIndex: 1,
-            lineHeight: 1.5,
-          }}
-        >
+    <div className="scene scene-access-layout scene-access-scene">
+      <div className="scene-access-panel">
+        <h2 className="scene-access-title">Request access to the Windows beta</h2>
+        <p className="scene-access-copy">
           Ari is currently available as a Windows beta. Leave your email and we will
           reach out when new access spots open.
         </p>
 
-        <input
-          className="scene-access-input"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Work email"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            borderRadius: "14px",
-            border: "1px solid rgba(255,255,255,0.2)",
-            background: "rgba(255,255,255,0.05)",
-            color: "white",
-            textAlign: "center",
-            width: "100%",
-            maxWidth: isPhone ? "100%" : "28rem",
-          }}
-        />
+        <div className="scene-access-form">
+          <label className="scene-access-field">
+            <span className="scene-access-label">Work email</span>
+            <input
+              className="scene-access-input"
+              type="email"
+              value={form.workEmail}
+              onChange={(e) => updateField("workEmail", e.target.value)}
+              placeholder="you@company.com"
+              autoComplete="email"
+            />
+          </label>
+
+          <label className="scene-access-field">
+            <span className="scene-access-label">Role</span>
+            <input
+              className="scene-access-input"
+              type="text"
+              value={form.role}
+              onChange={(e) => updateField("role", e.target.value)}
+              placeholder="Engineer, PM, founder..."
+              autoComplete="organization-title"
+            />
+          </label>
+
+          <label className="scene-access-field">
+            <span className="scene-access-label">Biggest source of the day getting scattered</span>
+            <textarea
+              className="scene-access-input scene-access-textarea"
+              value={form.scatterSource}
+              onChange={(e) => updateField("scatterSource", e.target.value)}
+              placeholder="Meetings, chat, too many tabs, app switching..."
+              rows={4}
+            />
+          </label>
+
+          <label className="scene-access-field">
+            <span className="scene-access-label">Hours per day on a computer</span>
+            <select
+              className="scene-access-input scene-access-select"
+              value={form.hoursPerDay}
+              onChange={(e) => updateField("hoursPerDay", e.target.value)}
+            >
+              <option value="">Choose one</option>
+              {HOURS_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
         <button
           className="scene-access-button"
@@ -124,28 +175,15 @@ export default function Scene5_Access({ onAdvance }: { onAdvance?: () => void })
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={handleSubmit}
-          style={{
-            cursor: "pointer",
-            borderRadius: "14px",
-            border: "none",
-            background: "#ff8844",
-            color: "#fff",
-            boxShadow: hovered
-              ? "0 0 20px #ff8844, 0 0 40px rgba(255,136,68,0.4)"
-              : "0 0 8px rgba(255,136,68,0.2)",
-            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
-            fontWeight: "bold",
-            position: "relative",
-            zIndex: 1,
-          }}
+          disabled={isSubmitting}
         >
-          Request beta access
+          {isSubmitting ? "Sending request..." : "Request beta access"}
         </button>
       </div>
 
-      {status && (
-        <p className="scene-access-status" style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
-          {status}
+      {requestState.message && requestState.tone !== "idle" && (
+        <p className="scene-access-status" data-tone={requestState.tone}>
+          {requestState.message}
         </p>
       )}
     </div>

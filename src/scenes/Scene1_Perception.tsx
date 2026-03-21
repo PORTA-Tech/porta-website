@@ -23,13 +23,6 @@ const signals = [
   },
 ];
 
-const positions = [
-  { x: 35, y: 30 },
-  { x: 75, y: 30 },
-  { x: 34, y: 65 },
-  { x: 76, y: 66 },
-];
-
 export default function Scene1_Perception({ isActive }: SceneProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [entranceProgress, setEntranceProgress] = useState(0);
@@ -37,7 +30,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
   const bgRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const depthRef = useRef<number[]>(signals.map(() => Math.random() * 20 + 10));
-  const { layout, panel, card, spacing } = useResponsiveScale();
+  const { layout } = useResponsiveScale();
   const isStacked = layout === "stacked";
 
   // Mouse tracking for parallax
@@ -139,9 +132,8 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
   return (
     <div
       ref={bgRef}
-      className="scene scene-floating-layout"
+      className="scene scene-floating-layout scene-perception-layout"
       data-layout={layout}
-      style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
         <h2>What Ari sees</h2>
@@ -157,39 +149,12 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
             e.preventDefault();
             setHovered(prev => (prev === signal.title ? null : signal.title));
           }}
-          className="scene-floating-card"
-          style={{
-            position: isStacked ? "relative" : "absolute",
-            top: isStacked ? "auto" : `${positions[idx].y}%`,
-            left: isStacked ? "auto" : `${positions[idx].x}%`,
-            width: isStacked ? `min(100%, ${Math.round(360 * card)}px)` : undefined,
-            maxWidth: isStacked ? "100%" : undefined,
-            padding: isStacked
-              ? `${Math.max(16, Math.round(16 * panel))}px ${Math.max(18, Math.round(20 * panel))}px`
-              : `clamp(12px, ${1.5 * panel}vw, ${Math.round(24 * panel)}px)`,
-            borderRadius: isStacked ? "18px" : "clamp(8px, 1vw, 16px)",
-            background: PORTA_VISUAL_STYLE.palette.panelBg,
-            border: "1px solid rgba(255,255,255,0.2)",
-            color: PORTA_VISUAL_STYLE.palette.text,
-            textAlign: isStacked ? "left" : "center",
-            minWidth: isStacked ? "0" : `clamp(140px, ${14 * card}vw, ${Math.round(220 * card)}px)`,
-            cursor: "pointer",
-            fontFamily: PORTA_VISUAL_STYLE.font.family,
-            fontSize: isStacked
-              ? `${Math.max(16, Math.round(18 * panel))}px`
-              : `clamp(14px, ${1.2 * panel}vw, ${Math.round(20 * panel)}px)`,
-            transition: `all ${PORTA_VISUAL_STYLE.ui.panelTransition}s`,
-            touchAction: "manipulation",
-            lineHeight: 1.35,
-            marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
-          }}
+          className="scene-floating-card scene-perception-card"
+          data-slot={idx}
         >
           {signal.title}
           {hovered === signal.title && (
-            <div
-              className="scene-floating-card-detail"
-              style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
-            >
+            <div className="scene-floating-card-detail">
               {signal.detail}
             </div>
           )}

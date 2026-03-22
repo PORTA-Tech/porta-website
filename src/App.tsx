@@ -314,39 +314,41 @@ export default function App() {
           <p className="landing-eyebrow">Who it&apos;s for</p>
           <h2>For people who need clear thinking at a computer.</h2>
         </div>
-        <div className="landing-chip-cloud">
-          {audiences.map((audience, index) => (
-            <button
-              key={audience.title}
-              type="button"
-              className="landing-chip"
-              data-reveal
-              data-reveal-order={(index % 4) + 1}
-              data-motion="chip-pop"
-              data-active={activeAudienceTitle === audience.title ? "true" : "false"}
-              onMouseEnter={() => setHoveredAudience(audience.title)}
-              onMouseLeave={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
-              onFocus={() => setHoveredAudience(audience.title)}
-              onBlur={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
-              onClick={() =>
-                setSelectedAudience((current) => (current === audience.title ? null : audience.title))
-              }
-            >
-              {audience.title}
-            </button>
-          ))}
-        </div>
-        {activeAudience ? (
-          <div
-            className="landing-audience-detail"
-            data-reveal
-            data-reveal-order="2"
-            data-motion="card-rise"
-          >
-            <h3>{activeAudience.title}</h3>
-            <p>{activeAudience.detail}</p>
+        <div className="landing-audience-cloud" data-has-detail={activeAudience ? "true" : "false"}>
+          <div className="landing-chip-cloud">
+            {audiences.map((audience, index) => (
+              <button
+                key={audience.title}
+                type="button"
+                className="landing-chip"
+                data-reveal
+                data-reveal-order={(index % 4) + 1}
+                data-motion="chip-pop"
+                data-active={activeAudienceTitle === audience.title ? "true" : "false"}
+                onMouseEnter={() => setHoveredAudience(audience.title)}
+                onMouseLeave={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
+                onFocus={() => setHoveredAudience(audience.title)}
+                onBlur={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
+                onClick={() =>
+                  setSelectedAudience((current) => (current === audience.title ? null : audience.title))
+                }
+              >
+                {audience.title}
+              </button>
+            ))}
           </div>
-        ) : null}
+          {activeAudience ? (
+            <div
+              className="landing-audience-detail"
+              data-reveal
+              data-reveal-order="2"
+              data-motion="card-rise"
+            >
+              <h3>{activeAudience.title}</h3>
+              <p>{activeAudience.detail}</p>
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section className="landing-shell landing-section" id="trust">

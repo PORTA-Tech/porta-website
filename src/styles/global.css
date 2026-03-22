@@ -666,6 +666,12 @@ body {
   gap: 12px;
 }
 
+.landing-audience-cloud {
+  position: relative;
+  display: grid;
+  justify-items: start;
+}
+
 .landing-chip {
   display: inline-flex;
   align-items: center;
@@ -697,13 +703,13 @@ body {
 }
 
 .landing-audience-detail {
-  margin-top: 18px;
-  max-width: 36rem;
-  padding: 22px;
-  border-radius: 24px;
+  margin-top: 14px;
+  width: min(100%, 30rem);
+  padding: 18px 20px;
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(8, 10, 16, 0.68);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -1102,6 +1108,11 @@ body {
   .landing-grid-three,
   .landing-grid-two {
     grid-template-columns: 1fr;
+  }
+
+  .landing-audience-cloud,
+  .landing-audience-detail {
+    width: 100%;
   }
 
   .landing-hero-card,

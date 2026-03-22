@@ -117,7 +117,7 @@ export default function App() {
           data-motion="hero-copy"
         >
           <p className="landing-eyebrow">Ari for computer work</p>
-          <h1>Know when your workday starts getting scattered.</h1>
+          <h1>Know when your day starts getting scattered.</h1>
           <p className="landing-lead">
             Ari looks at patterns in how you work on your computer and shows you when focus gets
             harder to hold.
@@ -130,11 +130,6 @@ export default function App() {
               Open immersive experience
             </a>
           </div>
-          <ul className="landing-proof-list">
-            <li>Looks at typing, mouse activity, app switching, and idle time</li>
-            <li>Shows focus, overload, and how confident the reading is</li>
-            <li>Lets you pause, export, delete local data, or revoke consent</li>
-          </ul>
         </div>
 
         <div
@@ -145,7 +140,7 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Ari helps you catch drift early, before the day pulls you in too many directions.
+              Catch drift early, before the day gets too noisy.
             </p>
           </div>
         </div>

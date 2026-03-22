@@ -106,8 +106,7 @@ const trustCards = [
 ];
 
 export default function App() {
-  const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
-  const [hoveredAudience, setHoveredAudience] = useState<string | null>(null);
+  const [activeAudienceTitle, setActiveAudienceTitle] = useState<string | null>(null);
 
   useEffect(() => {
     const revealTargets = Array.from(
@@ -137,7 +136,6 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  const activeAudienceTitle = hoveredAudience ?? selectedAudience;
   const activeAudience = audiences.find((audience) => audience.title === activeAudienceTitle) ?? null;
 
   return (
@@ -325,13 +323,9 @@ export default function App() {
                 data-reveal-order={(index % 4) + 1}
                 data-motion="chip-pop"
                 data-active={activeAudienceTitle === audience.title ? "true" : "false"}
-                onMouseEnter={() => setHoveredAudience(audience.title)}
-                onMouseLeave={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
-                onFocus={() => setHoveredAudience(audience.title)}
-                onBlur={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
-                onClick={() =>
-                  setSelectedAudience((current) => (current === audience.title ? null : audience.title))
-                }
+                onMouseEnter={() => setActiveAudienceTitle(audience.title)}
+                onFocus={() => setActiveAudienceTitle(audience.title)}
+                onClick={() => setActiveAudienceTitle(audience.title)}
               >
                 {audience.title}
               </button>

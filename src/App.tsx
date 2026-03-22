@@ -338,12 +338,7 @@ export default function App() {
             ))}
           </div>
           {activeAudience ? (
-            <div
-              className="landing-audience-detail"
-              data-reveal
-              data-reveal-order="2"
-              data-motion="card-rise"
-            >
+            <div className="landing-audience-detail">
               <h3>{activeAudience.title}</h3>
               <p>{activeAudience.detail}</p>
             </div>

@@ -73,8 +73,7 @@ export default function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-          } else {
-            entry.target.classList.remove("is-visible");
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -111,7 +110,12 @@ export default function App() {
       </header>
 
       <section className="landing-shell landing-hero" id="hero">
-        <div className="landing-hero-copy" data-reveal data-reveal-order="1">
+        <div
+          className="landing-hero-copy"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="hero-copy"
+        >
           <p className="landing-eyebrow">Ari for focused computer work</p>
           <h1>See when the day starts slipping out of focus.</h1>
           <p className="landing-lead">
@@ -133,7 +137,12 @@ export default function App() {
           </ul>
         </div>
 
-        <div className="landing-hero-aside" data-reveal data-reveal-order="2">
+        <div
+          className="landing-hero-aside"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="hero-card"
+        >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
               Ari gives you an earlier heads-up when work starts drifting, so you can protect
@@ -144,7 +153,12 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="demo">
-        <div className="landing-section-heading" data-reveal data-reveal-order="1">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
           <p className="landing-eyebrow">Short demo</p>
           <h2>See a recorded Ari session in under a minute.</h2>
           <p>
@@ -152,7 +166,12 @@ export default function App() {
           </p>
         </div>
 
-        <div className="landing-demo-frame" data-reveal data-reveal-order="2">
+        <div
+          className="landing-demo-frame"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="demo"
+        >
           <video
             className="landing-demo-video"
             src={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath}
@@ -166,7 +185,12 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="signals">
-        <div className="landing-section-heading" data-reveal data-reveal-order="1">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
           <p className="landing-eyebrow">What Ari sees</p>
           <h2>It watches the rhythm of work, not the content.</h2>
         </div>
@@ -177,6 +201,7 @@ export default function App() {
               className="landing-feature-card"
               data-reveal
               data-reveal-order={Math.min(index + 1, 4)}
+              data-motion={["card-rise", "card-slide-right", "card-slide-left", "card-tilt"][index % 4]}
             >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>
@@ -186,7 +211,12 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="inference">
-        <div className="landing-section-heading" data-reveal data-reveal-order="1">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
           <p className="landing-eyebrow">What Ari figures out</p>
           <h2>Simple signals you can understand at a glance.</h2>
         </div>
@@ -197,6 +227,7 @@ export default function App() {
               className="landing-feature-card"
               data-reveal
               data-reveal-order={Math.min(index + 1, 4)}
+              data-motion={["card-slide-left", "card-rise", "card-tilt", "card-slide-right"][index % 4]}
             >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>
@@ -206,7 +237,12 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="audience">
-        <div className="landing-section-heading" data-reveal data-reveal-order="1">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
           <p className="landing-eyebrow">Who it&apos;s for</p>
           <h2>Built for people whose work depends on thinking clearly on a computer.</h2>
         </div>
@@ -217,6 +253,7 @@ export default function App() {
               className="landing-chip"
               data-reveal
               data-reveal-order={(index % 4) + 1}
+              data-motion="chip-pop"
             >
               {audience}
             </span>
@@ -225,12 +262,22 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="trust">
-        <div className="landing-section-heading" data-reveal data-reveal-order="1">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
           <p className="landing-eyebrow">Controls and trust</p>
           <h2>You stay in control of Ari.</h2>
         </div>
         <div className="landing-grid landing-grid-two">
-          <div className="landing-trust-card" data-reveal data-reveal-order="1">
+          <div
+            className="landing-trust-card"
+            data-reveal
+            data-reveal-order="1"
+            data-motion="card-slide-right"
+          >
             <h3>What Ari can do</h3>
             <ul className="landing-list">
               {controls.map((item) => (
@@ -238,7 +285,12 @@ export default function App() {
               ))}
             </ul>
           </div>
-          <div className="landing-trust-card" data-reveal data-reveal-order="2">
+          <div
+            className="landing-trust-card"
+            data-reveal
+            data-reveal-order="2"
+            data-motion="card-slide-left"
+          >
             <h3>What Ari does not do</h3>
             <ul className="landing-list">
               <li>Does not read typed text</li>
@@ -255,16 +307,19 @@ export default function App() {
           className="landing-section-heading landing-section-heading-tight"
           data-reveal
           data-reveal-order="1"
+          data-motion="section"
         >
           <p className="landing-eyebrow">Windows beta</p>
           <h2>Request access and tell us where your day gets scattered.</h2>
         </div>
 
-        <BetaRequestForm
-          title="Request access to the Windows beta"
-          description="Tell us a bit about your work and what breaks focus most often. We will use that to prioritize the next beta group."
-          panelClassName="landing-beta-card"
-        />
+        <div data-reveal data-reveal-order="2" data-motion="beta-panel">
+          <BetaRequestForm
+            title="Request access to the Windows beta"
+            description="Tell us a bit about your work and what breaks focus most often. We will use that to prioritize the next beta group."
+            panelClassName="landing-beta-card"
+          />
+        </div>
       </section>
     </main>
   );

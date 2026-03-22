@@ -190,6 +190,10 @@ body {
   text-align: center;
 }
 
+.scene-access-scene .scene-access-panel {
+  max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 72px);
+}
+
 .scene-access-title,
 .scene-access-copy {
   position: relative;
@@ -720,7 +724,9 @@ body {
   }
 
   .scene-access-layout {
-    justify-content: center;
+    justify-content: flex-start;
+    padding-top: calc(var(--safe-top) + 72px);
+    padding-bottom: calc(var(--safe-bottom) + 18px);
   }
 
   .scene-access-panel {
@@ -777,6 +783,47 @@ body {
     right: -2rem;
     width: 14rem;
     height: 14rem;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 768px) {
+  .scene-access-layout {
+    padding-top: calc(var(--safe-top) + 18px);
+    padding-bottom: calc(var(--safe-bottom) + 18px);
+  }
+
+  .scene-access-scene .scene-access-panel {
+    max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 36px);
+    padding: 22px;
+    gap: 12px;
+  }
+
+  .scene-access-scene .scene-access-title {
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .scene-access-scene .scene-access-copy {
+    font-size: 0.98rem;
+    line-height: 1.4;
+  }
+
+  .scene-access-scene .scene-access-form {
+    gap: 10px;
+  }
+
+  .scene-access-scene .scene-access-label {
+    font-size: 0.88rem;
+  }
+
+  .scene-access-scene .scene-access-input,
+  .scene-access-scene .scene-access-button {
+    min-height: 46px;
+    padding: 12px 16px;
+  }
+
+  .scene-access-scene .scene-access-textarea {
+    min-height: 88px;
   }
 }
 

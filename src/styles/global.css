@@ -478,11 +478,14 @@ body {
 }
 
 .landing-hero h1 {
-  max-width: 15ch;
+  max-width: 24ch;
   font-size: clamp(1.85rem, 3vw, 2.75rem);
   line-height: 1.02;
   letter-spacing: -0.045em;
-  text-wrap: balance;
+}
+
+.landing-hero-line {
+  display: block;
 }
 
 .landing-section-heading h2 {
@@ -1024,8 +1027,16 @@ body {
   }
 
   .landing-hero h1 {
-    max-width: 13ch;
+    max-width: 12ch;
     font-size: clamp(1.8rem, 8.8vw, 2.55rem);
+  }
+
+  .landing-hero-line {
+    display: inline;
+  }
+
+  .landing-hero-line + .landing-hero-line::before {
+    content: " ";
   }
 
   .landing-section-heading h2 {

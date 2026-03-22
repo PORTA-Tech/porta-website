@@ -136,10 +136,13 @@ export default function App() {
           data-motion="hero-copy"
         >
           <p className="landing-eyebrow">Ari for computer work</p>
-          <h1>See when work starts to get scattered.</h1>
+          <h1>
+            <span className="landing-hero-line">Catch focus slipping</span>
+            <span className="landing-hero-line">before your day gets scattered.</span>
+          </h1>
           <p className="landing-lead">
-            Ari looks at patterns in how you work on your computer and shows you when focus gets
-            harder to hold.
+            Ari looks at how you work on your computer and lets you know when it is getting harder
+            to stay on track.
           </p>
           <div className="landing-hero-actions">
             <a className="landing-button landing-button-primary" href="#beta">

@@ -43,19 +43,19 @@ const whatAriFiguresOut = [
 const howAriHelps = [
   {
     title: "Suggest a break",
-    detail: "When overload keeps building, Ari can tell you it is time to step away for a bit.",
+    detail: "A short pause when overload keeps rising.",
   },
   {
     title: "Suggest a stretch break",
-    detail: "When fatigue builds up, Ari can suggest a short stretch break.",
+    detail: "A quick stretch when fatigue starts building.",
   },
   {
     title: "Help you stay on one task",
-    detail: "When focus is worth protecting, Ari can suggest staying with the task in front of you.",
+    detail: "A nudge to stay with the task in front of you.",
   },
   {
     title: "Quiet notifications during deep work",
-    detail: "Ari can turn notifications down during deep work, then turn them back on after.",
+    detail: "Notifications quieted during deep work, then turned back on after.",
   },
 ];
 
@@ -69,12 +69,19 @@ const audiences = [
   "Designers",
 ];
 
-const controls = [
-  "Pause or resume Ari",
-  "Export local data",
-  "Delete local data",
-  "Revoke consent",
-  "No typed text, screenshots, or clipboard",
+const trustCards = [
+  {
+    title: "Pause or resume",
+    detail: "Stop Ari anytime, turn it back on later, or revoke consent.",
+  },
+  {
+    title: "Export or delete data",
+    detail: "Download your local data or clear it from the device.",
+  },
+  {
+    title: "Privacy basics",
+    detail: "Ari does not read typed text, capture screenshots, or copy clipboard contents.",
+  },
 ];
 
 export default function App() {
@@ -120,11 +127,9 @@ export default function App() {
         </a>
         <nav className="landing-nav" aria-label="Primary">
           <a href="#demo">Demo</a>
+          <a href="#regulation">How Ari helps</a>
           <a href="#trust">Trust</a>
           <a href="#beta">Windows beta</a>
-          <a className="landing-nav-link-accent" href="/#/experience">
-            Immersive experience
-          </a>
         </nav>
       </header>
 
@@ -137,19 +142,16 @@ export default function App() {
         >
           <p className="landing-eyebrow">Ari for computer work</p>
           <h1>
-            <span className="landing-hero-line">Catch focus slipping</span>
-            <span className="landing-hero-line">before your day gets scattered.</span>
+            <span className="landing-hero-line">Protect Your Focus</span>
+            <span className="landing-hero-line">at Work.</span>
           </h1>
           <p className="landing-lead">
-            Ari looks at how you work on your computer and lets you know when it is getting harder
-            to stay on track.
+            Ari watches activity on your computer for early signs that focus is slipping, then
+            gently helps you stay on track.
           </p>
           <div className="landing-hero-actions">
             <a className="landing-button landing-button-primary" href="#beta">
-              Request Windows beta access
-            </a>
-            <a className="landing-button landing-button-secondary" href="/#/experience">
-              Open immersive experience
+              Request Windows Beta
             </a>
           </div>
         </div>
@@ -162,8 +164,8 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Ari can suggest a break, help you stay on one task, or quiet notifications during
-              deep work.
+              Ari can suggest a break, suggest staying on task, or quiet notifications during deep
+              work.
             </p>
           </div>
         </div>
@@ -257,7 +259,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">How Ari helps</p>
-          <h2>When it decides to step in, it does it in simple ways.</h2>
+          <h2>When Ari steps in, it does it in simple ways.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
           {howAriHelps.map((item, index) => (
@@ -308,36 +310,21 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Controls and trust</p>
-          <h2>You stay in control of Ari.</h2>
+          <h2>You stay in control.</h2>
         </div>
-        <div className="landing-grid landing-grid-two">
-          <div
-            className="landing-trust-card"
-            data-reveal
-            data-reveal-order="1"
-            data-motion="card-slide-right"
-          >
-            <h3>What Ari can do</h3>
-            <ul className="landing-list">
-              {controls.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div
-            className="landing-trust-card"
-            data-reveal
-            data-reveal-order="2"
-            data-motion="card-slide-left"
-          >
-            <h3>What Ari does not do</h3>
-            <ul className="landing-list">
-              <li>Does not read typed text</li>
-              <li>Does not capture screenshots</li>
-              <li>Does not copy clipboard contents</li>
-              <li>Does not claim to read thoughts or feelings directly</li>
-            </ul>
-          </div>
+        <div className="landing-grid landing-grid-three">
+          {trustCards.map((item, index) => (
+            <article
+              key={item.title}
+              className="landing-trust-card"
+              data-reveal
+              data-reveal-order={Math.min(index + 1, 3)}
+              data-motion={["card-slide-right", "card-rise", "card-slide-left"][index % 3]}
+            >
+              <h3>{item.title}</h3>
+              <p>{item.detail}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -349,15 +336,22 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Windows beta</p>
-          <h2>Request Windows beta access.</h2>
+          <h2>Ready to stay focused at work?</h2>
+          <p>Join the closed beta. Tell us a bit about your work, and we will reach out when Ari is ready for you.</p>
         </div>
 
         <div data-reveal data-reveal-order="2" data-motion="beta-panel">
           <BetaRequestForm
-            title="Request access to the Windows beta"
-            description="Tell us what breaks focus most often. We will use that to shape the next beta group."
+            title="Request Windows Beta"
+            description="This is a closed beta, not an instant download. Your answers help shape the next beta group."
             panelClassName="landing-beta-card"
           />
+        </div>
+        <div className="landing-beta-footnote" data-reveal data-reveal-order="3" data-motion="section">
+          <p>Prefer the visual walkthrough?</p>
+          <a className="landing-inline-link" href="/#/experience">
+            Open the immersive experience
+          </a>
         </div>
       </section>
     </main>

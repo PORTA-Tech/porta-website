@@ -5,38 +5,38 @@ import BetaRequestForm from "./components/BetaRequestForm";
 const whatAriSees = [
   {
     title: "Keyboard activity",
-    detail: "Typing speed, rhythm, and how steady your input looks over time.",
+    detail: "Typing pace and rhythm over time.",
   },
   {
     title: "Mouse activity",
-    detail: "Movement, scrolling, and quick correction patterns during work.",
+    detail: "Movement, scrolling, and correction patterns.",
   },
   {
     title: "App switching",
-    detail: "How often attention jumps between tools, tabs, and windows.",
+    detail: "How often work jumps between tools and tabs.",
   },
   {
     title: "Idle time",
-    detail: "Short pauses, longer breaks, and stop-start patterns through the day.",
+    detail: "Pauses, breaks, and stop-start stretches.",
   },
 ];
 
 const whatAriFiguresOut = [
   {
     title: "Focus",
-    detail: "Whether work looks steady enough to protect.",
+    detail: "Whether steady work is worth protecting.",
   },
   {
     title: "Overload",
-    detail: "When the day starts looking scattered or hard to sustain.",
+    detail: "When work starts to look scattered.",
   },
   {
     title: "Trust",
-    detail: "How reliable the current reading looks.",
+    detail: "How reliable the current reading is.",
   },
   {
     title: "Calibration",
-    detail: "How ready Ari is to make stronger suggestions.",
+    detail: "How ready Ari is to step in more.",
   },
 ];
 
@@ -55,7 +55,7 @@ const controls = [
   "Export local data",
   "Delete local data",
   "Revoke consent",
-  "No typed text, screenshots, or clipboard capture",
+  "No typed text, screenshots, or clipboard",
 ];
 
 export default function App() {
@@ -120,7 +120,7 @@ export default function App() {
           <h1>See when the day starts slipping out of focus.</h1>
           <p className="landing-lead">
             Ari watches activity patterns on your computer so you can catch focus slipping and
-            overload rising before the day gets fully scattered.
+            overload rising early.
           </p>
           <div className="landing-hero-actions">
             <a className="landing-button landing-button-primary" href="#beta">
@@ -131,9 +131,9 @@ export default function App() {
             </a>
           </div>
           <ul className="landing-proof-list">
-            <li>Watches activity patterns, not content</li>
+            <li>Tracks activity, not content</li>
             <li>Shows focus, overload, trust, and calibration</li>
-            <li>Lets you pause, export, delete local data, and revoke consent</li>
+            <li>Lets you pause, export, delete local data, or revoke consent</li>
           </ul>
         </div>
 
@@ -145,8 +145,7 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Ari gives you an earlier heads-up when work starts drifting, so you can protect
-              focus before the day turns noisy.
+              Ari gives you an earlier signal when work starts drifting.
             </p>
           </div>
         </div>
@@ -160,10 +159,8 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Short demo</p>
-          <h2>See a recorded Ari session in under a minute.</h2>
-          <p>
-            This is the full recorded Ari website video, built from the exact exported Ari trace.
-          </p>
+          <h2>Watch one real Ari session.</h2>
+          <p>This video is built from a recorded Ari trace.</p>
         </div>
 
         <div
@@ -180,7 +177,7 @@ export default function App() {
             playsInline
             preload="metadata"
           />
-          <p className="landing-demo-note">Press play to watch the full 45-second recorded Ari video with sound.</p>
+          <p className="landing-demo-note">Play the full 45-second video with sound.</p>
         </div>
       </section>
 
@@ -192,7 +189,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">What Ari sees</p>
-          <h2>It watches the rhythm of work, not the content.</h2>
+          <h2>It watches work patterns, not what you type.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
           {whatAriSees.map((item, index) => (
@@ -218,7 +215,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">What Ari figures out</p>
-          <h2>Simple signals you can understand at a glance.</h2>
+          <h2>It turns simple signals into a few clear states.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
           {whatAriFiguresOut.map((item, index) => (
@@ -244,7 +241,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Who it&apos;s for</p>
-          <h2>Built for people whose work depends on thinking clearly on a computer.</h2>
+          <h2>For people who need clear thinking on a computer.</h2>
         </div>
         <div className="landing-chip-cloud">
           {audiences.map((audience, index) => (
@@ -269,7 +266,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Controls and trust</p>
-          <h2>You stay in control of Ari.</h2>
+          <h2>You stay in control.</h2>
         </div>
         <div className="landing-grid landing-grid-two">
           <div
@@ -310,13 +307,13 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Windows beta</p>
-          <h2>Request access and tell us where your day gets scattered.</h2>
+          <h2>Request Windows beta access.</h2>
         </div>
 
         <div data-reveal data-reveal-order="2" data-motion="beta-panel">
           <BetaRequestForm
             title="Request access to the Windows beta"
-            description="Tell us a bit about your work and what breaks focus most often. We will use that to prioritize the next beta group."
+            description="Tell us what breaks focus most often. We will use that to shape the next beta group."
             panelClassName="landing-beta-card"
           />
         </div>

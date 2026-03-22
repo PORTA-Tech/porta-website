@@ -73,7 +73,7 @@ export default function App() {
           <a href="#demo">Demo</a>
           <a href="#trust">Trust</a>
           <a href="#beta">Windows beta</a>
-          <a className="landing-nav-link-accent" href="/experience">
+          <a className="landing-nav-link-accent" href="/#/experience">
             Immersive experience
           </a>
         </nav>
@@ -91,7 +91,7 @@ export default function App() {
             <a className="landing-button landing-button-primary" href="#beta">
               Request Windows beta access
             </a>
-            <a className="landing-button landing-button-secondary" href="/experience">
+            <a className="landing-button landing-button-secondary" href="/#/experience">
               Open immersive experience
             </a>
           </div>

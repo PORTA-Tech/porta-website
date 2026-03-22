@@ -84,7 +84,7 @@ export default function AriVideoExportedPreviewApp() {
             >
               <ActionLink href={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath} label="Open MP4" />
               <ActionLink href={ARI_VIDEO_EXPORT_ASSETS.homepageMp4PublicPath} label="Open 30s Cut" />
-              <ActionLink href="/ari-video" label="Open Composition Review" />
+              <ActionLink href="/#/ari-video" label="Open Composition Review" />
             </div>
           </div>
         </section>

@@ -6,12 +6,21 @@ import AriVideoPreviewApp from "./ari-video/preview/AriVideoPreviewApp";
 import ImmersiveExperienceApp from "./immersive/ImmersiveExperienceApp";
 import "./styles/global.css";
 
-const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
-const RootComponent = pathname === "/ari-video"
+function normalizeRoute(route: string) {
+  return route.replace(/\/+$/, "") || "/";
+}
+
+const pathnameRoute = normalizeRoute(window.location.pathname);
+const hashRoute = window.location.hash.startsWith("#/")
+  ? normalizeRoute(window.location.hash.slice(1))
+  : null;
+const route = hashRoute ?? pathnameRoute;
+
+const RootComponent = route === "/ari-video"
   ? AriVideoPreviewApp
-  : pathname === "/ari-video/exported"
+  : route === "/ari-video/exported"
     ? AriVideoExportedPreviewApp
-    : pathname === "/experience" || pathname === "/immersive"
+    : route === "/experience" || route === "/immersive"
       ? ImmersiveExperienceApp
     : App;
 

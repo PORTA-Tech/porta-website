@@ -349,12 +349,7 @@ export default function App() {
               <h3>{activeAudience.title}</h3>
               <p>{activeAudience.detail}</p>
             </>
-          ) : (
-            <>
-              <h3>Pick a role</h3>
-              <p>Hover on desktop or tap on phone to see who Ari fits best.</p>
-            </>
-          )}
+          ) : null}
         </div>
       </section>
 

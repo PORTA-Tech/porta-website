@@ -40,6 +40,25 @@ const whatAriFiguresOut = [
   },
 ];
 
+const howAriHelps = [
+  {
+    title: "Suggest a break",
+    detail: "When overload keeps building, Ari can tell you it is time to step away for a bit.",
+  },
+  {
+    title: "Suggest a stretch break",
+    detail: "When fatigue builds up, Ari can suggest a short stretch break.",
+  },
+  {
+    title: "Help you stay on one task",
+    detail: "When focus is worth protecting, Ari can suggest staying with the task in front of you.",
+  },
+  {
+    title: "Quiet notifications during deep work",
+    detail: "Ari can turn notifications down during deep work, then turn them back on after.",
+  },
+];
+
 const audiences = [
   "Founders",
   "Startup teams",
@@ -117,7 +136,7 @@ export default function App() {
           data-motion="hero-copy"
         >
           <p className="landing-eyebrow">Ari for computer work</p>
-          <h1>Know when your day starts getting scattered.</h1>
+          <h1>See when work starts to get scattered.</h1>
           <p className="landing-lead">
             Ari looks at patterns in how you work on your computer and shows you when focus gets
             harder to hold.
@@ -140,7 +159,8 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Catch drift early, before the day gets too noisy.
+              Ari can suggest a break, help you stay on one task, or quiet notifications during
+              deep work.
             </p>
           </div>
         </div>
@@ -155,7 +175,6 @@ export default function App() {
         >
           <p className="landing-eyebrow">Short demo</p>
           <h2>Watch Ari in one real session.</h2>
-          <p>This video is built from recorded Ari data.</p>
         </div>
 
         <div
@@ -172,7 +191,6 @@ export default function App() {
             playsInline
             preload="metadata"
           />
-          <p className="landing-demo-note">Watch the 45-second video.</p>
         </div>
       </section>
 
@@ -220,6 +238,32 @@ export default function App() {
               data-reveal
               data-reveal-order={Math.min(index + 1, 4)}
               data-motion={["card-slide-left", "card-rise", "card-tilt", "card-slide-right"][index % 4]}
+            >
+              <h3>{item.title}</h3>
+              <p>{item.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="landing-shell landing-section" id="regulation">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
+          <p className="landing-eyebrow">How Ari helps</p>
+          <h2>When it decides to step in, it does it in simple ways.</h2>
+        </div>
+        <div className="landing-grid landing-grid-four">
+          {howAriHelps.map((item, index) => (
+            <article
+              key={item.title}
+              className="landing-feature-card"
+              data-reveal
+              data-reveal-order={Math.min(index + 1, 4)}
+              data-motion={["card-tilt", "card-rise", "card-slide-right", "card-slide-left"][index % 4]}
             >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>

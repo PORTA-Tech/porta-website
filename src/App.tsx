@@ -106,7 +106,9 @@ const trustCards = [
 ];
 
 export default function App() {
-  const [activeAudienceTitle, setActiveAudienceTitle] = useState<string | null>(null);
+  const [selectedAudienceTitle, setSelectedAudienceTitle] = useState<string | null>(null);
+  const [hoveredAudienceTitle, setHoveredAudienceTitle] = useState<string | null>(null);
+  const [supportsHover, setSupportsHover] = useState(false);
 
   useEffect(() => {
     const revealTargets = Array.from(
@@ -136,6 +138,22 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const updateSupportsHover = () => setSupportsHover(mediaQuery.matches);
+
+    updateSupportsHover();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateSupportsHover);
+      return () => mediaQuery.removeEventListener("change", updateSupportsHover);
+    }
+
+    mediaQuery.addListener(updateSupportsHover);
+    return () => mediaQuery.removeListener(updateSupportsHover);
+  }, []);
+
+  const activeAudienceTitle = hoveredAudienceTitle ?? selectedAudienceTitle;
   const activeAudience = audiences.find((audience) => audience.title === activeAudienceTitle) ?? null;
 
   return (
@@ -312,7 +330,15 @@ export default function App() {
           <p className="landing-eyebrow">Who it&apos;s for</p>
           <h2>For people who need clear thinking at a computer.</h2>
         </div>
-        <div className="landing-audience-cloud" data-has-detail={activeAudience ? "true" : "false"}>
+        <div
+          className="landing-audience-cloud"
+          data-has-detail={activeAudience ? "true" : "false"}
+          onMouseLeave={() => {
+            if (supportsHover) {
+              setHoveredAudienceTitle(null);
+            }
+          }}
+        >
           <div className="landing-chip-cloud">
             {audiences.map((audience, index) => (
               <button
@@ -323,9 +349,24 @@ export default function App() {
                 data-reveal-order={(index % 4) + 1}
                 data-motion="chip-pop"
                 data-active={activeAudienceTitle === audience.title ? "true" : "false"}
-                onMouseEnter={() => setActiveAudienceTitle(audience.title)}
-                onFocus={() => setActiveAudienceTitle(audience.title)}
-                onClick={() => setActiveAudienceTitle(audience.title)}
+                onMouseEnter={() => {
+                  if (supportsHover) {
+                    setHoveredAudienceTitle(audience.title);
+                  }
+                }}
+                onFocus={() => setHoveredAudienceTitle(audience.title)}
+                onBlur={() => {
+                  if (supportsHover) {
+                    setHoveredAudienceTitle(null);
+                  }
+                }}
+                onClick={() => {
+                  if (!supportsHover) {
+                    setSelectedAudienceTitle((current) =>
+                      current === audience.title ? null : audience.title
+                    );
+                  }
+                }}
               >
                 {audience.title}
               </button>

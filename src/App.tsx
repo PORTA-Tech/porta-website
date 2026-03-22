@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { ARI_VIDEO_EXPORT_ASSETS } from "./ari-video/data/exportManifest";
 import BetaRequestForm from "./components/BetaRequestForm";
 
 const whatAriSees = [
@@ -70,12 +71,11 @@ export default function App() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+          } else {
+            entry.target.classList.remove("is-visible");
           }
-
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
         });
       },
       {
@@ -148,21 +148,20 @@ export default function App() {
           <p className="landing-eyebrow">Short demo</p>
           <h2>See a recorded Ari session in under a minute.</h2>
           <p>
-            This is the same recorded Ari trace used in the coded video pipeline, exported for the
-            website as a lightweight homepage cut.
+            This is the full recorded Ari website video, built from the exact exported Ari trace.
           </p>
         </div>
 
         <div className="landing-demo-frame" data-reveal data-reveal-order="2">
           <video
             className="landing-demo-video"
-            src="/ari-video/exports/ari-recorded-story-homepage.mp4"
-            poster="/ari-video/exports/ari-recorded-story-poster.png"
+            src={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath}
+            poster={ARI_VIDEO_EXPORT_ASSETS.posterPublicPath}
             controls
             playsInline
             preload="metadata"
           />
-          <p className="landing-demo-note">Press play to watch the recorded Ari session with sound.</p>
+          <p className="landing-demo-note">Press play to watch the full 45-second recorded Ari video with sound.</p>
         </div>
       </section>
 

@@ -634,6 +634,7 @@ body {
 .landing-trust-card {
   padding: 22px;
   border-radius: 24px;
+  animation: landingCardFloat 14s ease-in-out infinite;
 }
 
 .landing-feature-card:hover,
@@ -701,6 +702,30 @@ body {
   transform: none;
 }
 
+.landing-feature-card.is-visible,
+.landing-trust-card.is-visible {
+  animation:
+    landingCardFloat 14s ease-in-out infinite,
+    landingRevealPulse 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-demo-frame.is-visible {
+  animation:
+    landingCardFloat 13s ease-in-out infinite 0.6s,
+    landingRevealPulse 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-hero-card.is-visible {
+  animation:
+    landingCardFloat 11s ease-in-out infinite,
+    landingRevealPulse 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-chip.is-visible,
+.landing-section-heading.is-visible {
+  animation: landingRevealPulse 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 [data-reveal-order="2"] {
   transition-delay: 80ms;
 }
@@ -740,6 +765,23 @@ body {
 
   50% {
     transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes landingRevealPulse {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+
+  65% {
+    opacity: 1;
+    transform: translate3d(0, -4px, 0) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
   }
 }
 

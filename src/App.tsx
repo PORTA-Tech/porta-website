@@ -336,20 +336,17 @@ export default function App() {
             </button>
           ))}
         </div>
-        <div
-          className="landing-audience-detail"
-          data-reveal
-          data-reveal-order="2"
-          data-motion="card-rise"
-          data-empty={activeAudience ? "false" : "true"}
-        >
-          {activeAudience ? (
-            <>
-              <h3>{activeAudience.title}</h3>
-              <p>{activeAudience.detail}</p>
-            </>
-          ) : null}
-        </div>
+        {activeAudience ? (
+          <div
+            className="landing-audience-detail"
+            data-reveal
+            data-reveal-order="2"
+            data-motion="card-rise"
+          >
+            <h3>{activeAudience.title}</h3>
+            <p>{activeAudience.detail}</p>
+          </div>
+        ) : null}
       </section>
 
       <section className="landing-shell landing-section" id="trust">

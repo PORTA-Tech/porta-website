@@ -718,11 +718,6 @@ body {
   line-height: 1.6;
 }
 
-.landing-audience-detail[data-empty="true"] {
-  border-style: dashed;
-  color: rgba(255, 255, 255, 0.74);
-}
-
 .landing-beta-section {
   padding-bottom: calc(var(--safe-bottom) + 60px);
 }

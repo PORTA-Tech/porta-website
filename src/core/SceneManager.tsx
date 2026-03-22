@@ -57,6 +57,18 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollLockRef = useRef(false);
   const touchSessionRef = useRef<TouchSession | null>(null);
+  const navigationUnlockTimeoutRef = useRef<number | null>(null);
+
+  const scheduleNavigationUnlock = useCallback((delayMs = 200) => {
+    if (navigationUnlockTimeoutRef.current !== null) {
+      window.clearTimeout(navigationUnlockTimeoutRef.current);
+    }
+
+    navigationUnlockTimeoutRef.current = window.setTimeout(() => {
+      scrollLockRef.current = false;
+      navigationUnlockTimeoutRef.current = null;
+    }, delayMs);
+  }, []);
 
   const handleAdvance = useCallback(() => {
     setActiveIndex((prev) => {
@@ -81,15 +93,17 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       if (e.key === "n") {
         scrollLockRef.current = true;
         handleAdvance();
+        scheduleNavigationUnlock();
       }
       if (e.key === "p") {
         scrollLockRef.current = true;
         handleBack();
+        scheduleNavigationUnlock();
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [handleAdvance, handleBack]);
+  }, [handleAdvance, handleBack, scheduleNavigationUnlock]);
 
   // Vertical wheel navigation only. Horizontal trackpad movement is reserved for orb rotation.
   useEffect(() => {
@@ -106,37 +120,24 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       }
     };
 
-    const releaseLock = () => {
-      scrollLockRef.current = false;
-    };
-
-    let wheelTimeout: number | null = null;
     const wrappedWheel = (e: WheelEvent) => {
       handleScroll(e);
-      if (wheelTimeout !== null) {
-        window.clearTimeout(wheelTimeout);
-      }
-
-      wheelTimeout = window.setTimeout(releaseLock, 200);
+      scheduleNavigationUnlock();
     };
 
     window.addEventListener("wheel", wrappedWheel, { passive: true });
     return () => {
       window.removeEventListener("wheel", wrappedWheel);
-      if (wheelTimeout !== null) {
-        window.clearTimeout(wheelTimeout);
+      if (navigationUnlockTimeoutRef.current !== null) {
+        window.clearTimeout(navigationUnlockTimeoutRef.current);
+        navigationUnlockTimeoutRef.current = null;
       }
+      scrollLockRef.current = false;
     };
-  }, [activeIndex, handleAdvance, handleBack]);
+  }, [activeIndex, handleAdvance, handleBack, scheduleNavigationUnlock]);
 
   // Phone swipe navigation starts only after scene 0.
   useEffect(() => {
-    const releaseLockSoon = () => {
-      window.setTimeout(() => {
-        scrollLockRef.current = false;
-      }, 200);
-    };
-
     const handleTouchStart = (event: TouchEvent) => {
       const touch = event.touches[0];
       if (!touch) {
@@ -190,7 +191,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
         handleBack();
       }
 
-      releaseLockSoon();
+      scheduleNavigationUnlock();
     };
 
     const handleTouchCancel = () => {
@@ -208,7 +209,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchCancel);
     };
-  }, [activeIndex, handleAdvance, handleBack]);
+  }, [activeIndex, handleAdvance, handleBack, scheduleNavigationUnlock]);
 
   const ActiveScene = scenes[activeIndex];
   return <ActiveScene isActive={true} onAdvance={handleAdvance} />;

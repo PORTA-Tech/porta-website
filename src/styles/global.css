@@ -672,6 +672,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     gap: 12px;
+    padding-top: calc(var(--safe-top) + 88px);
   }
 
   .scene.scene-floating-layout .scene-floating-card {
@@ -689,7 +690,7 @@ body {
   }
 
   .scene-perception-layout .scene-perception-card:first-of-type {
-    margin-top: 63px;
+    margin-top: 0;
   }
 
   .scene-access-layout {

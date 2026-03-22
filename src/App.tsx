@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import BetaRequestForm from "./components/BetaRequestForm";
 
 const whatAriSees = [
@@ -57,6 +58,36 @@ const controls = [
 ];
 
 export default function App() {
+  useEffect(() => {
+    const revealTargets = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-reveal]")
+    );
+
+    if (revealTargets.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.16,
+        rootMargin: "0px 0px -10% 0px",
+      }
+    );
+
+    revealTargets.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="landing-page">
       <div className="landing-background" aria-hidden="true">
@@ -80,7 +111,7 @@ export default function App() {
       </header>
 
       <section className="landing-shell landing-hero" id="hero">
-        <div className="landing-hero-copy">
+        <div className="landing-hero-copy" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">Ari for focused computer work</p>
           <h1>See when the day starts slipping out of focus.</h1>
           <p className="landing-lead">
@@ -102,19 +133,18 @@ export default function App() {
           </ul>
         </div>
 
-        <div className="landing-hero-aside">
+        <div className="landing-hero-aside" data-reveal data-reveal-order="2">
           <div className="landing-hero-card">
-            <p className="landing-card-label">Fast product read</p>
             <p className="landing-card-copy">
-              Ari helps people who need to think clearly on a computer notice earlier when the
-              day is drifting, then suggests simple steps to protect focus or take a break.
+              Ari gives you an earlier heads-up when work starts drifting, so you can protect
+              focus before the day turns noisy.
             </p>
           </div>
         </div>
       </section>
 
       <section className="landing-shell landing-section" id="demo">
-        <div className="landing-section-heading">
+        <div className="landing-section-heading" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">Short demo</p>
           <h2>See a recorded Ari session in under a minute.</h2>
           <p>
@@ -123,27 +153,32 @@ export default function App() {
           </p>
         </div>
 
-        <div className="landing-demo-frame">
+        <div className="landing-demo-frame" data-reveal data-reveal-order="2">
           <video
             className="landing-demo-video"
             src="/ari-video/exports/ari-recorded-story-homepage.mp4"
             poster="/ari-video/exports/ari-recorded-story-poster.png"
-            autoPlay
-            muted
-            loop
+            controls
             playsInline
+            preload="metadata"
           />
+          <p className="landing-demo-note">Press play to watch the recorded Ari session with sound.</p>
         </div>
       </section>
 
       <section className="landing-shell landing-section" id="signals">
-        <div className="landing-section-heading">
+        <div className="landing-section-heading" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">What Ari sees</p>
           <h2>It watches the rhythm of work, not the content.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
-          {whatAriSees.map((item) => (
-            <article key={item.title} className="landing-feature-card">
+          {whatAriSees.map((item, index) => (
+            <article
+              key={item.title}
+              className="landing-feature-card"
+              data-reveal
+              data-reveal-order={Math.min(index + 1, 4)}
+            >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>
             </article>
@@ -152,13 +187,18 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="inference">
-        <div className="landing-section-heading">
+        <div className="landing-section-heading" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">What Ari figures out</p>
           <h2>Simple signals you can understand at a glance.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
-          {whatAriFiguresOut.map((item) => (
-            <article key={item.title} className="landing-feature-card">
+          {whatAriFiguresOut.map((item, index) => (
+            <article
+              key={item.title}
+              className="landing-feature-card"
+              data-reveal
+              data-reveal-order={Math.min(index + 1, 4)}
+            >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>
             </article>
@@ -167,13 +207,18 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="audience">
-        <div className="landing-section-heading">
+        <div className="landing-section-heading" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">Who it&apos;s for</p>
           <h2>Built for people whose work depends on thinking clearly on a computer.</h2>
         </div>
         <div className="landing-chip-cloud">
-          {audiences.map((audience) => (
-            <span key={audience} className="landing-chip">
+          {audiences.map((audience, index) => (
+            <span
+              key={audience}
+              className="landing-chip"
+              data-reveal
+              data-reveal-order={(index % 4) + 1}
+            >
               {audience}
             </span>
           ))}
@@ -181,12 +226,12 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="trust">
-        <div className="landing-section-heading">
+        <div className="landing-section-heading" data-reveal data-reveal-order="1">
           <p className="landing-eyebrow">Controls and trust</p>
           <h2>You stay in control of Ari.</h2>
         </div>
         <div className="landing-grid landing-grid-two">
-          <div className="landing-trust-card">
+          <div className="landing-trust-card" data-reveal data-reveal-order="1">
             <h3>What Ari can do</h3>
             <ul className="landing-list">
               {controls.map((item) => (
@@ -194,7 +239,7 @@ export default function App() {
               ))}
             </ul>
           </div>
-          <div className="landing-trust-card">
+          <div className="landing-trust-card" data-reveal data-reveal-order="2">
             <h3>What Ari does not do</h3>
             <ul className="landing-list">
               <li>Does not read typed text</li>
@@ -207,7 +252,11 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section landing-beta-section" id="beta">
-        <div className="landing-section-heading landing-section-heading-tight">
+        <div
+          className="landing-section-heading landing-section-heading-tight"
+          data-reveal
+          data-reveal-order="1"
+        >
           <p className="landing-eyebrow">Windows beta</p>
           <h2>Request access and tell us where your day gets scattered.</h2>
         </div>

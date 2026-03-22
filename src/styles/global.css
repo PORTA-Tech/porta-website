@@ -299,6 +299,7 @@ body {
 }
 
 .scene-access-button:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.015);
   box-shadow: 0 0 20px #ff8844, 0 0 40px rgba(255, 136, 68, 0.4);
 }
 
@@ -387,6 +388,7 @@ body {
   width: 26rem;
   height: 26rem;
   background: rgba(0, 255, 255, 0.12);
+  animation: landingGlowFloat 18s ease-in-out infinite;
 }
 
 .landing-glow-right {
@@ -395,6 +397,7 @@ body {
   width: 22rem;
   height: 22rem;
   background: rgba(255, 136, 68, 0.1);
+  animation: landingGlowFloat 22s ease-in-out infinite reverse;
 }
 
 .landing-orb {
@@ -407,6 +410,7 @@ body {
     radial-gradient(circle at center, rgba(0, 255, 255, 0.18), rgba(0, 255, 255, 0.03) 48%, transparent 68%),
     radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0.02) 55%, transparent 72%);
   box-shadow: 0 0 120px rgba(0, 255, 255, 0.14);
+  animation: landingOrbDrift 18s ease-in-out infinite;
 }
 
 .landing-shell {
@@ -451,15 +455,15 @@ body {
 .landing-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  gap: 42px;
+  gap: 34px;
   align-items: center;
   min-height: calc(100dvh - 88px);
-  padding-top: 48px;
+  padding-top: 40px;
   padding-bottom: 56px;
 }
 
 .landing-hero-copy {
-  max-width: 42rem;
+  max-width: 38rem;
 }
 
 .landing-eyebrow {
@@ -473,13 +477,13 @@ body {
 
 .landing-hero h1,
 .landing-section-heading h2 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-  line-height: 0.96;
+  font-size: clamp(2.15rem, 4.15vw, 4.1rem);
+  line-height: 0.98;
   letter-spacing: -0.04em;
 }
 
 .landing-section-heading h2 {
-  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-size: clamp(1.8rem, 3.3vw, 3rem);
 }
 
 .landing-lead,
@@ -494,8 +498,8 @@ body {
 
 .landing-lead {
   margin-top: 18px;
-  max-width: 36rem;
-  font-size: 1.08rem;
+  max-width: 33rem;
+  font-size: 1rem;
 }
 
 .landing-hero-actions {
@@ -514,6 +518,11 @@ body {
   border-radius: 999px;
   text-decoration: none;
   font-weight: 700;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
 }
 
 .landing-button-primary {
@@ -525,6 +534,10 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: #ffffff;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.landing-button:hover {
+  transform: translateY(-2px);
 }
 
 .landing-proof-list,
@@ -550,21 +563,22 @@ body {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
 }
 
 .landing-hero-card {
-  max-width: 24rem;
-  padding: 24px;
+  max-width: 22rem;
+  padding: 22px;
   border-radius: 28px;
+  animation: landingCardFloat 11s ease-in-out infinite;
 }
 
-.landing-card-label {
-  margin-bottom: 10px;
-  color: #00ffff;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.landing-card-copy {
+  font-size: 1.02rem;
+  line-height: 1.65;
 }
 
 .landing-section {
@@ -586,12 +600,21 @@ body {
 .landing-demo-frame {
   padding: 14px;
   border-radius: 30px;
+  animation: landingCardFloat 13s ease-in-out infinite 0.6s;
 }
 
 .landing-demo-video {
   display: block;
   width: 100%;
   border-radius: 22px;
+  background: #000000;
+}
+
+.landing-demo-note {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .landing-grid {
@@ -611,6 +634,15 @@ body {
 .landing-trust-card {
   padding: 22px;
   border-radius: 24px;
+}
+
+.landing-feature-card:hover,
+.landing-trust-card:hover,
+.landing-demo-frame:hover,
+.landing-hero-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 88px rgba(0, 0, 0, 0.28);
 }
 
 .landing-feature-card h3,
@@ -634,6 +666,16 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.9);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.landing-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .landing-beta-section {
@@ -643,6 +685,62 @@ body {
 .landing-beta-card {
   width: min(100%, 42rem);
   margin-inline: auto;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 680ms ease,
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal-order="2"] {
+  transition-delay: 80ms;
+}
+
+[data-reveal-order="3"] {
+  transition-delay: 140ms;
+}
+
+[data-reveal-order="4"] {
+  transition-delay: 200ms;
+}
+
+@keyframes landingGlowFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, 18px, 0) scale(1.04);
+  }
+}
+
+@keyframes landingOrbDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-10px, 14px, 0) scale(1.03);
+  }
+}
+
+@keyframes landingCardFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
 }
 
 @supports not (height: 100dvh) {
@@ -781,7 +879,7 @@ body {
 
   .landing-hero h1,
   .landing-section-heading h2 {
-    font-size: clamp(2.2rem, 12vw, 3.2rem);
+    font-size: clamp(2rem, 10vw, 2.9rem);
   }
 
   .landing-grid-four,
@@ -801,6 +899,27 @@ body {
     right: -2rem;
     width: 14rem;
     height: 14rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-glow-left,
+  .landing-glow-right,
+  .landing-orb,
+  .landing-hero-card,
+  .landing-demo-frame,
+  [data-reveal] {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .landing-button,
+  .landing-feature-card,
+  .landing-trust-card,
+  .landing-chip {
+    transition: none !important;
   }
 }
 

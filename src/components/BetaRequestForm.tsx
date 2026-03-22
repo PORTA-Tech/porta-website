@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { PORTA_VISUAL_STYLE } from "../core/PORTA_VISUAL_STYLE";
+import { useState } from "react";
 import { submitBetaRequest, type BetaRequestPayload } from "../lib/betaRequestApi";
 
 type RequestState =
@@ -41,31 +40,7 @@ export default function BetaRequestForm({
     tone: "idle",
     message: "",
   });
-  const [hovered, setHovered] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const isSubmitting = requestState.tone === "loading";
-
-  useEffect(() => {
-    if (!hovered || !buttonRef.current) return;
-
-    let angle = 0;
-    let id: number;
-
-    const pulse = () => {
-      angle += 0.1;
-      const scale = 1 + PORTA_VISUAL_STYLE.ui.panelHoverScale * Math.sin(angle);
-      buttonRef.current!.style.transform = `scale(${scale})`;
-      id = requestAnimationFrame(pulse);
-    };
-
-    pulse();
-    return () => {
-      cancelAnimationFrame(id);
-      if (buttonRef.current) {
-        buttonRef.current.style.transform = "scale(1)";
-      }
-    };
-  }, [hovered]);
 
   const updateField = (field: keyof BetaRequestPayload, value: string) => {
     setForm((current) => ({
@@ -186,9 +161,6 @@ export default function BetaRequestForm({
 
         <button
           className="scene-access-button"
-          ref={buttonRef}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
           onClick={handleSubmit}
           disabled={isSubmitting}
         >

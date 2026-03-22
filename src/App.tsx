@@ -331,7 +331,6 @@ export default function App() {
               onClick={() =>
                 setSelectedAudience((current) => (current === audience.title ? null : audience.title))
               }
-              aria-pressed={activeAudienceTitle === audience.title}
             >
               {audience.title}
             </button>

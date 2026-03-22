@@ -116,11 +116,11 @@ export default function App() {
           data-reveal-order="1"
           data-motion="hero-copy"
         >
-          <p className="landing-eyebrow">Ari for focused computer work</p>
-          <h1>See when the day starts slipping out of focus.</h1>
+          <p className="landing-eyebrow">Ari for computer work</p>
+          <h1>Know when your workday starts getting scattered.</h1>
           <p className="landing-lead">
-            Ari watches activity patterns on your computer so you can catch focus slipping and
-            overload rising early.
+            Ari looks at patterns in how you work on your computer and shows you when focus gets
+            harder to hold.
           </p>
           <div className="landing-hero-actions">
             <a className="landing-button landing-button-primary" href="#beta">
@@ -131,8 +131,8 @@ export default function App() {
             </a>
           </div>
           <ul className="landing-proof-list">
-            <li>Tracks activity, not content</li>
-            <li>Shows focus, overload, trust, and calibration</li>
+            <li>Looks at typing, mouse activity, app switching, and idle time</li>
+            <li>Shows focus, overload, and how confident the reading is</li>
             <li>Lets you pause, export, delete local data, or revoke consent</li>
           </ul>
         </div>
@@ -145,7 +145,7 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Ari gives you an earlier signal when work starts drifting.
+              Ari helps you catch drift early, before the day pulls you in too many directions.
             </p>
           </div>
         </div>
@@ -159,8 +159,8 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Short demo</p>
-          <h2>Watch one real Ari session.</h2>
-          <p>This video is built from a recorded Ari trace.</p>
+          <h2>Watch Ari in one real session.</h2>
+          <p>This video is built from recorded Ari data.</p>
         </div>
 
         <div
@@ -177,7 +177,7 @@ export default function App() {
             playsInline
             preload="metadata"
           />
-          <p className="landing-demo-note">Play the full 45-second video with sound.</p>
+          <p className="landing-demo-note">Watch the 45-second video.</p>
         </div>
       </section>
 
@@ -189,7 +189,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">What Ari sees</p>
-          <h2>It watches work patterns, not what you type.</h2>
+          <h2>It looks at how work moves through your day.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
           {whatAriSees.map((item, index) => (
@@ -215,7 +215,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">What Ari figures out</p>
-          <h2>It turns simple signals into a few clear states.</h2>
+          <h2>It turns those signals into a few clear states.</h2>
         </div>
         <div className="landing-grid landing-grid-four">
           {whatAriFiguresOut.map((item, index) => (
@@ -241,7 +241,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Who it&apos;s for</p>
-          <h2>For people who need clear thinking on a computer.</h2>
+          <h2>For people who need clear thinking at a computer.</h2>
         </div>
         <div className="landing-chip-cloud">
           {audiences.map((audience, index) => (
@@ -266,7 +266,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Controls and trust</p>
-          <h2>You stay in control.</h2>
+          <h2>You stay in control of Ari.</h2>
         </div>
         <div className="landing-grid landing-grid-two">
           <div

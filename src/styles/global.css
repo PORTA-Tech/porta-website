@@ -306,6 +306,32 @@ body {
   color: rgba(255, 255, 255, 0.82);
 }
 
+.immersive-back-link {
+  position: fixed;
+  top: calc(var(--safe-top) + 18px);
+  left: calc(var(--safe-left) + 18px);
+  z-index: 24;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 10, 16, 0.68);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.94rem;
+  font-weight: 600;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.immersive-back-link:hover {
+  border-color: rgba(0, 255, 255, 0.34);
+  color: #00ffff;
+}
+
 .landing-page {
   position: relative;
   height: 100dvh;
@@ -701,6 +727,14 @@ body {
     width: 100%;
     padding: 22px 18px;
     border-radius: 20px;
+  }
+
+  .immersive-back-link {
+    top: calc(var(--safe-top) + 14px);
+    left: calc(var(--safe-left) + 14px);
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.88rem;
   }
 
   .scene-access-input,

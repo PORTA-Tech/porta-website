@@ -21,6 +21,10 @@ const scenes = [
 
 const SWIPE_TRIGGER_PX = 72;
 const SWIPE_HORIZONTAL_TOLERANCE = 1.15;
+const KEYBOARD_NAV_LOCK_MS = 220;
+const TOUCH_NAV_LOCK_MS = 240;
+const WHEEL_NAV_LOCK_MS = 460;
+const WHEEL_TRIGGER_DELTA = 28;
 
 type TouchSession = {
   startX: number;
@@ -55,6 +59,7 @@ function isInteractiveTarget(target: EventTarget | null) {
 
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
   const scrollLockRef = useRef(false);
   const touchSessionRef = useRef<TouchSession | null>(null);
   const navigationUnlockTimeoutRef = useRef<number | null>(null);
@@ -70,35 +75,41 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     }, delayMs);
   }, []);
 
-  const handleAdvance = useCallback(() => {
-    setActiveIndex((prev) => {
-      const next = Math.min(prev + 1, scenes.length - 1);
-      onSceneChange(next);
-      return next;
-    });
+  const navigateToIndex = useCallback((nextIndex: number) => {
+    const clamped = Math.max(0, Math.min(nextIndex, scenes.length - 1));
+    if (clamped === activeIndexRef.current) {
+      return false;
+    }
+
+    activeIndexRef.current = clamped;
+    setActiveIndex(clamped);
+    onSceneChange(clamped);
+    return true;
   }, [onSceneChange]);
 
+  const handleAdvance = useCallback(() => {
+    return navigateToIndex(activeIndexRef.current + 1);
+  }, [navigateToIndex]);
+
   const handleBack = useCallback(() => {
-    setActiveIndex((prev) => {
-      const next = Math.max(prev - 1, 0);
-      onSceneChange(next);
-      return next;
-    });
-  }, [onSceneChange]);
+    return navigateToIndex(activeIndexRef.current - 1);
+  }, [navigateToIndex]);
 
   // Keyboard navigation (n / p)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (scrollLockRef.current) return;
       if (e.key === "n") {
-        scrollLockRef.current = true;
-        handleAdvance();
-        scheduleNavigationUnlock();
+        if (handleAdvance()) {
+          scrollLockRef.current = true;
+          scheduleNavigationUnlock(KEYBOARD_NAV_LOCK_MS);
+        }
       }
       if (e.key === "p") {
-        scrollLockRef.current = true;
-        handleBack();
-        scheduleNavigationUnlock();
+        if (handleBack()) {
+          scrollLockRef.current = true;
+          scheduleNavigationUnlock(KEYBOARD_NAV_LOCK_MS);
+        }
       }
     };
     window.addEventListener("keydown", handleKey);
@@ -110,31 +121,28 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
     const handleScroll = (e: WheelEvent) => {
       if (scrollLockRef.current) return;
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      if (Math.abs(e.deltaY) < WHEEL_TRIGGER_DELTA) return;
 
-      if (e.deltaY > 0 && activeIndex < scenes.length - 1) {
+      if (e.deltaY > 0) {
+        if (!handleAdvance()) return;
         scrollLockRef.current = true;
-        handleAdvance();
-      } else if (e.deltaY < 0 && activeIndex > 0) {
+        scheduleNavigationUnlock(WHEEL_NAV_LOCK_MS);
+      } else if (e.deltaY < 0) {
+        if (!handleBack()) return;
         scrollLockRef.current = true;
-        handleBack();
+        scheduleNavigationUnlock(WHEEL_NAV_LOCK_MS);
       }
     };
-
-    const wrappedWheel = (e: WheelEvent) => {
-      handleScroll(e);
-      scheduleNavigationUnlock();
-    };
-
-    window.addEventListener("wheel", wrappedWheel, { passive: true });
+    window.addEventListener("wheel", handleScroll, { passive: true });
     return () => {
-      window.removeEventListener("wheel", wrappedWheel);
+      window.removeEventListener("wheel", handleScroll);
       if (navigationUnlockTimeoutRef.current !== null) {
         window.clearTimeout(navigationUnlockTimeoutRef.current);
         navigationUnlockTimeoutRef.current = null;
       }
       scrollLockRef.current = false;
     };
-  }, [activeIndex, handleAdvance, handleBack, scheduleNavigationUnlock]);
+  }, [handleAdvance, handleBack, scheduleNavigationUnlock]);
 
   // Phone swipe navigation starts only after scene 0.
   useEffect(() => {
@@ -149,7 +157,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
         startY: touch.clientY,
         currentX: touch.clientX,
         currentY: touch.clientY,
-        ignoreSwipe: activeIndex === 0 || isInteractiveTarget(event.target),
+        ignoreSwipe: activeIndexRef.current === 0 || isInteractiveTarget(event.target),
       };
     };
 
@@ -182,16 +190,19 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
         return;
       }
 
-      scrollLockRef.current = true;
-
       const deltaY = session.currentY - session.startY;
-      if (deltaY < 0 && activeIndex < scenes.length - 1) {
-        handleAdvance();
-      } else if (deltaY > 0 && activeIndex > 0) {
-        handleBack();
+      const didNavigate = deltaY < 0
+        ? handleAdvance()
+        : deltaY > 0
+          ? handleBack()
+          : false;
+
+      if (!didNavigate) {
+        return;
       }
 
-      scheduleNavigationUnlock();
+      scrollLockRef.current = true;
+      scheduleNavigationUnlock(TOUCH_NAV_LOCK_MS);
     };
 
     const handleTouchCancel = () => {
@@ -209,7 +220,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchCancel);
     };
-  }, [activeIndex, handleAdvance, handleBack, scheduleNavigationUnlock]);
+  }, [handleAdvance, handleBack, scheduleNavigationUnlock]);
 
   const ActiveScene = scenes[activeIndex];
   return <ActiveScene isActive={true} onAdvance={handleAdvance} />;

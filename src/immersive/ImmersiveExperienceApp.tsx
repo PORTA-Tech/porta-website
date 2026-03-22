@@ -21,6 +21,10 @@ export default function ImmersiveExperienceApp() {
         <World3D sceneIndex={sceneIndex} />
       </Canvas>
 
+      <a className="immersive-back-link" href="/#/">
+        Back to overview
+      </a>
+
       <SceneManager onSceneChange={setSceneIndex} />
     </>
   );

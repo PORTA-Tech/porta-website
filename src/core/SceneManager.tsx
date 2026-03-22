@@ -31,6 +31,7 @@ type TouchSession = {
   startY: number;
   currentX: number;
   currentY: number;
+  scrollContainer: HTMLElement | null;
   ignoreSwipe: boolean;
 };
 
@@ -53,8 +54,32 @@ function isInteractiveTarget(target: EventTarget | null) {
   }
 
   return Boolean(
-    target.closest("button, input, textarea, select, a, label, [role='button']")
+    target.closest("button, input, textarea, select, a, [role='button']")
   );
+}
+
+function getScrollableFormContainer(target: EventTarget | null) {
+  if (!(target instanceof Element)) {
+    return null;
+  }
+
+  return target.closest(".scene-access-panel-scrollable") as HTMLElement | null;
+}
+
+function canScrollContainer(container: HTMLElement | null, gestureDeltaY: number) {
+  if (!container || container.scrollHeight <= container.clientHeight + 1) {
+    return false;
+  }
+
+  if (gestureDeltaY < 0) {
+    return container.scrollTop + container.clientHeight < container.scrollHeight - 1;
+  }
+
+  if (gestureDeltaY > 0) {
+    return container.scrollTop > 0;
+  }
+
+  return false;
 }
 
 export default function SceneManager({ onSceneChange }: SceneManagerProps) {
@@ -122,6 +147,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       if (scrollLockRef.current) return;
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
       if (Math.abs(e.deltaY) < WHEEL_TRIGGER_DELTA) return;
+      if (canScrollContainer(getScrollableFormContainer(e.target), e.deltaY)) return;
 
       if (e.deltaY > 0) {
         if (!handleAdvance()) return;
@@ -157,6 +183,7 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
         startY: touch.clientY,
         currentX: touch.clientX,
         currentY: touch.clientY,
+        scrollContainer: getScrollableFormContainer(event.target),
         ignoreSwipe: activeIndexRef.current === 0 || isInteractiveTarget(event.target),
       };
     };
@@ -170,6 +197,11 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
 
       session.currentX = touch.clientX;
       session.currentY = touch.clientY;
+      const gestureDeltaY = session.currentY - session.startY;
+
+      if (canScrollContainer(session.scrollContainer, gestureDeltaY)) {
+        return;
+      }
 
       if (canUseTouchNavigation(session) && event.cancelable) {
         event.preventDefault();
@@ -191,6 +223,10 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
       }
 
       const deltaY = session.currentY - session.startY;
+      if (canScrollContainer(session.scrollContainer, deltaY)) {
+        return;
+      }
+
       const didNavigate = deltaY < 0
         ? handleAdvance()
         : deltaY > 0

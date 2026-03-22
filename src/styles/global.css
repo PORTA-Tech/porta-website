@@ -190,8 +190,26 @@ body {
   text-align: center;
 }
 
-.scene-access-scene .scene-access-panel {
+.scene-access-panel-scrollable {
   max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 72px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+}
+
+.scene-access-panel-scrollable::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scene-access-panel-scrollable::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(10, 10, 16, 0.72);
+}
+
+.scene-access-panel-scrollable::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .scene-access-title,

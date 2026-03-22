@@ -679,12 +679,48 @@ body {
     transform 220ms ease,
     border-color 220ms ease,
     background-color 220ms ease;
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
 }
 
 .landing-chip:hover {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.landing-chip[data-active="true"] {
+  border-color: rgba(0, 255, 255, 0.42);
+  background: rgba(0, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.landing-audience-detail {
+  margin-top: 18px;
+  max-width: 36rem;
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 16, 0.68);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.landing-audience-detail h3 {
+  margin-bottom: 10px;
+  font-size: 1.04rem;
+}
+
+.landing-audience-detail p {
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+}
+
+.landing-audience-detail[data-empty="true"] {
+  border-style: dashed;
+  color: rgba(255, 255, 255, 0.74);
 }
 
 .landing-beta-section {

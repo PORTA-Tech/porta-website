@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ARI_VIDEO_EXPORT_ASSETS } from "./ari-video/data/exportManifest";
 import BetaRequestForm from "./components/BetaRequestForm";
 
@@ -60,13 +60,34 @@ const howAriHelps = [
 ];
 
 const audiences = [
-  "Founders",
-  "Startup teams",
-  "PMs",
-  "Engineers",
-  "Consultants",
-  "Analysts",
-  "Designers",
+  {
+    title: "Founders",
+    detail: "For days split across decisions, hiring, docs, meetings, and constant switching.",
+  },
+  {
+    title: "Startup teams",
+    detail: "For work that keeps jumping between chat, tickets, docs, and shifting priorities.",
+  },
+  {
+    title: "PMs",
+    detail: "For people balancing planning, writing, meetings, and cross-team follow-up.",
+  },
+  {
+    title: "Engineers",
+    detail: "For people trying to protect deep work while code, docs, and messages keep pulling.",
+  },
+  {
+    title: "Consultants",
+    detail: "For people moving between clients, calls, decks, notes, and analysis.",
+  },
+  {
+    title: "Analysts",
+    detail: "For long stretches of research, spreadsheets, reports, and context switching.",
+  },
+  {
+    title: "Designers",
+    detail: "For focused creative work mixed with reviews, feedback, and collaboration.",
+  },
 ];
 
 const trustCards = [
@@ -85,6 +106,9 @@ const trustCards = [
 ];
 
 export default function App() {
+  const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
+  const [hoveredAudience, setHoveredAudience] = useState<string | null>(null);
+
   useEffect(() => {
     const revealTargets = Array.from(
       document.querySelectorAll<HTMLElement>("[data-reveal]")
@@ -112,6 +136,9 @@ export default function App() {
     revealTargets.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
   }, []);
+
+  const activeAudienceTitle = hoveredAudience ?? selectedAudience;
+  const activeAudience = audiences.find((audience) => audience.title === activeAudienceTitle) ?? null;
 
   return (
     <main className="landing-page">
@@ -289,16 +316,45 @@ export default function App() {
         </div>
         <div className="landing-chip-cloud">
           {audiences.map((audience, index) => (
-            <span
-              key={audience}
+            <button
+              key={audience.title}
+              type="button"
               className="landing-chip"
               data-reveal
               data-reveal-order={(index % 4) + 1}
               data-motion="chip-pop"
+              data-active={activeAudienceTitle === audience.title ? "true" : "false"}
+              onMouseEnter={() => setHoveredAudience(audience.title)}
+              onMouseLeave={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
+              onFocus={() => setHoveredAudience(audience.title)}
+              onBlur={() => setHoveredAudience((current) => (current === audience.title ? null : current))}
+              onClick={() =>
+                setSelectedAudience((current) => (current === audience.title ? null : audience.title))
+              }
+              aria-pressed={activeAudienceTitle === audience.title}
             >
-              {audience}
-            </span>
+              {audience.title}
+            </button>
           ))}
+        </div>
+        <div
+          className="landing-audience-detail"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="card-rise"
+          data-empty={activeAudience ? "false" : "true"}
+        >
+          {activeAudience ? (
+            <>
+              <h3>{activeAudience.title}</h3>
+              <p>{activeAudience.detail}</p>
+            </>
+          ) : (
+            <>
+              <h3>Pick a role</h3>
+              <p>Hover on desktop or tap on phone to see who Ari fits best.</p>
+            </>
+          )}
         </div>
       </section>
 

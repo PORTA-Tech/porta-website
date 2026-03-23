@@ -417,7 +417,7 @@ body {
 .immersive-back-link {
   position: fixed;
   top: calc(var(--safe-top) + 18px);
-  right: calc(var(--safe-right) + 18px);
+  left: calc(var(--safe-left) + 18px);
   z-index: 24;
   display: inline-flex;
   align-items: center;
@@ -1239,7 +1239,7 @@ body {
 
   .immersive-back-link {
     top: calc(var(--safe-top) + 14px);
-    right: calc(var(--safe-right) + 14px);
+    left: calc(var(--safe-left) + 14px);
     min-height: 40px;
     padding: 0 14px;
     font-size: 0.88rem;

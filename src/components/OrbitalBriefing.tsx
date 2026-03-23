@@ -1,4 +1,4 @@
-import type { CSSProperties, KeyboardEvent } from "react";
+import type { CSSProperties } from "react";
 
 export type OrbitalBriefingItem = {
   title: string;
@@ -20,19 +20,6 @@ type OrbitalBriefingProps = {
   stackedNodeColumns?: 1 | 2;
   onActiveIndexChange: (index: number) => void;
 };
-
-function handleActivateWithKeyboard(
-  event: KeyboardEvent<HTMLDivElement>,
-  index: number,
-  onActiveIndexChange: (index: number) => void
-) {
-  if (event.key !== "Enter" && event.key !== " ") {
-    return;
-  }
-
-  event.preventDefault();
-  onActiveIndexChange(index);
-}
 
 export default function OrbitalBriefing({
   eyebrow,
@@ -86,22 +73,22 @@ export default function OrbitalBriefing({
               } as CSSProperties);
 
           return (
-            <div
+            <button
               key={item.title}
+              type="button"
               className="orbital-briefing-node"
               data-active={index === activeIndex ? "true" : "false"}
               style={style}
-              tabIndex={0}
+              aria-pressed={index === activeIndex}
               onMouseEnter={() => onActiveIndexChange(index)}
               onFocus={() => onActiveIndexChange(index)}
               onClick={() => onActiveIndexChange(index)}
-              onKeyDown={(event) => handleActivateWithKeyboard(event, index, onActiveIndexChange)}
             >
               <span className="orbital-briefing-node-index">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span className="orbital-briefing-node-label">{item.title}</span>
-            </div>
+            </button>
           );
         })}
       </div>

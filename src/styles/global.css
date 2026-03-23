@@ -301,6 +301,10 @@ body {
     box-shadow 220ms ease;
   cursor: pointer;
   outline: none;
+  appearance: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
 }
 
 .orbital-briefing-node:hover,

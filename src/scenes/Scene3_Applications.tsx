@@ -70,7 +70,6 @@ export default function Scene3_Response({ isActive }: SceneProps) {
         items={actions}
         activeIndex={activeIndex}
         isStacked={isStacked}
-        stackedNodeColumns={1}
         onActiveIndexChange={setActiveIndex}
       />
     </div>

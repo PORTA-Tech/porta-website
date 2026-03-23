@@ -271,7 +271,10 @@ body {
 
 .orbital-briefing-node-cloud {
   position: absolute;
-  inset: 0;
+  top: clamp(18px, 5vh, 64px);
+  right: clamp(16px, 4vw, 56px);
+  bottom: clamp(20px, 5vh, 56px);
+  left: clamp(25rem, 37vw, 33rem);
 }
 
 .orbital-briefing-node {
@@ -1316,7 +1319,7 @@ body {
     position: relative;
     inset: auto;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--orbital-mobile-columns, 2), minmax(0, 1fr));
     gap: 12px;
   }
 

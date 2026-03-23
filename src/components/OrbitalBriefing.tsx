@@ -17,6 +17,7 @@ type OrbitalBriefingProps = {
   items: OrbitalBriefingItem[];
   activeIndex: number;
   isStacked: boolean;
+  stackedNodeColumns?: 1 | 2;
   onActiveIndexChange: (index: number) => void;
 };
 
@@ -41,6 +42,7 @@ export default function OrbitalBriefing({
   items,
   activeIndex,
   isStacked,
+  stackedNodeColumns = 2,
   onActiveIndexChange,
 }: OrbitalBriefingProps) {
   const activeItem = items[activeIndex] ?? items[0];
@@ -66,7 +68,14 @@ export default function OrbitalBriefing({
         </div>
       </section>
 
-      <div className="orbital-briefing-node-cloud">
+      <div
+        className="orbital-briefing-node-cloud"
+        style={
+          isStacked
+            ? ({ "--orbital-mobile-columns": String(stackedNodeColumns) } as CSSProperties)
+            : undefined
+        }
+      >
         {items.map((item, index) => {
           const style = isStacked
             ? undefined

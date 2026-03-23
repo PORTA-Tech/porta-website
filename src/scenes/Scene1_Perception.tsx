@@ -8,22 +8,22 @@ const signals: OrbitalBriefingItem[] = [
   {
     title: "Keyboard activity",
     detail: "Typing pace and rhythm over time.",
-    position: { x: 24, y: 32 },
+    position: { x: 42, y: 31 },
   },
   {
     title: "Mouse activity",
     detail: "Movement, scrolling, and correction patterns.",
-    position: { x: 77, y: 36 },
+    position: { x: 78, y: 35 },
   },
   {
     title: "App switching",
     detail: "How often work jumps between tools and tabs.",
-    position: { x: 28, y: 72 },
+    position: { x: 40, y: 73 },
   },
   {
     title: "Idle time",
     detail: "Pauses, breaks, and stop-start stretches.",
-    position: { x: 72, y: 76 },
+    position: { x: 76, y: 76 },
   },
 ];
 

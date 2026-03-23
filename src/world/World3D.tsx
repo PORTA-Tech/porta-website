@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Orb3D from "../components/Orb3D";
-import { useResponsiveScale } from "../hooks/useResponsiveScale";
 
 interface World3DProps {
   sceneIndex: number;
@@ -54,7 +53,6 @@ function isInteractiveTarget(target: EventTarget | null) {
 }
 
 export default function World3D({ sceneIndex }: World3DProps) {
-  const { isPhone } = useResponsiveScale();
   const groupRef = useRef<THREE.Group>(null);
   const targetRotationYRef = useRef(0);
   const angularVelocityRef = useRef(0);
@@ -214,9 +212,7 @@ export default function World3D({ sceneIndex }: World3DProps) {
     const interaction = interactionRef.current;
     const currentZ = groupRef.current.position.z;
     const targetZ = SCENE_Z[sceneIndex];
-    const targetY = isPhone ? -0.75 : 0;
     groupRef.current.position.z += (targetZ - currentZ) * 0.1;
-    groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.08;
 
     targetRotationYRef.current += AMBIENT_ROTATION_Y;
 

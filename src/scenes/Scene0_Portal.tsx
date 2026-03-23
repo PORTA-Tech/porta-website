@@ -53,13 +53,17 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
 
       {/* Overlay text + button */}
       <div className="scene-portal-copy">
-        <p className="scene-portal-eyebrow">Ari for computer work</p>
-        <h1 className="scene-portal-title">Protect your focus at work.</h1>
-        <p className="scene-portal-subtitle">
-          Ari watches activity on your computer for early signs that focus is slipping,
-          then gently helps you stay on track.
-        </p>
+        <div className="scene-portal-heading">
+          <p className="scene-portal-eyebrow">Ari for computer work</p>
+          <h1 className="scene-portal-title">Protect your focus at work.</h1>
+          <p className="scene-portal-subtitle">
+            Ari watches activity on your computer for early signs that focus is slipping,
+            then gently helps you stay on track.
+          </p>
+        </div>
+      </div>
 
+      <div className="scene-portal-actions">
         <button
           onClick={onAdvance}
           className="scene-portal-button"

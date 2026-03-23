@@ -7,19 +7,19 @@ type SceneProps = { isActive: boolean };
 const processors = [
   {
     title: "Focus",
-    detail: "Whether your work looks steady or keeps getting broken apart.",
+    detail: "Whether steady work is worth protecting.",
   },
   {
     title: "Overload",
-    detail: "When your pattern looks strained, scattered, or hard to keep up.",
+    detail: "When work starts to look scattered.",
   },
   {
     title: "Trust",
-    detail: "How reliable Ari thinks the current reading is.",
+    detail: "How reliable the current reading is.",
   },
   {
     title: "Calibration",
-    detail: "How ready Ari is to make stronger suggestions with confidence.",
+    detail: "How ready Ari is to step in more.",
   },
 ];
 
@@ -39,6 +39,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
   const depthRef = useRef<number[]>(processors.map(() => Math.random() * 20 + 10));
   const { layout, panel, card, spacing } = useResponsiveScale();
   const isStacked = layout === "stacked";
+  const activeProcessor = processors.find((processor) => processor.title === hovered) ?? null;
 
   // Mouse tracking for parallax
   useEffect(() => {
@@ -144,8 +145,18 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>What Ari figures out</h2>
+        <div className="scene-header-copy">
+          <h2>What Ari figures out</h2>
+          <p className="scene-subtitle">It turns those signals into a few clear states.</p>
+        </div>
       </div>
+
+      {isStacked && activeProcessor ? (
+        <div className="scene-mobile-detail">
+          <h3>{activeProcessor.title}</h3>
+          <p>{activeProcessor.detail}</p>
+        </div>
+      ) : null}
 
       {processors.map((processor, idx) => (
         <div
@@ -153,11 +164,14 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(processor.title)}
           onMouseLeave={() => setHovered(null)}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            setHovered(prev => (prev === processor.title ? null : processor.title));
+          onClick={() => {
+            if (!isStacked) {
+              return;
+            }
+            setHovered((prev) => (prev === processor.title ? null : processor.title));
           }}
           className="scene-floating-card"
+          data-active={hovered === processor.title ? "true" : "false"}
           style={{
             position: isStacked ? "relative" : "absolute",
             top: isStacked ? "auto" : `${positions[idx].y}%`,
@@ -185,7 +199,7 @@ export default function Scene2_Processing({ isActive }: SceneProps) {
           }}
         >
           {processor.title}
-          {hovered === processor.title && (
+          {!isStacked && hovered === processor.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}

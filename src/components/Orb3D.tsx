@@ -23,7 +23,7 @@ export default function Orb3D({
   const starGroupRef = useRef<THREE.Group>(null);
   const smoothedPointerRef = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
 
-  const { orb: orbScale } = useResponsiveScale();
+  const { orb: orbScale, isPhone } = useResponsiveScale();
 
   const orbParticles = useMemo(() => {
     const count = 1400;
@@ -43,13 +43,13 @@ export default function Orb3D({
       color: PORTA_VISUAL_STYLE.palette.coreOrb,
       size: 0.025,
       transparent: true,
-      opacity: 0.9,
+      opacity: isPhone ? 0.68 : 0.9,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
 
     return new THREE.Points(geometry, material);
-  }, [radius]);
+  }, [isPhone, radius]);
 
   const starLayers = useMemo(() => {
     const layers: { positions: Float32Array; sizes: Float32Array }[] = [];
@@ -145,7 +145,7 @@ export default function Orb3D({
               size={0.03 + idx * 0.02}
               sizeAttenuation
               transparent
-              opacity={0.7}
+              opacity={isPhone ? 0.42 : 0.7}
               depthWrite={false}
             />
           </points>

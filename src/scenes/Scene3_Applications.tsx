@@ -4,45 +4,30 @@ import { useResponsiveScale } from "../hooks/useResponsiveScale";
 
 type SceneProps = { isActive: boolean };
 
-const actuators = [
+const actions = [
   {
-    title: "Founders",
-    detail: "Big decisions, meetings, and constant switching through the day.",
+    title: "Suggest a break",
+    detail: "A short pause when overload keeps rising.",
   },
   {
-    title: "Startup teams",
-    detail: "Fast-moving work where too many tabs and pings break focus apart.",
+    title: "Suggest a stretch break",
+    detail: "A quick stretch when fatigue starts building.",
   },
   {
-    title: "PMs",
-    detail: "Planning, docs, chat, and constant follow-up across teams.",
+    title: "Help you stay on one task",
+    detail: "A nudge to stay with the task in front of you.",
   },
   {
-    title: "Engineers",
-    detail: "Long stretches of steady focus to build, debug, and think clearly.",
-  },
-  {
-    title: "Consultants",
-    detail: "Clients, calls, decks, and deadlines pulling in different directions.",
-  },
-  {
-    title: "Analysts",
-    detail: "Careful attention across tools, spreadsheets, dashboards, and data.",
-  },
-  {
-    title: "Designers",
-    detail: "Ideas, files, feedback, and review loops all competing for attention.",
+    title: "Quiet notifications during deep work",
+    detail: "Notifications quieted during deep work, then turned back on after.",
   },
 ];
 
 const positions = [
-  { x: 22, y: 24 },
-  { x: 50, y: 22 },
-  { x: 78, y: 24 },
-  { x: 22, y: 53 },
-  { x: 78, y: 53 },
-  { x: 35, y: 79 },
-  { x: 65, y: 79 },
+  { x: 30, y: 30 },
+  { x: 70, y: 30 },
+  { x: 34, y: 72 },
+  { x: 76, y: 72 },
 ];
 
 export default function Scene3_Response({ isActive }: SceneProps) {
@@ -51,9 +36,10 @@ export default function Scene3_Response({ isActive }: SceneProps) {
   const panelRefs = useRef<HTMLDivElement[]>([]);
   const bgRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const depthRef = useRef<number[]>(actuators.map(() => Math.random() * 20 + 10));
+  const depthRef = useRef<number[]>(actions.map(() => Math.random() * 20 + 10));
   const { layout, panel, card, spacing } = useResponsiveScale();
   const isStacked = layout === "stacked";
+  const activeAction = actions.find((action) => action.title === hovered) ?? null;
 
   // Mouse tracking for parallax
   useEffect(() => {
@@ -123,12 +109,12 @@ export default function Scene3_Response({ isActive }: SceneProps) {
         const entranceScale = 0.6 + 0.4 * entranceProgress;
         const parallaxX = mouseRef.current.x * depthFactor * 20;
         const parallaxY = mouseRef.current.y * depthFactor * 20;
-        const scale = hovered === actuators[idx].title
+        const scale = hovered === actions[idx].title
           ? PORTA_VISUAL_STYLE.ui.panelHoverScale * entranceScale
           : entranceScale;
 
         el.style.transform = `translate(${floatX + parallaxX}%, ${floatY + entranceOffsetY + parallaxY}%) scale(${scale}) translate(-50%, -50%)`;
-        el.style.boxShadow = hovered === actuators[idx].title
+        el.style.boxShadow = hovered === actions[idx].title
           ? `0 0 ${10 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}, 0 0 ${20 + depth}px ${PORTA_VISUAL_STYLE.palette.panelGlow}`
           : `0 0 ${4 + depth}px rgba(68,68,255,0.2)`;
         el.style.zIndex = `${Math.floor(100 - depth)}`;
@@ -159,20 +145,33 @@ export default function Scene3_Response({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>Who Ari is for</h2>
+        <div className="scene-header-copy">
+          <h2>How Ari helps</h2>
+          <p className="scene-subtitle">When Ari steps in, it does it in simple ways.</p>
+        </div>
       </div>
 
-      {actuators.map((audience, idx) => (
+      {isStacked && activeAction ? (
+        <div className="scene-mobile-detail">
+          <h3>{activeAction.title}</h3>
+          <p>{activeAction.detail}</p>
+        </div>
+      ) : null}
+
+      {actions.map((action, idx) => (
         <div
-          key={audience.title}
+          key={action.title}
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
-          onMouseEnter={() => setHovered(audience.title)}
+          onMouseEnter={() => setHovered(action.title)}
           onMouseLeave={() => setHovered(null)}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            setHovered(prev => (prev === audience.title ? null : audience.title));
+          onClick={() => {
+            if (!isStacked) {
+              return;
+            }
+            setHovered((prev) => (prev === action.title ? null : action.title));
           }}
           className="scene-floating-card"
+          data-active={hovered === action.title ? "true" : "false"}
           style={{
             position: isStacked ? "relative" : "absolute",
             top: isStacked ? "auto" : `${positions[idx].y}%`,
@@ -199,13 +198,13 @@ export default function Scene3_Response({ isActive }: SceneProps) {
             marginTop: isStacked && idx === 0 ? `${spacing * 4.5}px` : undefined,
           }}
         >
-          {audience.title}
-          {hovered === audience.title && (
+          {action.title}
+          {!isStacked && hovered === action.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}
             >
-              {audience.detail}
+              {action.detail}
             </div>
           )}
         </div>

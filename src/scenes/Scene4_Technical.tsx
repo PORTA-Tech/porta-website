@@ -7,32 +7,22 @@ type SceneProps = { isActive: boolean };
 const integrators = [
   {
     title: "Pause or resume",
-    detail: "Stop Ari when you want and turn it back on when you are ready.",
+    detail: "Stop Ari anytime, turn it back on later, or revoke consent.",
   },
   {
-    title: "Export local data",
-    detail: "Download the local session data Ari has stored on your machine.",
+    title: "Export or delete data",
+    detail: "Download your local data or clear it from the device.",
   },
   {
-    title: "Delete local data",
-    detail: "Clear Ari's local history from the machine whenever you want.",
-  },
-  {
-    title: "Revoke consent",
-    detail: "Revoke consent so Ari stops working from that point on.",
-  },
-  {
-    title: "Privacy boundaries",
-    detail: "Ari does not read typed text, take screenshots, or copy the clipboard.",
+    title: "Privacy basics",
+    detail: "Ari does not read typed text, capture screenshots, or copy clipboard contents.",
   },
 ];
 
 const positions = [
-  { x: 27, y: 30 },
-  { x: 73, y: 30 },
-  { x: 26, y: 64 },
-  { x: 73, y: 64 },
-  { x: 50, y: 82 },
+  { x: 26, y: 36 },
+  { x: 74, y: 36 },
+  { x: 50, y: 78 },
 ];
 
 export default function Scene4_Integration({ isActive }: SceneProps) {
@@ -44,6 +34,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
   const depthRef = useRef<number[]>(integrators.map(() => Math.random() * 20 + 10));
   const { layout, panel, card, spacing } = useResponsiveScale();
   const isStacked = layout === "stacked";
+  const activeControl = integrators.find((control) => control.title === hovered) ?? null;
 
   // Mouse tracking for parallax
   useEffect(() => {
@@ -149,8 +140,18 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
       style={{ position: "relative", overflow: "hidden" }}
     >
       <div className="scene-header">
-        <h2>You stay in control</h2>
+        <div className="scene-header-copy">
+          <h2>You stay in control.</h2>
+          <p className="scene-subtitle">Ari gives you controls, not lock-in.</p>
+        </div>
       </div>
+
+      {isStacked && activeControl ? (
+        <div className="scene-mobile-detail">
+          <h3>{activeControl.title}</h3>
+          <p>{activeControl.detail}</p>
+        </div>
+      ) : null}
 
       {integrators.map((control, idx) => (
         <div
@@ -158,11 +159,14 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
           ref={(el) => { if (el) panelRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(control.title)}
           onMouseLeave={() => setHovered(null)}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            setHovered(prev => (prev === control.title ? null : control.title));
+          onClick={() => {
+            if (!isStacked) {
+              return;
+            }
+            setHovered((prev) => (prev === control.title ? null : control.title));
           }}
           className="scene-floating-card"
+          data-active={hovered === control.title ? "true" : "false"}
           style={{
             position: isStacked ? "relative" : "absolute",
             top: isStacked ? "auto" : `${positions[idx].y}%`,
@@ -190,7 +194,7 @@ export default function Scene4_Integration({ isActive }: SceneProps) {
           }}
         >
           {control.title}
-          {hovered === control.title && (
+          {!isStacked && hovered === control.title && (
             <div
               className="scene-floating-card-detail"
               style={{ fontSize: "0.85em", color: PORTA_VISUAL_STYLE.palette.tooltip, marginTop: "10px" }}

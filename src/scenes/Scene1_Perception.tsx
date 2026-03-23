@@ -7,19 +7,19 @@ type SceneProps = { isActive: boolean };
 const signals = [
   {
     title: "Keyboard activity",
-    detail: "How your typing speeds up, slows down, or becomes less steady.",
+    detail: "Typing pace and rhythm over time.",
   },
   {
     title: "Mouse activity",
-    detail: "How much you move, scroll, and make quick corrections.",
+    detail: "Movement, scrolling, and correction patterns.",
   },
   {
     title: "App switching",
-    detail: "How often your attention jumps from one app to another.",
+    detail: "How often work jumps between tools and tabs.",
   },
   {
     title: "Idle time",
-    detail: "Short pauses, longer breaks, and stop-start patterns in your day.",
+    detail: "Pauses, breaks, and stop-start stretches.",
   },
 ];
 
@@ -32,6 +32,7 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
   const depthRef = useRef<number[]>(signals.map(() => Math.random() * 20 + 10));
   const { layout } = useResponsiveScale();
   const isStacked = layout === "stacked";
+  const activeSignal = signals.find((signal) => signal.title === hovered) ?? null;
 
   // Mouse tracking for parallax
   useEffect(() => {
@@ -136,8 +137,18 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
       data-layout={layout}
     >
       <div className="scene-header">
-        <h2>What Ari sees</h2>
+        <div className="scene-header-copy">
+          <h2>What Ari sees</h2>
+          <p className="scene-subtitle">It looks at how work moves through your day.</p>
+        </div>
       </div>
+
+      {isStacked && activeSignal ? (
+        <div className="scene-mobile-detail">
+          <h3>{activeSignal.title}</h3>
+          <p>{activeSignal.detail}</p>
+        </div>
+      ) : null}
 
       {signals.map((signal, idx) => (
         <div
@@ -145,15 +156,18 @@ export default function Scene1_Perception({ isActive }: SceneProps) {
           ref={(el) => { if (el) signalRefs.current[idx] = el; }}
           onMouseEnter={() => setHovered(signal.title)}
           onMouseLeave={() => setHovered(null)}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            setHovered(prev => (prev === signal.title ? null : signal.title));
+          onClick={() => {
+            if (!isStacked) {
+              return;
+            }
+            setHovered((prev) => (prev === signal.title ? null : signal.title));
           }}
           className="scene-floating-card scene-perception-card"
           data-slot={idx}
+          data-active={hovered === signal.title ? "true" : "false"}
         >
           {signal.title}
-          {hovered === signal.title && (
+          {!isStacked && hovered === signal.title && (
             <div className="scene-floating-card-detail">
               {signal.detail}
             </div>

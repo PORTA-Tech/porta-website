@@ -33,7 +33,7 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
   return (
     <div
       ref={bgRef}
-      className="scene"
+      className="scene scene-portal"
       style={{ overflow: "hidden", background: PORTA_VISUAL_STYLE.palette.background }}
     >
       {/* Canvas for lights or 3D elements */}
@@ -52,40 +52,26 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
       </Canvas>
 
       {/* Overlay text + button */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          fontFamily: PORTA_VISUAL_STYLE.font.family,
-          color: PORTA_VISUAL_STYLE.palette.text,
-        }}
-      >
-        <h1 style={{ fontSize: "3em", marginBottom: "0.2em" }}>Ari</h1>
-        <h3 style={{ fontSize: "1.5em", marginBottom: "0.5em", fontWeight: 400, maxWidth: "22em" }}>
-          See when your day starts slipping out of focus.
-        </h3>
-        <p style={{ fontSize: "1.1em", marginBottom: "2em", maxWidth: "34rem", lineHeight: 1.5 }}>
-          Ari helps you catch the moment focus starts to slip and overload starts to rise,
-          then suggests simple steps to protect focus or take a break.
+      <div className="scene-portal-copy">
+        <p className="scene-portal-eyebrow">Ari for computer work</p>
+        <h1 className="scene-portal-title">Protect your focus at work.</h1>
+        <p className="scene-portal-subtitle">
+          Ari watches activity on your computer for early signs that focus is slipping,
+          then gently helps you stay on track.
+        </p>
+        <p className="scene-portal-description">
+          It can suggest a break, suggest staying on task, or quiet notifications during
+          deep work.
         </p>
 
         <button
           onClick={onAdvance}
+          className="scene-portal-button"
           style={{
-            marginTop: "30px",
-            padding: "10px 20px",
-            cursor: "pointer",
-            transition: "all 0.3s",
             fontFamily: PORTA_VISUAL_STYLE.font.family,
             fontSize: PORTA_VISUAL_STYLE.font.size,
             color: PORTA_VISUAL_STYLE.palette.background,
             backgroundColor: PORTA_VISUAL_STYLE.palette.cta,
-            border: "none",
-            borderRadius: "6px",
           }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.boxShadow = `0 0 15px ${PORTA_VISUAL_STYLE.palette.cta}`)

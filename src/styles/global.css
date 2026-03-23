@@ -59,6 +59,62 @@ body {
     calc(var(--safe-left) + 28px);
 }
 
+.scene-portal-copy {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 42rem);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.scene-portal-eyebrow {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scene-portal-title {
+  max-width: 12ch;
+  font-size: clamp(2.6rem, 6vw, 4.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.scene-portal-subtitle,
+.scene-portal-description,
+.scene-subtitle {
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.58;
+}
+
+.scene-portal-subtitle {
+  max-width: 34rem;
+  font-size: 1.08rem;
+}
+
+.scene-portal-description {
+  max-width: 28rem;
+  font-size: 0.98rem;
+}
+
+.scene-portal-button {
+  margin-top: 18px;
+  min-height: 48px;
+  padding: 0 22px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
 .scene-header {
   position: absolute;
   top: calc(var(--safe-top) + 9vh);
@@ -69,6 +125,11 @@ body {
   pointer-events: none;
   width: min(100%, 42rem);
   padding-inline: 16px;
+}
+
+.scene-header-copy {
+  display: grid;
+  gap: 12px;
 }
 
 .scene-tag {
@@ -92,6 +153,13 @@ body {
   font-size: clamp(1.65rem, 3vw, 2.75rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
+}
+
+.scene-subtitle {
+  max-width: 34rem;
+  margin-inline: auto;
+  font-size: 0.98rem;
+  text-wrap: balance;
 }
 
 .scene-divider {
@@ -123,6 +191,10 @@ body {
   max-width: 17rem;
 }
 
+.scene-floating-card[data-active="true"] {
+  border-color: rgba(0, 255, 255, 0.34);
+}
+
 .scene-floating-card-detail {
   margin-top: 10px;
   font-size: 0.85em;
@@ -130,6 +202,10 @@ body {
   line-height: 1.45;
   max-width: 16rem;
   text-wrap: balance;
+}
+
+.scene-mobile-detail {
+  display: none;
 }
 
 .scene-perception-layout {
@@ -1028,7 +1104,28 @@ body {
     justify-content: flex-start;
     align-items: center;
     gap: 12px;
-    padding-top: calc(var(--safe-top) + 88px);
+    padding-top: calc(var(--safe-top) + 18px);
+  }
+
+  .scene.scene-floating-layout .scene-header {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    padding: 18px 16px 16px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background:
+      linear-gradient(180deg, rgba(4, 6, 12, 0.92), rgba(4, 6, 12, 0.66)),
+      rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .scene.scene-floating-layout .scene-subtitle {
+    max-width: none;
+    font-size: 0.94rem;
   }
 
   .scene.scene-floating-layout .scene-floating-card {
@@ -1039,10 +1136,56 @@ body {
     width: min(100%, 22rem) !important;
     max-width: 100%;
     min-width: 0 !important;
+    text-align: left !important;
   }
 
   .scene.scene-floating-layout .scene-floating-card-detail {
     font-size: 0.92em;
+  }
+
+  .scene-mobile-detail {
+    display: block;
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 255, 0.14);
+    background: rgba(8, 10, 16, 0.7);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .scene-mobile-detail h3 {
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+
+  .scene-mobile-detail p {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .scene-portal-copy {
+    gap: 12px;
+    padding: 22px 18px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(4, 6, 12, 0.84), rgba(4, 6, 12, 0.4));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .scene-portal-title {
+    max-width: 10ch;
+    font-size: clamp(2.2rem, 10vw, 3rem);
+  }
+
+  .scene-portal-subtitle {
+    font-size: 0.98rem;
+  }
+
+  .scene-portal-description {
+    font-size: 0.92rem;
   }
 
   .scene-perception-layout .scene-perception-card:first-of-type {

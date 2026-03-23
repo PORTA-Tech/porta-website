@@ -416,13 +416,13 @@ export default function App() {
         >
           <p className="landing-eyebrow">Windows beta</p>
           <h2>Ready to stay focused at work?</h2>
-          <p>Join the closed beta. Tell us a bit about your work, and we will reach out when Ari is ready for you.</p>
+          <p>Tell us a bit about your work, and we will reach out when Ari is ready for you.</p>
         </div>
 
         <div data-reveal data-reveal-order="2" data-motion="beta-panel">
           <BetaRequestForm
             title="Request Windows Beta"
-            description="This is a closed beta, not an instant download. Your answers help shape the next beta group."
+            description="Tell us a bit about your work. Your answers help shape the next beta group."
             panelClassName="landing-beta-card"
           />
         </div>

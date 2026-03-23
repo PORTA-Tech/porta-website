@@ -19,7 +19,7 @@ const scenes = [
   Scene5_Access,
 ];
 
-const SWIPE_TRIGGER_PX = 72;
+const SWIPE_TRIGGER_PX = 56;
 const SWIPE_HORIZONTAL_TOLERANCE = 1.15;
 const KEYBOARD_NAV_LOCK_MS = 220;
 const TOUCH_NAV_LOCK_MS = 240;
@@ -54,7 +54,7 @@ function isInteractiveTarget(target: EventTarget | null) {
   }
 
   return Boolean(
-    target.closest("button, input, textarea, select, a, label, [role='button'], [contenteditable='true']")
+    target.closest("button, input, textarea, select, a, [role='button'], [contenteditable='true']")
   );
 }
 

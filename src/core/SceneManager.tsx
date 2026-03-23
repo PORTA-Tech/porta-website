@@ -54,7 +54,17 @@ function isInteractiveTarget(target: EventTarget | null) {
   }
 
   return Boolean(
-    target.closest("button, input, textarea, select, a, [role='button']")
+    target.closest("button, input, textarea, select, a, label, [role='button'], [contenteditable='true']")
+  );
+}
+
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest("input, textarea, select, [contenteditable='true']")
   );
 }
 
@@ -123,7 +133,9 @@ export default function SceneManager({ onSceneChange }: SceneManagerProps) {
   // Keyboard navigation (n / p)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (scrollLockRef.current) return;
+      if (isEditableTarget(e.target) || isEditableTarget(document.activeElement)) return;
       if (e.key === "n") {
         if (handleAdvance()) {
           scrollLockRef.current = true;

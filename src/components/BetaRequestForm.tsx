@@ -36,6 +36,7 @@ export default function BetaRequestForm({
   panelClassName = "",
 }: BetaRequestFormProps) {
   const [form, setForm] = useState(INITIAL_FORM);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [requestState, setRequestState] = useState<RequestState>({
     tone: "idle",
     message: "",
@@ -92,6 +93,7 @@ export default function BetaRequestForm({
     }
 
     setRequestState({ tone: "success", message: result.message });
+    setSubmittedEmail(form.workEmail);
     setForm(INITIAL_FORM);
     onSuccess?.();
   };
@@ -166,13 +168,20 @@ export default function BetaRequestForm({
         >
           {isSubmitting ? "Sending request..." : "Request beta access"}
         </button>
-      </div>
 
-      {requestState.message && requestState.tone !== "idle" && (
-        <p className="scene-access-status" data-tone={requestState.tone}>
-          {requestState.message}
-        </p>
-      )}
+        {requestState.message && requestState.tone !== "idle" && (
+          <div className="scene-access-feedback" data-tone={requestState.tone}>
+            <p className="scene-access-status" data-tone={requestState.tone}>
+              {requestState.message}
+            </p>
+            {requestState.tone === "success" && submittedEmail ? (
+              <p className="scene-access-followup">
+                We will review your request and reply to <strong>{submittedEmail}</strong>.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </div>
     </>
   );
 }

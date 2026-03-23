@@ -118,6 +118,33 @@ function buildHtmlBody(request: ValidatedBetaRequest) {
   `;
 }
 
+function buildRequesterConfirmationText(request: ValidatedBetaRequest) {
+  return [
+    "Your Ari Windows beta request was received.",
+    "",
+    "Here is what you sent:",
+    `Role: ${request.role}`,
+    `Hours per day on computer: ${request.hoursPerDay}`,
+    "",
+    "Biggest source of the day getting scattered:",
+    request.scatterSource,
+    "",
+    "We will reach out when new access spots open.",
+  ].join("\n");
+}
+
+function buildRequesterConfirmationHtml(request: ValidatedBetaRequest) {
+  return `
+    <h2>Your Ari Windows beta request was received</h2>
+    <p>Thanks for requesting access to the Ari Windows beta.</p>
+    <p><strong>Role:</strong> ${request.role}</p>
+    <p><strong>Hours per day on computer:</strong> ${request.hoursPerDay}</p>
+    <p><strong>Biggest source of the day getting scattered:</strong></p>
+    <p>${request.scatterSource.replace(/\n/g, "<br />")}</p>
+    <p>We will reach out when new access spots open.</p>
+  `;
+}
+
 export default async function handler(
   request: ApiRequest,
   response: ApiResponse
@@ -172,9 +199,24 @@ export default async function handler(
       runtimeConfig.timeoutMs
     );
 
+    try {
+      await withTimeout(
+        transporter.sendMail({
+          from: runtimeConfig.smtpFrom,
+          to: validation.value.workEmail,
+          subject: "Ari Windows beta request received",
+          text: buildRequesterConfirmationText(validation.value),
+          html: buildRequesterConfirmationHtml(validation.value),
+        }),
+        runtimeConfig.timeoutMs
+      );
+    } catch {
+      // Do not fail the main beta request if the optional confirmation email cannot be delivered.
+    }
+
     sendJson(response, 200, {
       ok: true,
-      message: "Thanks. Your beta request was sent.",
+      message: "Thanks. Your beta request was sent. Check your email for confirmation.",
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "unknown_error";

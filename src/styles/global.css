@@ -566,6 +566,22 @@ body {
   z-index: 1;
 }
 
+.scene-access-feedback {
+  margin-top: 6px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.scene-access-followup {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+  text-align: center;
+}
+
 .scene-access-status[data-tone="success"] {
   color: #83f0ae;
 }

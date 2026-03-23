@@ -59,10 +59,6 @@ export default function Scene0_Portal({ onAdvance, isActive }: SceneProps) {
           Ari watches activity on your computer for early signs that focus is slipping,
           then gently helps you stay on track.
         </p>
-        <p className="scene-portal-description">
-          It can suggest a break, suggest staying on task, or quiet notifications during
-          deep work.
-        </p>
 
         <button
           onClick={onAdvance}

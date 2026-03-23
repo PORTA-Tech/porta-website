@@ -68,11 +68,14 @@ body {
   gap: 12px;
   text-align: center;
   color: var(--color-text);
+  margin-inline: auto;
 }
 
 .scene-portal-heading {
   display: grid;
   gap: 12px;
+  justify-items: center;
+  text-align: center;
 }
 
 .scene-portal-eyebrow {
@@ -1097,9 +1100,9 @@ body {
   }
 
   .scene.scene-portal {
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding-top: calc(var(--safe-top) + 74px);
+    padding-top: calc(var(--safe-top) + 18px);
   }
 
   .scene-header {
@@ -1116,7 +1119,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     gap: 12px;
-    padding-top: calc(var(--safe-top) + 68px);
+    padding-top: calc(var(--safe-top) + 82px);
   }
 
   .scene.scene-floating-layout .scene-header {
@@ -1179,17 +1182,21 @@ body {
   }
 
   .scene-portal-copy {
-    gap: 12px;
+    position: absolute;
+    top: calc(var(--safe-top) + 58px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(calc(100% - 32px), 22rem);
+    gap: 10px;
     padding: 0;
     border-radius: 0;
     background: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    width: 100%;
   }
 
   .scene-portal-heading {
-    width: min(100%, 22rem);
+    width: 100%;
   }
 
   .scene-portal-title {
@@ -1199,13 +1206,18 @@ body {
 
   .scene-portal-subtitle {
     font-size: 0.98rem;
+    max-width: 20rem;
   }
 
   .scene-portal-actions {
-    width: 100%;
-    margin-top: auto;
+    position: absolute;
+    left: 50%;
+    top: min(74%, calc(100% - var(--safe-bottom) - 112px));
+    transform: translateX(-50%);
+    width: auto;
+    margin-top: 0;
     padding-top: 0;
-    padding-bottom: 12px;
+    padding-bottom: 0;
     justify-content: center;
   }
 

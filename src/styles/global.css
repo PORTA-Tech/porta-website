@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --color-background: #000000;
   --color-text: #ffffff;
   --font-family: "Inter", sans-serif;
@@ -1126,6 +1126,56 @@ body {
   animation: landingRevealPop 620ms cubic-bezier(0.2, 0.9, 0.2, 1.05) var(--landing-enter-delay) both;
 }
 
+
+/* ── Feature row (side-by-side: text left, screenshot right) ─────────────── */
+
+.landing-feature-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.landing-feature-row--reverse {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+}
+
+.landing-section-heading--no-margin {
+  margin-bottom: 0;
+}
+
+/* ── App window glow wrapper ──────────────────────────────────────────────── */
+
+.app-window-wrap {
+  position: relative;
+}
+
+.app-window-wrap::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 80%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.1), transparent 68%);
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+}
+
+.app-window-wrap > .app-window {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Email window size ────────────────────────────────────────────────────── */
+
+.app-window--email {
+  max-width: 480px;
+  margin-inline: auto;
+}
 /* ── App window frame ─────────────────────────────────────────── */
 
 .app-window {
@@ -1383,6 +1433,11 @@ body {
   .landing-grid-two {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .landing-feature-row,
+  .landing-feature-row--reverse {
+    gap: 36px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -1639,6 +1694,16 @@ body {
   .landing-grid-three,
   .landing-grid-two {
     grid-template-columns: 1fr;
+  }
+
+  .landing-feature-row,
+  .landing-feature-row--reverse {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .app-window--email {
+    max-width: 100%;
   }
 
   .landing-audience-cloud,

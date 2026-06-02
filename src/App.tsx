@@ -204,35 +204,30 @@ export default function App() {
       </section>
 
       <section className="landing-shell landing-section" id="widget">
-        <div
-          className="landing-section-heading"
-          data-reveal
-          data-reveal-order="1"
-          data-motion="section"
-        >
-          <p className="landing-eyebrow">Always with you</p>
-          <h2>Always know where you stand.</h2>
-          <p>A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
-        </div>
-        <div
-          className="app-window app-window--narrow"
-          data-reveal
-          data-reveal-order="2"
-          data-motion="demo"
-        >
-          <div className="app-window-titlebar">
-            <div className="app-window-dots">
-              <span className="app-window-dot app-window-dot--red" />
-              <span className="app-window-dot app-window-dot--yellow" />
-              <span className="app-window-dot app-window-dot--green" />
-            </div>
+        <div className="landing-feature-row">
+          <div
+            className="landing-section-heading landing-section-heading--no-margin"
+            data-reveal
+            data-reveal-order="1"
+            data-motion="section"
+          >
+            <p className="landing-eyebrow">Always with you</p>
+            <h2>Always know where you stand.</h2>
+            <p>A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
           </div>
-          <div className="app-window-body">
-            <img
-              className="app-window-img"
-              src="/images/widget.png"
-              alt="Ari widget"
-            />
+          <div className="app-window-wrap" data-reveal data-reveal-order="2" data-motion="demo">
+            <div className="app-window app-window--narrow">
+              <div className="app-window-titlebar">
+                <div className="app-window-dots">
+                  <span className="app-window-dot app-window-dot--red" />
+                  <span className="app-window-dot app-window-dot--yellow" />
+                  <span className="app-window-dot app-window-dot--green" />
+                </div>
+              </div>
+              <div className="app-window-body">
+                <img className="app-window-img" src="/images/widget.png" alt="Ari widget" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -248,59 +243,47 @@ export default function App() {
           <h2>See exactly how your day moved.</h2>
           <p>Ari builds a visual map of your day — focus blocks, distractions, breaks — by the hour. Day, week, or two weeks at a glance.</p>
         </div>
-        <div
-          className="app-window"
-          data-reveal
-          data-reveal-order="2"
-          data-motion="demo"
-        >
-          <div className="app-window-titlebar">
-            <div className="app-window-dots">
-              <span className="app-window-dot app-window-dot--red" />
-              <span className="app-window-dot app-window-dot--yellow" />
-              <span className="app-window-dot app-window-dot--green" />
+        <div className="app-window-wrap" data-reveal data-reveal-order="2" data-motion="demo">
+          <div className="app-window">
+            <div className="app-window-titlebar">
+              <div className="app-window-dots">
+                <span className="app-window-dot app-window-dot--red" />
+                <span className="app-window-dot app-window-dot--yellow" />
+                <span className="app-window-dot app-window-dot--green" />
+              </div>
             </div>
-          </div>
-          <div className="app-window-body">
-            <img
-              className="app-window-img"
-              src="/images/history.png"
-              alt="Ari history calendar showing a full day of focus blocks"
-            />
+            <div className="app-window-body">
+              <img className="app-window-img" src="/images/history.png" alt="Ari history calendar showing a full day of focus blocks" />
+            </div>
           </div>
         </div>
       </section>
 
       <section className="landing-shell landing-section" id="digest">
-        <div
-          className="landing-section-heading"
-          data-reveal
-          data-reveal-order="1"
-          data-motion="section"
-        >
-          <p className="landing-eyebrow">Every evening</p>
-          <h2>A clear recap lands in your inbox every night.</h2>
-          <p>At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
-        </div>
-        <div
-          className="app-window app-window--mid"
-          data-reveal
-          data-reveal-order="2"
-          data-motion="demo"
-        >
-          <div className="app-window-titlebar">
-            <div className="app-window-dots">
-              <span className="app-window-dot app-window-dot--red" />
-              <span className="app-window-dot app-window-dot--yellow" />
-              <span className="app-window-dot app-window-dot--green" />
-            </div>
+        <div className="landing-feature-row landing-feature-row--reverse">
+          <div
+            className="landing-section-heading landing-section-heading--no-margin"
+            data-reveal
+            data-reveal-order="1"
+            data-motion="section"
+          >
+            <p className="landing-eyebrow">Every evening</p>
+            <h2>A clear recap lands in your inbox every night.</h2>
+            <p>At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
           </div>
-          <div className="app-window-body">
-            <img
-              className="app-window-img"
-              src="/images/digest.png"
-              alt="Ari nightly digest email"
-            />
+          <div className="app-window-wrap" data-reveal data-reveal-order="2" data-motion="demo">
+            <div className="app-window app-window--email">
+              <div className="app-window-titlebar">
+                <div className="app-window-dots">
+                  <span className="app-window-dot app-window-dot--red" />
+                  <span className="app-window-dot app-window-dot--yellow" />
+                  <span className="app-window-dot app-window-dot--green" />
+                </div>
+              </div>
+              <div className="app-window-body">
+                <img className="app-window-img" src="/images/digest.png" alt="Ari nightly digest email" />
+              </div>
+            </div>
           </div>
         </div>
       </section>

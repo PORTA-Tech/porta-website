@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import AriVideoExportedPreviewApp from "./ari-video/preview/AriVideoExportedPreviewApp";
-import AriVideoPreviewApp from "./ari-video/preview/AriVideoPreviewApp";
 import ImmersiveExperienceApp from "./immersive/ImmersiveExperienceApp";
 import "./styles/global.css";
 
@@ -36,13 +34,9 @@ function RootRouter() {
     };
   }, []);
 
-  const RootComponent = route === "/ari-video"
-    ? AriVideoPreviewApp
-    : route === "/ari-video/exported"
-      ? AriVideoExportedPreviewApp
-      : route === "/experience" || route === "/immersive"
-        ? ImmersiveExperienceApp
-        : App;
+  const RootComponent = route === "/experience" || route === "/immersive"
+    ? ImmersiveExperienceApp
+    : App;
 
   return <RootComponent />;
 }

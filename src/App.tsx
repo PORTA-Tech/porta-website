@@ -215,16 +215,25 @@ export default function App() {
           <p>A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
         </div>
         <div
-          className="landing-screenshot-frame"
+          className="app-window app-window--narrow"
           data-reveal
           data-reveal-order="2"
           data-motion="demo"
         >
-          <img
-            className="landing-screenshot-img"
-            src="/images/widget.png"
-            alt="Ari widget"
-          />
+          <div className="app-window-titlebar">
+            <div className="app-window-dots">
+              <span className="app-window-dot app-window-dot--red" />
+              <span className="app-window-dot app-window-dot--yellow" />
+              <span className="app-window-dot app-window-dot--green" />
+            </div>
+          </div>
+          <div className="app-window-body">
+            <img
+              className="app-window-img"
+              src="/images/widget.png"
+              alt="Ari widget"
+            />
+          </div>
         </div>
       </section>
 
@@ -240,16 +249,25 @@ export default function App() {
           <p>Ari builds a visual map of your day — focus blocks, distractions, breaks — by the hour. Day, week, or two weeks at a glance.</p>
         </div>
         <div
-          className="landing-screenshot-frame landing-screenshot-frame-large"
+          className="app-window"
           data-reveal
           data-reveal-order="2"
           data-motion="demo"
         >
-          <img
-            className="landing-screenshot-img"
-            src="/images/history.png"
-            alt="Ari history calendar showing a full day of focus blocks"
-          />
+          <div className="app-window-titlebar">
+            <div className="app-window-dots">
+              <span className="app-window-dot app-window-dot--red" />
+              <span className="app-window-dot app-window-dot--yellow" />
+              <span className="app-window-dot app-window-dot--green" />
+            </div>
+          </div>
+          <div className="app-window-body">
+            <img
+              className="app-window-img"
+              src="/images/history.png"
+              alt="Ari history calendar showing a full day of focus blocks"
+            />
+          </div>
         </div>
       </section>
 
@@ -265,16 +283,25 @@ export default function App() {
           <p>At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
         </div>
         <div
-          className="landing-screenshot-frame"
+          className="app-window app-window--mid"
           data-reveal
           data-reveal-order="2"
           data-motion="demo"
         >
-          <img
-            className="landing-screenshot-img"
-            src="/images/digest.png"
-            alt="Ari nightly digest email"
-          />
+          <div className="app-window-titlebar">
+            <div className="app-window-dots">
+              <span className="app-window-dot app-window-dot--red" />
+              <span className="app-window-dot app-window-dot--yellow" />
+              <span className="app-window-dot app-window-dot--green" />
+            </div>
+          </div>
+          <div className="app-window-body">
+            <img
+              className="app-window-img"
+              src="/images/digest.png"
+              alt="Ari nightly digest email"
+            />
+          </div>
         </div>
       </section>
 

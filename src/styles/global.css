@@ -1126,6 +1126,83 @@ body {
   animation: landingRevealPop 620ms cubic-bezier(0.2, 0.9, 0.2, 1.05) var(--landing-enter-delay) both;
 }
 
+/* ── App window frame ─────────────────────────────────────────── */
+
+.app-window {
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(8, 10, 16, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.52),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.app-window:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 52px 140px rgba(0, 0, 0, 0.58),
+    0 12px 40px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.app-window--narrow {
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.app-window--mid {
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.app-window-titlebar {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.025);
+  flex-shrink: 0;
+}
+
+.app-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.app-window-dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.app-window-dot--red    { background: #ff5f57; }
+.app-window-dot--yellow { background: #febc2e; }
+.app-window-dot--green  { background: #28c840; }
+
+.app-window-body {
+  display: block;
+}
+
+.app-window-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 @keyframes landingGlowFloat {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -1574,7 +1651,8 @@ body {
   .landing-trust-card,
   .landing-demo-frame,
   .landing-screenshot-frame,
-  .landing-screenshot-frame-large {
+  .landing-screenshot-frame-large,
+  .app-window {
     border-radius: 22px;
   }
 
@@ -1592,6 +1670,7 @@ body {
   .landing-orb,
   .landing-hero-card,
   .landing-demo-frame,
+  .app-window,
   [data-reveal] {
     animation: none !important;
     transition: none !important;

@@ -243,7 +243,6 @@ function HistoryScene({ frame, width, height }: SceneProps) {
   if (opacity <= 0) return null;
 
   const localF = frame - S.history.start;
-  const totalF = S.history.end - S.history.start; // 300
 
   // Phase 1 (0-100f): start zoomed out, scroll down
   // Phase 2 (100-180f): zoom in on block cluster
@@ -433,7 +432,7 @@ type SceneProps = { frame: number; width: number; height: number; fps: number };
 
 export function ProductDemoComposition() {
   const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
+  const { width, fps } = useVideoConfig();
   const props: SceneProps = { frame, width, height, fps };
 
   return (

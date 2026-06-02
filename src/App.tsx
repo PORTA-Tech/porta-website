@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
+const DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id=1HXH4aZLDVnfq3hhasGI0x-cI_ulUTdUp";
+
 const audiences = [
   { title: "Founders", detail: "For days split across decisions, hiring, docs, meetings, and constant switching." },
   { title: "Startup teams", detail: "For work that keeps jumping between chat, tickets, docs, and shifting priorities." },
@@ -85,9 +87,66 @@ function AriCard({ icon, title, desc }: { icon: React.ReactNode; title: string; 
   );
 }
 
+// ── Modal ──────────────────────────────────────────────────────────────────
+type ModalKey = "privacy" | "terms" | "contact";
+
+const MODAL_CONTENT: Record<ModalKey, { title: string; body: React.ReactNode }> = {
+  privacy: {
+    title: "Privacy",
+    body: (
+      <p>
+        Ari runs entirely on your device. We collect nothing from inside the app — no keystrokes,
+        no screen content, no file names. The only data we receive is your email if you contact us.
+        Local session data stays on your machine and can be deleted at any time from the app settings.
+      </p>
+    ),
+  },
+  terms: {
+    title: "Terms",
+    body: (
+      <p>
+        Porta is in beta. Use at your own risk. We may update or discontinue the product at any
+        time. Don&apos;t use it in environments where software monitoring is restricted.
+      </p>
+    ),
+  },
+  contact: {
+    title: "Contact",
+    body: (
+      <p>
+        Reach us at{" "}
+        <a href="mailto:hello@useporta.com" className="modal-link">
+          hello@useporta.com
+        </a>
+      </p>
+    ),
+  },
+};
+
+function Modal({ modalKey, onClose }: { modalKey: ModalKey; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const { title, body } = MODAL_CONTENT[modalKey];
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+        <h2 className="modal-title" id="modal-title">{title}</h2>
+        <div className="modal-body">{body}</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
   const [navScrolled, setNavScrolled] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalKey | null>(null);
   const [selectedAudienceTitle, setSelectedAudienceTitle] = useState<string | null>(null);
   const [hoveredAudienceTitle, setHoveredAudienceTitle] = useState<string | null>(null);
   const [supportsHover, setSupportsHover] = useState(false);
@@ -128,9 +187,13 @@ export default function App() {
 
   const activeAudienceTitle = hoveredAudienceTitle ?? selectedAudienceTitle;
   const activeAudience = audiences.find((a) => a.title === activeAudienceTitle) ?? null;
+  const closeModal = () => setActiveModal(null);
 
   return (
     <div className="landing-page" ref={pageRef}>
+
+      {/* ── MODAL ───────────────────────────────────────────────────── */}
+      {activeModal && <Modal modalKey={activeModal} onClose={closeModal} />}
 
       {/* ── NAV ─────────────────────────────────────────────────────── */}
       <nav className={`site-nav${navScrolled ? " nav-scrolled" : ""}`}>
@@ -139,7 +202,7 @@ export default function App() {
           <li><a href="#how-it-works">How it works</a></li>
           <li><a href="#trust">Trust</a></li>
           <li>
-            <a href="#download" className="btn-nav">
+            <a href={DOWNLOAD_URL} download className="btn-nav">
               <DownloadIcon />
               Download
             </a>
@@ -162,7 +225,7 @@ export default function App() {
               Ari runs silently on your Windows PC, tracks how your focus moves through the day, and sends you a clear summary every evening.
             </p>
             <div className="hero-ctas">
-              <a href="#download" className="btn-primary">
+              <a href={DOWNLOAD_URL} download className="btn-primary">
                 <DownloadIcon />
                 Download for Windows
               </a>
@@ -318,9 +381,7 @@ export default function App() {
       <section className="site-section" id="for">
         <div className="section-tag">Who it&apos;s for</div>
         <h2 className="section-h2">For anyone who does <em>deep work</em> at a computer.</h2>
-        <div
-          onMouseLeave={() => { if (supportsHover) setHoveredAudienceTitle(null); }}
-        >
+        <div onMouseLeave={() => { if (supportsHover) setHoveredAudienceTitle(null); }}>
           <div className="chips-cloud">
             {audiences.map((audience, i) => (
               <button
@@ -358,7 +419,7 @@ export default function App() {
           <h2 className="cta-h2">Your best work is waiting.</h2>
           <p className="cta-sub">Download Ari and stay in focus — runs silently on Windows 10 &amp; 11, no account needed.</p>
           <div className="cta-buttons">
-            <a href="#" className="btn-primary">
+            <a href={DOWNLOAD_URL} download className="btn-primary">
               <DownloadIcon />
               Download for Windows
             </a>
@@ -377,9 +438,9 @@ export default function App() {
       <footer className="site-footer">
         <a href="/" className="footer-logo">Ari</a>
         <ul className="footer-links">
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Terms</a></li>
-          <li><a href="mailto:hello@useporta.com">Contact</a></li>
+          <li><button className="footer-link-btn" onClick={() => setActiveModal("privacy")}>Privacy</button></li>
+          <li><button className="footer-link-btn" onClick={() => setActiveModal("terms")}>Terms</button></li>
+          <li><button className="footer-link-btn" onClick={() => setActiveModal("contact")}>Contact</button></li>
         </ul>
         <div className="footer-copy">© 2026 Porta</div>
       </footer>

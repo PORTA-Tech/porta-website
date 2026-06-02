@@ -392,12 +392,6 @@ export default function App() {
             panelClassName="landing-beta-card"
           />
         </div>
-        <div className="landing-beta-footnote" data-reveal data-reveal-order="3" data-motion="section">
-          <p>Prefer the visual walkthrough?</p>
-          <a className="landing-inline-link" href="/#/experience">
-            Open the immersive experience
-          </a>
-        </div>
       </section>
     </main>
   );

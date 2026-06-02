@@ -263,8 +263,8 @@ export default function App() {
         <div className="section-tag">Always with you</div>
         <h2 className="section-h2">Always know where you stand.</h2>
         <p className="section-sub">A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
-        <div className="reveal">
-          <ScreenshotFrame src="/images/widget.png" alt="Ari widget" modifier="screenshot-frame--narrow" />
+        <div className="reveal widget-standalone-wrap">
+          <img className="widget-standalone-img" src="/images/widget.png" alt="Ari widget" />
         </div>
       </section>
 
@@ -283,8 +283,10 @@ export default function App() {
         <div className="section-tag">Every evening</div>
         <h2 className="section-h2">A clear recap lands in your <em>inbox</em> every night.</h2>
         <p className="section-sub">At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
-        <div className="reveal">
-          <ScreenshotFrame src="/images/digest.png" alt="Ari nightly digest email" modifier="screenshot-frame--mid" />
+        <div className="reveal digest-frame-wrap">
+          <div className="digest-clip-box">
+            <img className="digest-img" src="/images/digest.png" alt="Ari nightly digest email" />
+          </div>
         </div>
       </section>
 

@@ -1221,6 +1221,50 @@ body::before {
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
 /* ── KEYFRAMES ──────────────────────────────────────────────── */
+/* ── WIDGET STANDALONE ──────────────────────────────────────── */
+.widget-standalone-wrap {
+  display: flex;
+  justify-content: center;
+}
+.widget-standalone-img {
+  display: block;
+  max-width: 440px;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 32px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.widget-standalone-img:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 44px 110px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,255,71,0.12);
+}
+
+/* ── DIGEST CLIP ─────────────────────────────────────────────── */
+.digest-frame-wrap {
+  display: flex;
+  justify-content: center;
+}
+.digest-clip-box {
+  max-width: 440px;
+  width: 100%;
+  /* clip to top half of the image — 722×677 is the top half of 722×1355 */
+  aspect-ratio: 722 / 677;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 32px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.digest-clip-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 44px 110px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,255,71,0.12);
+}
+.digest-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }

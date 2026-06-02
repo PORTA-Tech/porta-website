@@ -115,8 +115,8 @@ const MODAL_CONTENT: Record<ModalKey, { title: string; body: React.ReactNode }> 
     body: (
       <p>
         Reach us at{" "}
-        <a href="mailto:hello@useporta.com" className="modal-link">
-          hello@useporta.com
+        <a href="mailto:insideporta2@gmail.com" className="modal-link">
+          insideporta2@gmail.com
         </a>
       </p>
     ),
@@ -442,7 +442,7 @@ export default function App() {
           <li><button className="footer-link-btn" onClick={() => setActiveModal("terms")}>Terms</button></li>
           <li><button className="footer-link-btn" onClick={() => setActiveModal("contact")}>Contact</button></li>
         </ul>
-        <div className="footer-copy">© 2026 Porta</div>
+        <div className="footer-copy">© 2025 Porta</div>
       </footer>
 
     </div>

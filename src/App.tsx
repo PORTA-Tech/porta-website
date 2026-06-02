@@ -105,8 +105,9 @@ const MODAL_CONTENT: Record<ModalKey, { title: string; body: React.ReactNode }> 
     title: "Terms",
     body: (
       <p>
-        Porta is in beta. Use at your own risk. We may update or discontinue the product at any
-        time. Don&apos;t use it in environments where software monitoring is restricted.
+        Ari is free during beta. By downloading, you agree to use it on your own Windows machine
+        for personal productivity. We may release updates automatically. Your data never leaves
+        your device. We&apos;re not responsible for any interruptions to the beta service.
       </p>
     ),
   },

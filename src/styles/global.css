@@ -868,24 +868,6 @@ body {
   margin-bottom: 22px;
 }
 
-.landing-demo-frame {
-  padding: 14px;
-  border-radius: 30px;
-}
-
-.landing-demo-video {
-  display: block;
-  width: 100%;
-  border-radius: 22px;
-  background: #000000;
-}
-
-.landing-demo-note {
-  margin-top: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
 
 .landing-grid {
   display: grid;
@@ -912,7 +894,6 @@ body {
 
 .landing-feature-card:hover,
 .landing-trust-card:hover,
-.landing-demo-frame:hover,
 .landing-hero-card:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.18);

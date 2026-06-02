@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ARI_VIDEO_EXPORT_ASSETS } from "./ari-video/data/exportManifest";
 import BetaRequestForm from "./components/BetaRequestForm";
 
 const howAriHelps = [
@@ -127,7 +126,6 @@ export default function App() {
           Ari
         </a>
         <nav className="landing-nav" aria-label="Primary">
-          <a href="#demo">Demo</a>
           <a href="#how-it-works">How it works</a>
           <a href="#trust">Trust</a>
           <a href="#beta">Windows beta</a>
@@ -172,34 +170,6 @@ export default function App() {
               alt="Ari widget showing focus time, pressure, and hours worked"
             />
           </div>
-        </div>
-      </section>
-
-      <section className="landing-shell landing-section" id="demo">
-        <div
-          className="landing-section-heading"
-          data-reveal
-          data-reveal-order="1"
-          data-motion="section"
-        >
-          <p className="landing-eyebrow">Short demo</p>
-          <h2>Watch Ari in one real session.</h2>
-        </div>
-
-        <div
-          className="landing-demo-frame"
-          data-reveal
-          data-reveal-order="2"
-          data-motion="demo"
-        >
-          <video
-            className="landing-demo-video"
-            src={ARI_VIDEO_EXPORT_ASSETS.webMp4PublicPath}
-            poster={ARI_VIDEO_EXPORT_ASSETS.posterPublicPath}
-            controls
-            playsInline
-            preload="metadata"
-          />
         </div>
       </section>
 

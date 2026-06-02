@@ -1,7 +1,6 @@
 export type BetaRequestPayload = {
   workEmail: string;
   role: string;
-  scatterSource: string;
   hoursPerDay: string;
 };
 

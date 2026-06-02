@@ -1017,6 +1017,47 @@ body {
   text-decoration: underline;
 }
 
+.landing-screenshot-frame {
+  width: 100%;
+  background: rgba(8, 10, 16, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 16px;
+  overflow: hidden;
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.landing-screenshot-frame:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 88px rgba(0, 0, 0, 0.28);
+}
+
+.landing-screenshot-frame-large {
+  margin-inline: auto;
+}
+
+.landing-screenshot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+}
+
+.landing-hero-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  margin-top: 14px;
+}
+
 [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 0, 0);
@@ -1531,7 +1572,9 @@ body {
   .landing-hero-card,
   .landing-feature-card,
   .landing-trust-card,
-  .landing-demo-frame {
+  .landing-demo-frame,
+  .landing-screenshot-frame,
+  .landing-screenshot-frame-large {
     border-radius: 22px;
   }
 

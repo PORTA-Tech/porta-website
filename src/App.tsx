@@ -2,60 +2,18 @@ import { useEffect, useState } from "react";
 import { ARI_VIDEO_EXPORT_ASSETS } from "./ari-video/data/exportManifest";
 import BetaRequestForm from "./components/BetaRequestForm";
 
-const whatAriSees = [
-  {
-    title: "Keyboard activity",
-    detail: "Typing pace and rhythm over time.",
-  },
-  {
-    title: "Mouse activity",
-    detail: "Movement, scrolling, and correction patterns.",
-  },
-  {
-    title: "App switching",
-    detail: "How often work jumps between tools and tabs.",
-  },
-  {
-    title: "Idle time",
-    detail: "Pauses, breaks, and stop-start stretches.",
-  },
-];
-
-const whatAriFiguresOut = [
-  {
-    title: "Focus",
-    detail: "Whether steady work is worth protecting.",
-  },
-  {
-    title: "Overload",
-    detail: "When work starts to look scattered.",
-  },
-  {
-    title: "Trust",
-    detail: "How reliable the current reading is.",
-  },
-  {
-    title: "Calibration",
-    detail: "How ready Ari is to step in more.",
-  },
-];
-
 const howAriHelps = [
   {
     title: "Suggest a break",
     detail: "A short pause when overload keeps rising.",
   },
   {
-    title: "Suggest a stretch break",
-    detail: "A quick stretch when fatigue starts building.",
+    title: "Quiet notifications",
+    detail: "Silenced during deep work, turned back on after.",
   },
   {
-    title: "Help you stay on one task",
-    detail: "A nudge to stay with the task in front of you.",
-  },
-  {
-    title: "Quiet notifications during deep work",
-    detail: "Notifications quieted during deep work, then turned back on after.",
+    title: "Stay on task",
+    detail: "A nudge when your attention drifts.",
   },
 ];
 
@@ -92,16 +50,16 @@ const audiences = [
 
 const trustCards = [
   {
-    title: "Pause or resume",
-    detail: "Stop Ari anytime, turn it back on later, or revoke consent.",
+    title: "No keylogging",
+    detail: "Ari never reads what you type or copies clipboard contents.",
   },
   {
-    title: "Export or delete data",
-    detail: "Download your local data or clear it from the device.",
+    title: "No screenshots",
+    detail: "Ari never captures your screen or records what you see.",
   },
   {
-    title: "Privacy basics",
-    detail: "Ari does not read typed text, capture screenshots, or copy clipboard contents.",
+    title: "No file names",
+    detail: "Ari only sees the rhythm of your keyboard, mouse, and which app is in focus.",
   },
 ];
 
@@ -170,7 +128,7 @@ export default function App() {
         </a>
         <nav className="landing-nav" aria-label="Primary">
           <a href="#demo">Demo</a>
-          <a href="#regulation">How Ari helps</a>
+          <a href="#how-it-works">How it works</a>
           <a href="#trust">Trust</a>
           <a href="#beta">Windows beta</a>
         </nav>
@@ -189,8 +147,7 @@ export default function App() {
             <span className="landing-hero-line">at Work.</span>
           </h1>
           <p className="landing-lead">
-            Ari watches activity on your computer for early signs that focus is slipping, then
-            gently helps you stay on track.
+            Ari runs silently on your Windows PC, tracks how your focus moves through the day, and sends you a clear summary every evening.
           </p>
           <div className="landing-hero-actions">
             <a className="landing-button landing-button-primary" href="#beta">
@@ -207,9 +164,13 @@ export default function App() {
         >
           <div className="landing-hero-card">
             <p className="landing-card-copy">
-              Ari can suggest a break, suggest staying on task, or quiet notifications during deep
-              work.
+              A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.
             </p>
+            <img
+              className="landing-hero-card-img"
+              src="/images/widget.png"
+              alt="Ari widget showing focus time, pressure, and hours worked"
+            />
           </div>
         </div>
       </section>
@@ -242,76 +203,100 @@ export default function App() {
         </div>
       </section>
 
-      <section className="landing-shell landing-section" id="signals">
+      <section className="landing-shell landing-section" id="widget">
         <div
           className="landing-section-heading"
           data-reveal
           data-reveal-order="1"
           data-motion="section"
         >
-          <p className="landing-eyebrow">What Ari sees</p>
-          <h2>It looks at how work moves through your day.</h2>
+          <p className="landing-eyebrow">Always with you</p>
+          <h2>Always know where you stand.</h2>
+          <p>A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
         </div>
-        <div className="landing-grid landing-grid-four">
-          {whatAriSees.map((item, index) => (
-            <article
-              key={item.title}
-              className="landing-feature-card"
-              data-reveal
-              data-reveal-order={Math.min(index + 1, 4)}
-              data-motion={["card-rise", "card-slide-right", "card-slide-left", "card-tilt"][index % 4]}
-            >
-              <h3>{item.title}</h3>
-              <p>{item.detail}</p>
-            </article>
-          ))}
+        <div
+          className="landing-screenshot-frame"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="demo"
+        >
+          <img
+            className="landing-screenshot-img"
+            src="/images/widget.png"
+            alt="Ari widget"
+          />
         </div>
       </section>
 
-      <section className="landing-shell landing-section" id="inference">
+      <section className="landing-shell landing-section" id="history">
         <div
           className="landing-section-heading"
           data-reveal
           data-reveal-order="1"
           data-motion="section"
         >
-          <p className="landing-eyebrow">What Ari figures out</p>
-          <h2>It turns those signals into a few clear states.</h2>
+          <p className="landing-eyebrow">Your day, visualized</p>
+          <h2>See exactly how your day moved.</h2>
+          <p>Ari builds a visual map of your day — focus blocks, distractions, breaks — by the hour. Day, week, or two weeks at a glance.</p>
         </div>
-        <div className="landing-grid landing-grid-four">
-          {whatAriFiguresOut.map((item, index) => (
-            <article
-              key={item.title}
-              className="landing-feature-card"
-              data-reveal
-              data-reveal-order={Math.min(index + 1, 4)}
-              data-motion={["card-slide-left", "card-rise", "card-tilt", "card-slide-right"][index % 4]}
-            >
-              <h3>{item.title}</h3>
-              <p>{item.detail}</p>
-            </article>
-          ))}
+        <div
+          className="landing-screenshot-frame landing-screenshot-frame-large"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="demo"
+        >
+          <img
+            className="landing-screenshot-img"
+            src="/images/history.png"
+            alt="Ari history calendar showing a full day of focus blocks"
+          />
         </div>
       </section>
 
-      <section className="landing-shell landing-section" id="regulation">
+      <section className="landing-shell landing-section" id="digest">
         <div
           className="landing-section-heading"
           data-reveal
           data-reveal-order="1"
           data-motion="section"
         >
-          <p className="landing-eyebrow">How Ari helps</p>
-          <h2>When Ari steps in, it does it in simple ways.</h2>
+          <p className="landing-eyebrow">Every evening</p>
+          <h2>A clear recap lands in your inbox every night.</h2>
+          <p>At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
         </div>
-        <div className="landing-grid landing-grid-four">
+        <div
+          className="landing-screenshot-frame"
+          data-reveal
+          data-reveal-order="2"
+          data-motion="demo"
+        >
+          <img
+            className="landing-screenshot-img"
+            src="/images/digest.png"
+            alt="Ari nightly digest email"
+          />
+        </div>
+      </section>
+
+      <section className="landing-shell landing-section" id="how-it-works">
+        <div
+          className="landing-section-heading"
+          data-reveal
+          data-reveal-order="1"
+          data-motion="section"
+        >
+          <p className="landing-eyebrow">When focus slips</p>
+          <h2>Ari quietly steps in.</h2>
+          <p>When overload builds or deep work is interrupted, Ari suggests a break, suppresses notifications, or nudges you back — without breaking your flow.</p>
+        </div>
+        <div className="landing-grid landing-grid-three">
           {howAriHelps.map((item, index) => (
             <article
               key={item.title}
               className="landing-feature-card"
               data-reveal
-              data-reveal-order={Math.min(index + 1, 4)}
-              data-motion={["card-tilt", "card-rise", "card-slide-right", "card-slide-left"][index % 4]}
+              data-reveal-order={Math.min(index + 1, 3)}
+              data-motion={["card-slide-right", "card-rise", "card-slide-left"][index % 3]}
             >
               <h3>{item.title}</h3>
               <p>{item.detail}</p>
@@ -328,7 +313,7 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Who it&apos;s for</p>
-          <h2>For people who need clear thinking at a computer.</h2>
+          <h2>For anyone who does deep work at a computer.</h2>
         </div>
         <div
           className="landing-audience-cloud"
@@ -389,7 +374,8 @@ export default function App() {
           data-motion="section"
         >
           <p className="landing-eyebrow">Controls and trust</p>
-          <h2>You stay in control.</h2>
+          <h2>Your data stays on your device.</h2>
+          <p>Ari never reads what you type, never takes screenshots, never logs what files you open. It only sees the rhythm of your keyboard, mouse, and which app is in focus.</p>
         </div>
         <div className="landing-grid landing-grid-three">
           {trustCards.map((item, index) => (

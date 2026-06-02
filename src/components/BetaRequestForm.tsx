@@ -17,7 +17,6 @@ type BetaRequestFormProps = {
 const INITIAL_FORM: BetaRequestPayload = {
   workEmail: "",
   role: "",
-  scatterSource: "",
   hoursPerDay: "",
 };
 
@@ -61,10 +60,6 @@ export default function BetaRequestForm({
 
     if (!form.role.trim()) {
       return "Please tell us your role.";
-    }
-
-    if (!form.scatterSource.trim()) {
-      return "Please describe the biggest thing that scatters your day.";
     }
 
     if (!form.hoursPerDay) {
@@ -130,17 +125,6 @@ export default function BetaRequestForm({
               onChange={(e) => updateField("role", e.target.value)}
               placeholder="Engineer, PM, founder..."
               autoComplete="organization-title"
-            />
-          </label>
-
-          <label className="scene-access-field">
-            <span className="scene-access-label">Biggest source of the day getting scattered</span>
-            <textarea
-              className="scene-access-input scene-access-textarea"
-              value={form.scatterSource}
-              onChange={(e) => updateField("scatterSource", e.target.value)}
-              placeholder="Meetings, chat, too many tabs, app switching..."
-              rows={4}
             />
           </label>
 

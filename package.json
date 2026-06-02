@@ -11,7 +11,8 @@
     "video:sync": "node ./scripts/sync-ari-video-assets.mjs",
     "video:dev": "npm run video:sync && vite",
     "video:studio": "npm run video:sync && remotion studio remotion/index.ts",
-    "video:render": "node ./scripts/export-ari-video-assets.mjs"
+    "video:render": "node ./scripts/export-ari-video-assets.mjs",
+    "video:demo": "node ./scripts/export-product-demo.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",

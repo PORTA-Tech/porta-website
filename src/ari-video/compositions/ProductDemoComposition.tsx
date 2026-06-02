@@ -293,7 +293,7 @@ function HistoryScene({ frame, width, height }: SceneProps) {
 }
 
 // ─── SCENE 4 — Digest Email ────────────────────────────────────────────────
-function DigestScene({ frame, width, height, fps }: SceneProps) {
+function DigestScene({ frame, width, fps }: SceneProps) {
   const opacity = sceneFade(frame, S.digest);
   if (opacity <= 0) return null;
 
@@ -432,7 +432,7 @@ type SceneProps = { frame: number; width: number; height: number; fps: number };
 
 export function ProductDemoComposition() {
   const frame = useCurrentFrame();
-  const { width, fps } = useVideoConfig();
+  const { width, height, fps } = useVideoConfig();
   const props: SceneProps = { frame, width, height, fps };
 
   return (

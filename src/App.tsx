@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-const DOWNLOAD_URL = "https://drive.google.com/file/d/1HXH4aZLDVnfq3hhasGI0x-cI_ulUTdUp/view?usp=drive_link";
+const DOWNLOAD_URL = "https://drive.google.com/file/d/1HXH4aZLDVnfq3hhasGI0x-cI_ulUTdUp/view?usp=sharing";
 
 const audiences = [
   { title: "Founders", detail: "For days split across decisions, hiring, docs, meetings, and constant switching." },

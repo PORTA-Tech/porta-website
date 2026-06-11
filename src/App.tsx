@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-const DOWNLOAD_URL = "https://drive.google.com/file/d/13bzKhpbY640IjS0wP9-HcZvz7VkQ0Jlh/view?usp=sharing";
+const DOWNLOAD_URL = "https://github.com/PORTA-Tech/porta-windows-releases/releases/download/v1.2.86/AriAgentInstaller-1.2.86.msi";
 
 const audiences = [
   { title: "Founders", detail: "For days split across decisions, hiring, docs, meetings, and constant switching." },

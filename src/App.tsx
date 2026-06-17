@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-const DOWNLOAD_URL = "https://github.com/PORTA-Tech/porta-windows-releases/releases/download/v1.2.86/AriAgentInstaller-1.2.86.msi";
+// Always resolves to the newest release's AriAgentInstaller.msi — no need to bump this per release.
+const DOWNLOAD_URL = "https://github.com/PORTA-Tech/porta-windows-releases/releases/latest/download/AriAgentInstaller.msi";
 
 const audiences = [
   { title: "Founders", detail: "For days split across decisions, hiring, docs, meetings, and constant switching." },

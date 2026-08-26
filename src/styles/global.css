@@ -29,6 +29,8 @@
   --w-go:#3FBF7F; --w-warn:#E8A33D;
   --c-bg:#14171C; --c-line:#2A3038; --c-ink:#F2F4F7; --c-ink2:#8B929E;
   --c-mut:#6F7885; --c-go:#3FBF7F; --c-goink:#0E2A1C; --c-chip:#2E353E; --c-track:#232931;
+  /* the digest's own values, from digestEmailBuilder */
+  --d-accent:#1f9d55; --d-machine:#9aa3ad; --d-away:#e3e2dc;
 
   --display:'Bricolage Grotesque Variable','Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
   --body:'Instrument Sans Variable','Instrument Sans','Segoe UI',system-ui,sans-serif;
@@ -105,7 +107,12 @@ h3{font-size:19px;letter-spacing:-.012em;line-height:1.3}
 .seg button:hover{color:var(--ink-2)}
 .seg button[aria-selected="true"]{background:var(--signal);color:var(--signal-ink)}
 .stage-hint{font-size:14px;color:var(--ink-3);max-width:46ch}
-.view[hidden]{display:none}
+/* Both views occupy one grid cell, so the stage is as tall as the taller of the two and the
+   toggle never jumps. The inactive one keeps its box but is hidden from eye and screen
+   reader alike — neither sheet contains anything focusable. */
+.views{display:grid}
+.views>.view{grid-area:1/1}
+.view[data-active="false"]{visibility:hidden;pointer-events:none}
 
 .sheet{background:var(--paper-2);color:var(--pink);max-width:760px;border-radius:10px;border:1px solid var(--pring);box-shadow:0 2px 4px rgba(0,0,0,.4),0 26px 64px -20px rgba(0,0,0,.8);overflow:hidden;animation:lift .45s cubic-bezier(.2,.7,.3,1) both}
 @keyframes lift{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -394,6 +401,96 @@ h3{font-size:19px;letter-spacing:-.012em;line-height:1.3}
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
   html{scroll-behavior:auto}
 }
+
+/* ── second pass, 2026-08-26 ──────────────────────────────── */
+
+/* the name: Ari is the product, Porta is the company */
+.brand-sub{font-family:var(--body);font-size:12px;font-weight:400;letter-spacing:0;color:var(--ink-3)}
+
+/* section heading block, used by the sections that lead with copy */
+.head{display:flex;flex-direction:column;gap:14px;max-width:60ch}
+.head-sub{font-size:15.5px;color:var(--ink-3)}
+
+/* THE RESULT LINE — the sentence the freelancer typed, under the task it belongs to.
+   This is the argument of the page, so it is body type and not a footnote. */
+/* Fixed columns so a long status ("Waiting on you") cannot spill across the bar. */
+.work-client{table-layout:fixed}
+.work-client td{vertical-align:top}
+.work-client .st{white-space:normal}
+.work-client td:nth-child(2){padding-right:12px}
+.work-client .tbc{padding-right:12px}
+.res{display:block;font-size:12px;line-height:1.5;color:var(--pink-2);padding:4px 0 0 24px;max-width:46ch}
+
+/* the evening card, with a sentence already in it rather than a placeholder */
+.card .inp.typed{color:var(--c-ink);background:#0E1116;line-height:1.5}
+
+/* the chain: the same sentence in the card and in the report */
+.ch-out .x b{font-weight:600}
+.chain-echo{color:var(--pink);background:#fdf6d8;border-radius:3px;padding:0 2px}
+
+/* ── the digest, rebuilt from digestEmailBuilder ───────────── */
+.mail-resume{font-size:13px!important;font-weight:600;color:var(--pink)!important;letter-spacing:-.01em}
+.mail-l{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--pink-3)!important;padding-top:2px}
+.strip{display:flex;gap:1px;height:14px;border-radius:3px;overflow:hidden;background:var(--d-away)}
+.strip i{flex:1;display:block}
+.strip-hours{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--pink-3);margin-top:-5px}
+.strip-key{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;color:var(--pink-3);margin-top:-4px}
+.strip-key span{display:flex;align-items:center;gap:4px}
+.strip-key i{width:7px;height:7px;border-radius:2px;display:block}
+.mtask{display:flex;gap:12px;align-items:flex-start}
+.mtask-l{flex:1;min-width:0}
+.mtask-l .nm{font-size:12px!important;color:var(--pink-2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtask-l .nm.done{color:var(--pink)!important}
+.mtask-l .ck{color:var(--d-accent)}
+.mtask-bar{display:block;height:5px;border-radius:3px;background:var(--d-away);margin-top:6px;max-width:190px;overflow:hidden}
+.mtask-bar i{display:block;height:5px;border-radius:3px}
+.mtask-r{text-align:right;white-space:nowrap}
+.mtask-r .av{font-size:15px!important;color:var(--pink-2)!important;line-height:1.2!important}
+.mtask-r .av.done{color:var(--pink)!important}
+.mtask-r .pl{font-size:9.5px!important;color:var(--pink-3)!important;line-height:1.4!important}
+.mail-fig div{gap:3px}
+.mail-fig .l{padding-top:0}
+.mail-fig .v{font-size:15px}
+
+/* ── four moments, one height ──────────────────────────────── */
+/* display:contents drops each stop's four children straight into the rail's own rows, so the
+   labels, headings, copy and product shots line up across all four columns instead of each
+   column packing independently. Only in the 4-across layout; below that they stack and there
+   is nothing to align against. */
+/* The four moments keep their natural heights and align at the TOP. Forcing a shared height
+   opened a void inside the morning and all-day cards, which reads worse than an uneven
+   bottom edge — the eye forgives a ragged baseline, not a hole in a card. */
+@media (min-width:1041px){
+  .day-rail{grid-template-rows:auto auto auto auto;grid-auto-flow:column;align-items:start;row-gap:14px}
+  .stop{display:contents}
+  .stop-ui{margin-top:2px}
+}
+
+/* ── Effort by day, geometry from reportPageBuilder ────────── */
+.eff-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* min-height, not height: the total above and the label below add ~43px to the 150px column,
+   and a fixed height inside the scroll wrapper clipped the totals off the top. */
+.eff{display:flex;align-items:flex-end;gap:14px;min-height:172px;padding-top:6px;min-width:100%}
+.eff-col{display:flex;flex-direction:column;align-items:center;flex:1;min-width:34px}
+/* column-reverse so the first task in the day sits on the baseline, as it does in the report */
+.eff-stack{display:flex;flex-direction:column-reverse;gap:2px;width:100%;max-width:64px;justify-content:flex-end}
+.eff-seg{border-radius:2px;width:100%}
+.eff-seg:last-child{border-radius:4px 4px 2px 2px}
+.eff-zero{height:2px;background:var(--prule);width:100%;max-width:64px;border-radius:1px}
+.eff-tot{font-size:11px;color:var(--pink);font-variant-numeric:tabular-nums;padding-bottom:6px;height:16px}
+.eff-tot.zero{color:var(--pink-3)}
+.eff-lab{font-family:var(--mono);font-size:10px;color:var(--pink-3);padding-top:8px;white-space:nowrap;letter-spacing:.08em}
+@media (max-width:640px){
+  .eff{gap:6px;min-height:150px}
+  .eff-tot{font-size:10px;padding-bottom:4px}
+  .eff-lab{font-size:9px;padding-top:6px}
+  .eff-stack,.eff-zero{max-width:44px}
+}
+
+/* four figures: two-up while the column is narrow, four across when there is room */
+.mail-fig{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:10px 14px}
+.mail-fig .v{white-space:nowrap}
+.mail-fig .l{white-space:nowrap}
 
 /* ── beta request form ─────────────────────────────────────── */
 .scene-access-panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:clamp(24px,3vw,34px);display:flex;flex-direction:column;gap:14px;max-width:520px}

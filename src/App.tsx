@@ -6,19 +6,16 @@ import PlanCard from "./components/PlanCard";
 import ReportSheet from "./components/ReportSheet";
 import ReportToggle, { type ReportTab } from "./components/ReportToggle";
 import Widget from "./components/Widget";
-import {
-  CONTACT_EMAIL,
-  DOWNLOAD_HREF,
-  DOWNLOAD_URL,
-  REPORT_DEMO_HREF,
-  REPORT_DEMO_LABEL,
-  talkToUs,
-} from "./lib/links";
+import { CONTACT_HREF, CTA_HREF, CTA_LABEL, REPORT_HREF, REPORT_LABEL, talkToUs } from "./lib/links";
 
 const HERO_SPARK =
   "0,15 14,13 28,14 42,10 56,12 70,8 84,11 98,7 112,9 126,6 140,8 154,5 168,7 182,4 196,6 210,5 224,7 238,4 252,6 266,5 280,6";
 const DAY_SPARK =
   "0,17 16,14 32,15 48,11 64,13 80,9 96,10 112,6 128,8 144,5 160,7 176,4 192,6 208,3 224,5 240,4 256,6 280,4";
+
+/** The sentence that has to be identical in the evening card and in the report. */
+const CHAIN_TASK = "Checkout flow rebuild";
+const CHAIN_RESULT = "Live on staging. Card, Apple Pay and one failure path all tested.";
 
 const REPORT_TABS: ReportTab[] = [
   { id: "tab-client", controls: "v-client", label: "What your client sees" },
@@ -33,18 +30,18 @@ const REPORT_HINTS = [
 const PROBLEMS = [
   {
     n: "01",
-    title: "You spend Friday remembering",
-    body: "Scrolling back through your own week to work out what you actually did, because nothing wrote it down while you were doing it.",
+    title: "It's Friday and you can't remember Tuesday",
+    body: "You did the work. You just can't describe it any more. So you write something vague, and vague is exactly what gets questioned.",
   },
   {
     n: "02",
-    title: "Your invoice has nothing behind it",
-    body: "A number and one line of description. If the client questions it, all you have is what you remember. Memory loses that argument.",
+    title: "An invoice with nothing behind it",
+    body: "A number and one line. When they ask what the fourteen hours were, you are arguing from memory, and memory loses that argument every time.",
   },
   {
     n: "03",
-    title: "Silence worries people",
-    body: "They can't see you working, so they check in. You reply. Now they've learned that asking works, so they ask again.",
+    title: "They asked again",
+    body: "They can't see you working, so they check in. You answer. Now they know asking works, so on Thursday they ask again.",
   },
 ];
 
@@ -52,7 +49,7 @@ const RULES = [
   ["Nothing is guessed", "Every hour was counted while you were working."],
   [
     "It counts low, never high",
-    "Breaks aren't included, so the total sits under the clock on the wall.",
+    "Breaks and time away are left out, so the total always sits under the clock on the wall. Nobody ever felt overcharged by Ari.",
   ],
   [
     "Days off show as gaps",
@@ -60,20 +57,17 @@ const RULES = [
   ],
   [
     'No "time remaining"',
-    "A guess you made for yourself turns into a promise the second they read it.",
+    "A guess you made for yourself becomes a promise the second someone else reads it.",
   ],
   ["3 of 5 tasks, not 60%", "Tasks aren't the same size. A percentage pretends they are."],
   [
     "Once sent, it's frozen",
     "Tidying your notes later changes the next report, never one they already have.",
   ],
-  [
-    "You keep a copy of what was sent",
-    "The numbers, the wording, who got it, and when.",
-  ],
+  ["You keep a copy of what was sent", "The numbers, the wording, who got it, and when."],
   [
     "It never claims a win you didn't confirm",
-    "The summary comes from what you said, never from which apps were open.",
+    "The summary is built from the sentences you wrote, never from which applications were open.",
   ],
 ];
 
@@ -113,9 +107,8 @@ const FAQ = [
 export default function App() {
   const [view, setView] = useState(0);
 
-  // The document is empty until React renders, so the browser's own fragment
-  // scroll finds nothing and a shared /#pricing link lands at the top. Run it
-  // once the page actually exists.
+  // The document is empty until React renders, so the browser's own fragment scroll finds
+  // nothing and a shared /#pricing link lands at the top. Run it once the page exists.
   useEffect(() => {
     const hash = window.location.hash;
     if (hash.length < 2) {
@@ -132,16 +125,17 @@ export default function App() {
         <div className="shell nav-in">
           <a className="brand" href="#top">
             <span className="dot" />
-            Porta
+            Ari
+            <span className="brand-sub">by Porta</span>
           </a>
           <nav className="nav-links" aria-label="Main">
             <a href="#report">The report</a>
-            <a href="#day">A day with Porta</a>
+            <a href="#day">A day with Ari</a>
             <a href="#trust">Why it's believed</a>
             <a href="#pricing">Pricing</a>
           </nav>
-          <a className="btn btn-primary btn-sm" href="#pricing">
-            Try it free
+          <a className="btn btn-primary btn-sm" href={CTA_HREF}>
+            {CTA_LABEL}
           </a>
         </div>
       </header>
@@ -151,24 +145,20 @@ export default function App() {
         <section className="shell hero">
           <div className="hero-copy">
             <p className="eyebrow">For freelancers and contractors · Windows</p>
-            <h1>
-              Stop writing
-              <br />
-              the update.
-            </h1>
+            <h1>Your client stops asking how it's going.</h1>
             <p className="lede">
-              Porta counts your work while you do it. At the end of the week it writes the
-              progress report your client is waiting for. You read it and press send.
+              Ari counts your hours while you work, and turns them into a report your client can
+              open. You write one sentence at the end of the day. It writes everything else.
             </p>
             <div className="hero-cta">
-              <a className="btn btn-primary" href={DOWNLOAD_HREF}>
-                Download for Windows
+              <a className="btn btn-primary" href={CTA_HREF}>
+                {CTA_LABEL}
               </a>
-              <a className="btn btn-ghost" href={REPORT_DEMO_HREF}>
-                {REPORT_DEMO_LABEL}
+              <a className="btn btn-ghost" href={REPORT_HREF}>
+                {REPORT_LABEL}
               </a>
             </div>
-            <p className="hint">14 days free · No card · Windows 10 and 11</p>
+            <p className="hint">Windows 10 and 11 · 14 days free · No card</p>
           </div>
 
           <div>
@@ -184,70 +174,66 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 2. THE REPORT ═════════════════════════════════════ */}
-        <section className="shell stage" id="report">
-          <div className="stage-bar">
-            <ReportToggle
-              tabs={REPORT_TABS}
-              value={view}
-              onChange={setView}
-              label="Report view"
-            />
+        {/* ══ 2. THE REPORT — proof before argument ═════════════ */}
+        <section className="shell band" id="report">
+          <div className="head">
+            <p className="eyebrow">The report</p>
+            <h2>This is what lands in their inbox.</h2>
+            <p className="lede">
+              One link. Permanent, and frozen the second you send it. Here is a real week.
+            </p>
+          </div>
+
+          <div className="stage-bar" style={{ paddingTop: 26 }}>
+            <ReportToggle tabs={REPORT_TABS} value={view} onChange={setView} label="Report view" />
             <p className="stage-hint">{REPORT_HINTS[view]}</p>
           </div>
 
-          <div
-            className="view"
-            id="v-client"
-            role="tabpanel"
-            aria-labelledby="tab-client"
-            hidden={view !== 0}
-          >
-            <ReportSheet variant="client" />
-            <p className="cap">
-              <span className="ar" aria-hidden="true">
-                →
-              </span>
-              Your client clicks a link. Nothing to install, no account, no password. What they
-              see is frozen the moment you send it, so it says the same thing in six months.
-            </p>
-          </div>
+          <div className="views">
+            <div
+              className="view"
+              id="v-client"
+              role="tabpanel"
+              aria-labelledby="tab-client"
+              data-active={view === 0}
+              aria-hidden={view !== 0}
+            >
+              <ReportSheet variant="client" />
+              <p className="cap">
+                <span className="ar" aria-hidden="true">
+                  →
+                </span>
+                Your client clicks a link. Nothing to install, no account, no password. What they
+                see is frozen the moment you send it, so it says the same thing in six months.
+              </p>
+            </div>
 
-          <div
-            className="view"
-            id="v-you"
-            role="tabpanel"
-            aria-labelledby="tab-you"
-            hidden={view !== 1}
-          >
-            <ReportSheet variant="private" />
-            <p className="cap">
-              <span className="ar" aria-hidden="true">
-                →
-              </span>
-              Same week, two views. You draw the line once, and Porta never moves it.
-            </p>
-          </div>
-        </section>
-
-        {/* ══ 3. STATEMENT ══════════════════════════════════════ */}
-        <section className="statement">
-          <div className="shell">
-            <p>
-              They stop asking how it's going, <em>because they can already see.</em>
-            </p>
+            <div
+              className="view"
+              id="v-you"
+              role="tabpanel"
+              aria-labelledby="tab-you"
+              data-active={view === 1}
+              aria-hidden={view !== 1}
+            >
+              <ReportSheet variant="private" />
+              <p className="cap">
+                <span className="ar" aria-hidden="true">
+                  →
+                </span>
+                Same week, two views. You draw the line once, and Ari never moves it.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* ══ 4. THE PROBLEM ════════════════════════════════════ */}
+        {/* ══ 3. WHY THIS EXISTS ════════════════════════════════ */}
         <section className="shell band" id="why">
           <div className="split">
             <div className="split-head">
               <p className="eyebrow">Why this exists</p>
               <h2>The work is the easy part.</h2>
-              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
-                Proving it is what costs you every week.
-              </p>
+              <p className="head-sub">Proving it is what costs you, every week.</p>
             </div>
             <div className="probs">
               {PROBLEMS.map((problem) => (
@@ -263,13 +249,13 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 5. A DAY WITH PORTA ═══════════════════════════════ */}
+        {/* ══ 4. A DAY WITH ARI ═════════════════════════════════ */}
         <section className="shell band" id="day">
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "60ch" }}>
-            <p className="eyebrow">A day with Porta</p>
+          <div className="head">
+            <p className="eyebrow">A day with Ari</p>
             <h2>You do the work. It does the paperwork.</h2>
             <p className="lede">
-              Four moments in a day. You only touch one of them, and it takes about a minute.
+              Four moments. You touch one of them, and it takes about a minute.
             </p>
           </div>
 
@@ -287,8 +273,8 @@ export default function App() {
               <p className="stop-when">All day</p>
               <h3>It counts, quietly</h3>
               <p>
-                No timer to start. No timer to forget to stop. The corner panel shows what's
-                being counted.
+                No timer to start. No timer to forget to stop. The corner panel shows what is being
+                counted.
               </p>
               <div className="stop-ui">
                 <Widget
@@ -315,7 +301,7 @@ export default function App() {
             </div>
 
             <div className="stop">
-              <p className="stop-when">11:30 pm</p>
+              <p className="stop-when">11:30pm</p>
               <h3>Your day lands in your inbox</h3>
               <p>Just for you. Nobody else gets this one, and it never mentions a client.</p>
               <div className="stop-ui">
@@ -325,24 +311,22 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 6. THE CHAIN ══════════════════════════════════════ */}
+        {/* ══ 5. WHERE THE WORDS COME FROM ══════════════════════ */}
         <section className="shell band" id="chain">
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "58ch" }}>
+          <div className="head" style={{ maxWidth: "58ch" }}>
             <p className="eyebrow">Where the words come from</p>
             <h2>One tap becomes one line.</h2>
             <p className="lede">
-              Nothing in the report is a machine guessing at your work. The hours were counted.
-              The words are yours.
+              Ari counts the hours. It never writes the work. The sentence your client reads is the
+              one you typed at the end of the day, in your words, about your own work. Nothing in
+              the report is a machine guessing.
             </p>
           </div>
 
           <div className="chain">
             <div className="ch-side">
               <p className="ch-l">You typed this, Thursday 6:40 pm</p>
-              <div className="ch-tap">
-                <p className="q">What came of it?</p>
-                <p className="a">Live on staging, ready for review</p>
-              </div>
+              <CheckInCard variant="chain" task={CHAIN_TASK} result={CHAIN_RESULT} hours="7h 36m" />
             </div>
             <div className="ch-ar" aria-hidden="true">
               →
@@ -350,55 +334,31 @@ export default function App() {
             <div className="ch-side">
               <p className="ch-l">Your client reads this, Friday</p>
               <div className="ch-out">
-                <p className="l">In the summary</p>
+                <p className="l">In the report</p>
                 <p className="x">
-                  "The checkout flow is rebuilt and live on staging, ready for review. 7.6 hours
-                  across Monday and Tuesday."
+                  <b>{CHAIN_TASK}</b> · Done · 7.6h
+                  <br />
+                  <span className="chain-echo">{CHAIN_RESULT}</span>
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ══ 7. WHY IT'S BELIEVED ══════════════════════════════ */}
-        <section className="shell band" id="trust">
-          <div className="split">
-            <div className="split-head">
-              <p className="eyebrow">Why a client believes it</p>
-              <h2>Counted, not remembered.</h2>
-              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
-                Anyone can argue with an invoice. These rules mean your answer is the
-                measurement, not your word.
-              </p>
-            </div>
-            <div className="rules">
-              {RULES.map(([title, body], index) => (
-                <div className="ri" key={title}>
-                  <span className="mk">{String(index + 1).padStart(2, "0")}</span>
-                  <p>
-                    <b>{title}</b>
-                    {body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ 8. PRIVACY ════════════════════════════════════════ */}
+        {/* ══ 6. PRIVACY — moved above the eight rules ══════════ */}
         <section className="shell band" id="privacy">
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "60ch" }}>
+          <div className="head">
             <p className="eyebrow">Privacy</p>
             <h2>Other tools prove your work by watching you.</h2>
             <p className="lede">
-              Screenshots every ten minutes. Keystroke counts. A score your client can read. It
-              works, and it costs you your dignity. Porta counts the shape of the work, never
-              what's in it.
+              Screenshots every ten minutes. Keystroke counts. A productivity score your client is
+              allowed to read. It works, and it costs you your dignity. Ari counts the shape of the
+              work, never what is inside it.
             </p>
           </div>
 
           <div className="never">
-            <p className="eyebrow">Porta never</p>
+            <p className="eyebrow">Ari never</p>
             <div className="ng">
               {NEVER.map(([title, body]) => (
                 <div className="ni" key={title}>
@@ -415,9 +375,34 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 9. FIT ════════════════════════════════════════════ */}
+        {/* ══ 7. WHY A CLIENT BELIEVES IT ═══════════════════════ */}
+        <section className="shell band" id="trust">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Why a client believes it</p>
+              <h2>Counted, not remembered.</h2>
+              <p className="head-sub">
+                Anyone can argue with an invoice. These rules mean your answer is the measurement,
+                not your word.
+              </p>
+            </div>
+            <div className="rules">
+              {RULES.map(([title, body], index) => (
+                <div className="ri" key={title}>
+                  <span className="mk">{String(index + 1).padStart(2, "0")}</span>
+                  <p>
+                    <b>{title}</b>
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 8. FIT ════════════════════════════════════════════ */}
         <section className="shell band" id="fit">
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "56ch" }}>
+          <div className="head" style={{ maxWidth: "56ch" }}>
             <p className="eyebrow">Fit</p>
             <h2>Who this is for, and who it isn't.</h2>
           </div>
@@ -446,7 +431,7 @@ export default function App() {
                 {[
                   "You're on a Mac. There's no Mac version, and we won't pretend there is.",
                   "You work fixed-price and hours never come up",
-                  "You need invoicing. Porta hands you the hours; your invoicing tool keeps its job.",
+                  "You need invoicing. Ari hands you the hours; your invoicing tool keeps its job.",
                   "You want to watch a team. This is bought by the person doing the work.",
                 ].map((item) => (
                   <li key={item}>
@@ -461,13 +446,13 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 10. PRICING ═══════════════════════════════════════ */}
+        {/* ══ 9. PRICING ════════════════════════════════════════ */}
         <section className="shell band" id="pricing">
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "56ch" }}>
+          <div className="head" style={{ maxWidth: "56ch" }}>
             <p className="eyebrow">Pricing</p>
             <h2>Start on your own. Bring people when you need to.</h2>
             <p className="lede">
-              If one report saves you an hour of writing, it's paid for the month twice over.
+              If one report saves you an hour of writing, it has paid for the month twice over.
             </p>
           </div>
 
@@ -483,10 +468,10 @@ export default function App() {
                 "Unlimited reports and clients",
                 "Counted automatically, no timers",
                 "A permanent link per report, plus PDF",
-                "Daily and weekly email, just for you",
+                "Daily email, just for you",
                 "Sent in your name, replies come to you",
               ]}
-              cta={{ label: "Start 14 days free", href: DOWNLOAD_URL, primary: true }}
+              cta={{ label: CTA_LABEL, href: CTA_HREF, primary: true }}
               note="No card. Send a real report first."
             />
             <PlanCard
@@ -498,9 +483,8 @@ export default function App() {
               hint="3 people minimum"
               features={[
                 "Everything in Solo",
-                "Shared projects and clients",
+                "Shared projects and clients, so two people never send the same client two reports",
                 "One report covering the whole team's week",
-                "Each person's private view stays private",
               ]}
               cta={{ label: "Talk to us", href: talkToUs("Team") }}
               note="Tell us how you work and we'll set it up."
@@ -515,7 +499,8 @@ export default function App() {
               features={[
                 "Everything in Team",
                 "Set up with you, machine by machine",
-                "Someone you can call",
+                "A named person you can call, not a ticket queue",
+                "New people set up as you hire them",
               ]}
               cta={{ label: "Talk to us", href: talkToUs("Agency") }}
               note="Usually a 20 minute call."
@@ -523,24 +508,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 11. DOWNLOAD ══════════════════════════════════════ */}
-        <section className="shell band" id="download">
-          <div className="split">
-            <div className="split-head">
-              <p className="eyebrow">Download</p>
-              <h2>Put it on your machine.</h2>
-              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
-                Windows 10 and 11. Fourteen days free, no card. We'll email you the link.
-              </p>
-            </div>
-            <BetaRequestForm
-              title="Where should we send it?"
-              description="Two fields, and one question we'd genuinely like the answer to."
-            />
-          </div>
-        </section>
-
-        {/* ══ 12. FAQ ═══════════════════════════════════════════ */}
+        {/* ══ 10. FAQ ═══════════════════════════════════════════ */}
         <section className="shell band" id="faq">
           <div className="split">
             <div className="split-head">
@@ -558,22 +526,21 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 13. CLOSE ═════════════════════════════════════════ */}
-        <section className="shell band close">
-          <h2>Send the week. Not an email about it.</h2>
-          <p className="lede">
-            Install it on a Monday. By Friday there's a report waiting, and you didn't write a
-            word of it.
-          </p>
-          <div className="hero-cta">
-            <a className="btn btn-primary" href={DOWNLOAD_HREF}>
-              Download for Windows
-            </a>
-            <a className="btn btn-ghost" href={REPORT_DEMO_HREF}>
-              {REPORT_DEMO_LABEL}
-            </a>
+        {/* ══ 11. DOWNLOAD — the one call to action ═════════════ */}
+        <section className="shell band" id="download">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Download</p>
+              <h2>Put it on your machine.</h2>
+              <p className="head-sub">
+                Windows 10 and 11. Fourteen days free, no card. We email you the link.
+              </p>
+            </div>
+            <BetaRequestForm
+              title="Where should we send it?"
+              description="Two fields, and one question we would genuinely like the answer to."
+            />
           </div>
-          <p className="hint">Windows 10 and 11 · 14 days free · No card</p>
         </section>
       </main>
 
@@ -588,7 +555,7 @@ export default function App() {
             <a href="#pricing">Pricing</a>
             <a href="#privacy">Privacy</a>
             <a href="#faq">Questions</a>
-            <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+            <a href={CONTACT_HREF}>Contact</a>
           </nav>
           <p className="hint">useporta.com</p>
         </div>

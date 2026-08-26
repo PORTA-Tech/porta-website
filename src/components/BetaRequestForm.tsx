@@ -131,7 +131,7 @@ export default function BetaRequestForm({
       </div>
 
       <button className="scene-access-button" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Sending..." : "Send me the download"}
+        {isSubmitting ? "Sending..." : "Send me the link"}
       </button>
 
       {requestState.message && requestState.tone !== "idle" && (

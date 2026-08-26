@@ -1,27 +1,30 @@
-// Every outbound destination on the page, in one place.
-// Answers to the build brief's §13 open questions live here.
+// Every outbound destination and every call to action, in one place.
 
 /** GitHub auto-resolves this to the newest published AriAgentInstaller.msi. */
 export const DOWNLOAD_URL =
   "https://github.com/PORTA-Tech/porta-windows-releases/releases/latest/download/AriAgentInstaller.msi";
 
-/**
- * The "Download for Windows" buttons scroll to the request form rather than
- * pulling the MSI straight down — the form is the only way a visitor can reach
- * us. The direct MSI link above is still used by the Solo plan's CTA.
- */
-export const DOWNLOAD_HREF = "#download";
-
 export const CONTACT_EMAIL = "insideporta2@gmail.com";
 
-export function talkToUs(plan: string) {
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Porta ${plan} plan`)}`;
-}
+/**
+ * ONE verb, everywhere. The page previously offered "Try it free", "Download for Windows",
+ * "Start 14 days free" and "Send me the download" for a single action, which reads as four
+ * different offers. Nav, hero and the Solo plan all say this and all land on the form.
+ */
+export const CTA_LABEL = "Try Ari free";
+export const CTA_HREF = "#download";
 
 /**
- * §7 — the demo report at reports.useporta.com/r/demo does not exist yet, and
- * creating it deploys the live report service. Until it does, the button is an
- * in-page anchor to the report section rather than a dead link.
+ * §7 of the first brief — the demo report at reports.useporta.com/r/demo does not exist yet,
+ * and creating it deploys the live report service. Until it does, this is an in-page anchor
+ * rather than a dead link.
  */
-export const REPORT_DEMO_HREF = "#report";
-export const REPORT_DEMO_LABEL = "See a real report ↓";
+export const REPORT_HREF = "#report";
+export const REPORT_LABEL = "See a real report ↓";
+
+/** The footer's Contact link has to resolve somewhere. */
+export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Ari")}`;
+
+export function talkToUs(plan: string) {
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Ari ${plan} plan`)}`;
+}

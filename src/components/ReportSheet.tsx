@@ -5,7 +5,48 @@
  * `client` is what lands in the client's inbox. `private` is the same week
  * with everything they never get to see.
  */
+import EffortByDay, { type EffortDay } from "./EffortByDay";
+
 const PT20 = { paddingTop: 20 } as const;
+
+/**
+ * The week, split by day AND by task. Every column sums to that day's hours and every task
+ * sums to its row in the work table, so the chart, the table and the share bar all agree:
+ *   Mon 5.2 · Tue 4.8 · Wed — · Thu 4.9 · Fri 3.5   =  18.4h
+ *   t1 7.6 · t2 4.2 · t3 3.1 · t4 2.4 · t5 1.1      =  18.4h
+ */
+const EFFORT_DAYS: EffortDay[] = [
+  {
+    label: "MON",
+    segments: [
+      { token: "--t1", task: "Checkout flow rebuild", hours: 4.0 },
+      { token: "--t2", task: "Payment error states", hours: 1.2 },
+    ],
+  },
+  {
+    label: "TUE",
+    segments: [
+      { token: "--t1", task: "Checkout flow rebuild", hours: 3.6 },
+      { token: "--t2", task: "Payment error states", hours: 1.2 },
+    ],
+  },
+  { label: "WED", segments: [] },
+  {
+    label: "THU",
+    segments: [
+      { token: "--t2", task: "Payment error states", hours: 1.8 },
+      { token: "--t3", task: "Mobile navigation", hours: 3.1 },
+    ],
+  },
+  {
+    label: "FRI",
+    segments: [
+      { token: "--t4", task: "Account settings", hours: 2.4 },
+      { token: "--t5", task: "Shipping rules", hours: 1.1 },
+    ],
+  },
+];
+
 
 function Divider({ gap = 22 }: { gap?: number }) {
   return (
@@ -38,50 +79,58 @@ function Kpi({
   );
 }
 
-function Day({
-  label,
-  height,
-  value,
-  colour,
-  numeric = true,
-}: {
-  label: string;
-  height?: number;
-  value: string;
-  colour?: string;
-  numeric?: boolean;
-}) {
-  if (height === undefined) {
-    return (
-      <div className="day zero">
-        <div className="bar" />
-        <div className="hv">{value}</div>
-        <div className="lb">{label}</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="day">
-      <div
-        className="bar"
-        style={{ height: `${height}%`, ...(colour ? { background: colour } : null) }}
-      />
-      <div className={numeric ? "hv num" : "hv"}>{value}</div>
-      <div className="lb">{label}</div>
-    </div>
-  );
-}
-
 const HEADING = "Harbor — website rebuild";
 const PERIOD = "9 – 13 September 2026  ·  week 4";
 
 const WORK_ROWS = [
-  { token: "--t1", name: "Checkout flow rebuild", status: "✓ Done", statusClass: "st done", width: 100, hours: "7.6" },
-  { token: "--t2", name: "Payment error states", status: "✓ Done", statusClass: "st done", width: 55, hours: "4.2" },
-  { token: "--t3", name: "Mobile navigation", status: "✓ Done", statusClass: "st done", width: 41, hours: "3.1" },
-  { token: "--t4", name: "Account settings", status: "In progress", statusClass: "st", width: 32, hours: "2.4" },
-  { token: "--t5", name: "Shipping rules", status: "Waiting on you", statusClass: "st blk", width: 14, hours: "1.1" },
+  {
+    token: "--t1",
+    name: "Checkout flow rebuild",
+    // The result line is the argument of the whole page: the hours are counted, but the
+    // sentence is the freelancer's own, typed into the evening card.
+    result: "Live on staging. Card, Apple Pay and one failure path all tested.",
+    status: "✓ Done",
+    statusClass: "st done",
+    width: 100,
+    hours: "7.6",
+  },
+  {
+    token: "--t2",
+    name: "Payment error states",
+    result:
+      "Every Stripe decline now says what to do next instead of “something went wrong”.",
+    status: "✓ Done",
+    statusClass: "st done",
+    width: 55,
+    hours: "4.2",
+  },
+  {
+    token: "--t3",
+    name: "Mobile navigation",
+    result: "Rebuilt to work one-handed. Tested on a real phone, not a resized window.",
+    status: "✓ Done",
+    statusClass: "st done",
+    width: 41,
+    hours: "3.1",
+  },
+  {
+    token: "--t4",
+    name: "Account settings",
+    result: "Email and password done. Notification preferences still to come.",
+    status: "In progress",
+    statusClass: "st",
+    width: 32,
+    hours: "2.4",
+  },
+  {
+    token: "--t5",
+    name: "Shipping rules",
+    result: "Blocked since the 3rd, waiting on the zone list from Marc.",
+    status: "Waiting on you",
+    statusClass: "st blk",
+    width: 14,
+    hours: "1.1",
+  },
 ];
 
 const SHARE = [
@@ -90,6 +139,19 @@ const SHARE = [
   { token: "--t3", pct: 16.8, label: "17%", name: "Mobile navigation" },
   { token: "--t4", pct: 13.1, label: "13%", name: "Account settings" },
   { token: "--t5", pct: 6, label: "6%", name: "Shipping rules" },
+];
+
+/**
+ * The private strip, on the same geometry. The scores are out of 100 and drive the column
+ * height against the best day, so a strong day and a choppy one are actually different
+ * heights — they previously all collapsed to the same 35px.
+ */
+const FOCUS_DAYS: EffortDay[] = [
+  { label: "MON", valueLabel: "strong", segments: [{ token: "--t3", task: "Focus", hours: 78 }] },
+  { label: "TUE", valueLabel: "choppy", segments: [{ token: "--t4", task: "Focus", hours: 52 }] },
+  { label: "WED", valueLabel: "—", segments: [] },
+  { label: "THU", valueLabel: "strong", segments: [{ token: "--t3", task: "Focus", hours: 84 }] },
+  { label: "FRI", valueLabel: "scattered", segments: [{ token: "--t2", task: "Focus", hours: 38 }] },
 ];
 
 function ClientSheet() {
@@ -147,17 +209,12 @@ function ClientSheet() {
       <Divider />
 
       <div className="pad" style={PT20}>
-        <p className="stitle">Hours by day</p>
+        <p className="stitle">Effort by day</p>
         <p className="ssub" style={{ paddingBottom: 16 }}>
-          Wednesday wasn&apos;t worked on this project.
+          Each day split by the task worked on. Days with no work on this project are shown as
+          gaps rather than removed.
         </p>
-        <div className="days">
-          <Day label="MON" height={66} value="5.2h" />
-          <Day label="TUE" height={61} value="4.8h" />
-          <Day label="WED" value="—" />
-          <Day label="THU" height={62} value="4.9h" />
-          <Day label="FRI" height={44} value="3.5h" />
-        </div>
+        <EffortByDay days={EFFORT_DAYS} />
       </div>
 
       <Divider />
@@ -190,7 +247,13 @@ function ClientSheet() {
         <p className="stitle" style={{ paddingBottom: 14 }}>
           The work
         </p>
-        <table className="work">
+        <table className="work work-client">
+          <colgroup>
+            <col style={{ width: "45%" }} />
+            <col style={{ width: "21%" }} />
+            <col style={{ width: "22%" }} />
+            <col style={{ width: "12%" }} />
+          </colgroup>
           <thead>
             <tr>
               <th>Task</th>
@@ -207,6 +270,7 @@ function ClientSheet() {
                     <i className="sw" style={{ background: `var(${row.token})` }} />
                     {row.name}
                   </span>
+                  <span className="res">{row.result}</span>
                 </td>
                 <td>
                   <span className={row.statusClass}>{row.status}</span>
@@ -236,7 +300,7 @@ function ClientSheet() {
 
       <Divider />
       <div className="sh-foot">
-        <span>Measured by Porta · useporta.com</span>
+        <span>Measured by Ari · useporta.com</span>
         <span>Permanent link · not indexed</span>
       </div>
     </article>
@@ -335,13 +399,7 @@ function PrivateSheet() {
         <p className="ssub" style={{ paddingBottom: 16 }}>
           Focus, pressure, and what pulled you off. Yours alone.
         </p>
-        <div className="days">
-          <Day label="MON" height={78} value="strong" colour="var(--t3)" numeric={false} />
-          <Day label="TUE" height={52} value="choppy" colour="var(--t4)" numeric={false} />
-          <Day label="WED" value="—" />
-          <Day label="THU" height={84} value="strong" colour="var(--t3)" numeric={false} />
-          <Day label="FRI" height={38} value="scattered" colour="var(--t2)" numeric={false} />
-        </div>
+        <EffortByDay days={FOCUS_DAYS} />
       </div>
 
       <div className="pad" style={PT20}>

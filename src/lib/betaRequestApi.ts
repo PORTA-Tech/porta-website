@@ -24,21 +24,27 @@ type BetaRequestFailure = {
   code?: string;
 };
 
-const DEFAULT_API_BASE_URL = "https://porta-control-plane.onrender.com";
+const DEFAULT_CONTROL_PLANE_URL = "https://porta-control-plane.onrender.com";
 const REQUEST_TIMEOUT_MS = 20000;
 
-function getApiBaseUrl() {
-  const configuredBaseUrl = import.meta.env.VITE_PORTA_API_BASE_URL?.trim();
-  if (!configuredBaseUrl) {
-    return DEFAULT_API_BASE_URL;
+/**
+ * Deliberately NOT VITE_PORTA_API_BASE_URL. That variable is set in this site's Render build to
+ * porta-api, a different service, and reading it here sent the form there — a 404 from an Express
+ * app that has no such route. This endpoint lives on the control plane specifically, so it gets
+ * its own variable and a default that is correct without any dashboard configuration.
+ */
+function getControlPlaneUrl() {
+  const configured = import.meta.env.VITE_PORTA_CONTROL_PLANE_URL?.trim();
+  if (!configured) {
+    return DEFAULT_CONTROL_PLANE_URL;
   }
 
-  return configuredBaseUrl.replace(/\/+$/, "");
+  return configured.replace(/\/+$/, "");
 }
 
 function getEndpoint(path: string) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${getApiBaseUrl()}${normalizedPath}`;
+  return `${getControlPlaneUrl()}${normalizedPath}`;
 }
 
 function normalizeFailure(

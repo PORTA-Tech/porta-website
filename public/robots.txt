@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Client reports live on their own host and are deliberately not indexed.

@@ -1,0 +1,61 @@
+/* ═══════════════════════════════════════════════════════════════
+   PORTA — self-hosted faces
+
+   First paint used to wait on fonts.googleapis.com, and Lighthouse
+   mobile swung between 87 and 99 purely on how fast that round trip
+   came back. Same origin, so the CSS and the faces arrive together.
+
+   Latin only, no italic, weight axis only. The page uses no italic —
+   its one <em> is set back to normal — and no non-Latin text, so the
+   other subsets were bytes that could never be read.
+
+   Files vendored from Fontsource 5.3.0:
+     @fontsource-variable/bricolage-grotesque
+     @fontsource-variable/instrument-sans
+     @fontsource/ibm-plex-mono
+   All three are SIL Open Font License 1.1. To refresh, reinstall the
+   package and recopy the matching latin file from its files/ folder.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Latin, matching Fontsource's own range for these families. */
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url('../fonts/bricolage-grotesque-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Instrument Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url('../fonts/instrument-sans-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('../fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('../fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+}

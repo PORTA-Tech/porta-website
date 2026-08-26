@@ -1,452 +1,598 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import BetaRequestForm from "./components/BetaRequestForm";
+import CheckInCard from "./components/CheckInCard";
+import DigestMail from "./components/DigestMail";
+import PlanCard from "./components/PlanCard";
+import ReportSheet from "./components/ReportSheet";
+import ReportToggle, { type ReportTab } from "./components/ReportToggle";
+import Widget from "./components/Widget";
+import {
+  CONTACT_EMAIL,
+  DOWNLOAD_HREF,
+  DOWNLOAD_URL,
+  REPORT_DEMO_HREF,
+  REPORT_DEMO_LABEL,
+  talkToUs,
+} from "./lib/links";
 
-// Always resolves to the newest release's AriAgentInstaller.msi — no need to bump this per release.
-const DOWNLOAD_URL = "https://github.com/PORTA-Tech/porta-windows-releases/releases/latest/download/AriAgentInstaller.msi";
+const HERO_SPARK =
+  "0,15 14,13 28,14 42,10 56,12 70,8 84,11 98,7 112,9 126,6 140,8 154,5 168,7 182,4 196,6 210,5 224,7 238,4 252,6 266,5 280,6";
+const DAY_SPARK =
+  "0,17 16,14 32,15 48,11 64,13 80,9 96,10 112,6 128,8 144,5 160,7 176,4 192,6 208,3 224,5 240,4 256,6 280,4";
 
-const audiences = [
-  { title: "Founders", detail: "For days split across decisions, hiring, docs, meetings, and constant switching." },
-  { title: "Startup teams", detail: "For work that keeps jumping between chat, tickets, docs, and shifting priorities." },
-  { title: "PMs", detail: "For people balancing planning, writing, meetings, and cross-team follow-up." },
-  { title: "Engineers", detail: "For people trying to protect deep work while code, docs, and messages keep pulling." },
-  { title: "Consultants", detail: "For people moving between clients, calls, decks, notes, and analysis." },
-  { title: "Analysts", detail: "For long stretches of research, spreadsheets, reports, and context switching." },
-  { title: "Designers", detail: "For focused creative work mixed with reviews, feedback, and collaboration." },
+const REPORT_TABS: ReportTab[] = [
+  { id: "tab-client", controls: "v-client", label: "What your client sees" },
+  { id: "tab-you", controls: "v-you", label: "What you see" },
 ];
 
-// ── SVG icons ─────────────────────────────────────────────────────────────
-const DownloadIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-    <polyline points="7 10 12 15 17 10"/>
-    <line x1="12" y1="15" x2="12" y2="3"/>
-  </svg>
-);
-const CheckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12"/>
-  </svg>
-);
-const IconEye = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-const IconBell = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-  </svg>
-);
-const IconTarget = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-  </svg>
-);
-const IconShield = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-  </svg>
-);
-const IconCamera = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
-const IconKey = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-  </svg>
-);
-const LogoIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
-  </svg>
-);
+const REPORT_HINTS = [
+  "One week of work, exactly as it lands in your client's inbox.",
+  "The same week, with everything your client never gets to see.",
+];
 
-// ── Screenshot frame ───────────────────────────────────────────────────────
-function ScreenshotFrame({ src, alt, modifier = "" }: { src: string; alt: string; modifier?: string }) {
-  return (
-    <div className={`screenshot-frame ${modifier}`}>
-      <div className="screenshot-titlebar">
-        <span className="screenshot-dot screenshot-dot--red" />
-        <span className="screenshot-dot screenshot-dot--yellow" />
-        <span className="screenshot-dot screenshot-dot--green" />
-      </div>
-      <img className="screenshot-img" src={src} alt={alt} />
-    </div>
-  );
-}
-
-// ── Ari feature card ───────────────────────────────────────────────────────
-function AriCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="ari-card">
-      <div className="ari-card-icon">{icon}</div>
-      <h3 className="ari-card-title">{title}</h3>
-      <p className="ari-card-desc">{desc}</p>
-    </div>
-  );
-}
-
-// ── Modal ──────────────────────────────────────────────────────────────────
-type ModalKey = "privacy" | "terms" | "contact";
-
-const MODAL_CONTENT: Record<ModalKey, { title: string; body: React.ReactNode }> = {
-  privacy: {
-    title: "Privacy",
-    body: (
-      <p>
-        Ari runs entirely on your device. We collect nothing from inside the app — no keystrokes,
-        no screen content, no file names. The only data we receive is your email if you contact us.
-        Local session data stays on your machine and can be deleted at any time from the app settings.
-      </p>
-    ),
+const PROBLEMS = [
+  {
+    n: "01",
+    title: "You spend Friday remembering",
+    body: "Scrolling back through your own week to work out what you actually did, because nothing wrote it down while you were doing it.",
   },
-  terms: {
-    title: "Terms",
-    body: (
-      <p>
-        Ari is free during beta. By downloading, you agree to use it on your own Windows machine
-        for personal productivity. We may release updates automatically. Your data never leaves
-        your device. We&apos;re not responsible for any interruptions to the beta service.
-      </p>
-    ),
+  {
+    n: "02",
+    title: "Your invoice has nothing behind it",
+    body: "A number and one line of description. If the client questions it, all you have is what you remember. Memory loses that argument.",
   },
-  contact: {
-    title: "Contact",
-    body: (
-      <p>
-        Reach us at{" "}
-        <a href="mailto:insideporta2@gmail.com" className="modal-link">
-          insideporta2@gmail.com
-        </a>
-      </p>
-    ),
+  {
+    n: "03",
+    title: "Silence worries people",
+    body: "They can't see you working, so they check in. You reply. Now they've learned that asking works, so they ask again.",
   },
-};
+];
 
-function Modal({ modalKey, onClose }: { modalKey: ModalKey; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+const RULES = [
+  ["Nothing is guessed", "Every hour was counted while you were working."],
+  [
+    "It counts low, never high",
+    "Breaks aren't included, so the total sits under the clock on the wall.",
+  ],
+  [
+    "Days off show as gaps",
+    "Didn't work Wednesday? The chart says so. Hiding it is how you lose someone.",
+  ],
+  [
+    'No "time remaining"',
+    "A guess you made for yourself turns into a promise the second they read it.",
+  ],
+  ["3 of 5 tasks, not 60%", "Tasks aren't the same size. A percentage pretends they are."],
+  [
+    "Once sent, it's frozen",
+    "Tidying your notes later changes the next report, never one they already have.",
+  ],
+  [
+    "You keep a copy of what was sent",
+    "The numbers, the wording, who got it, and when.",
+  ],
+  [
+    "It never claims a win you didn't confirm",
+    "The summary comes from what you said, never from which apps were open.",
+  ],
+];
 
-  const { title, body } = MODAL_CONTENT[modalKey];
+const NEVER = [
+  ["Takes screenshots", "Not on a timer. Not ever."],
+  ["Reads what you type", "Keystrokes are counted, never recorded."],
+  ["Sees your files", "It knows you were in an editor. Not which file."],
+  ["Scores you to your client", "They get hours and outcomes. No grade."],
+  ["Sends on its own", "Every report leaves because you pressed send."],
+  ["Shows them money", "Your rate stays on your machine."],
+];
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
-        <h2 className="modal-title" id="modal-title">{title}</h2>
-        <div className="modal-body">{body}</div>
-      </div>
-    </div>
-  );
-}
+const FAQ = [
+  [
+    "What if the hours look wrong?",
+    "Drop any line from the report and the total moves with it. You can't push an hour up, and that's the point. A number you can edit is worth nothing.",
+  ],
+  [
+    "What if I forget to tell it what I'm doing?",
+    "The counting doesn't need you. The evening card catches up.",
+  ],
+  [
+    "Can one client see another?",
+    "No. A report covers one project, and the link holds that report and nothing else.",
+  ],
+  [
+    "Does it work offline?",
+    "Yes. Everything is counted and kept on your machine. Only sending needs a connection.",
+  ],
+  ["Who does the email come from?", "Your name. If your client hits reply, it reaches you, not us."],
+  [
+    "What if I stop paying?",
+    "Links you already sent keep working. Your client's copy shouldn't break over something between you and us.",
+  ],
+];
 
-// ── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
-  const [navScrolled, setNavScrolled] = useState(false);
-  const [activeModal, setActiveModal] = useState<ModalKey | null>(null);
-  const [selectedAudienceTitle, setSelectedAudienceTitle] = useState<string | null>(null);
-  const [hoveredAudienceTitle, setHoveredAudienceTitle] = useState<string | null>(null);
-  const [supportsHover, setSupportsHover] = useState(false);
-  const pageRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState(0);
 
-  // Nav scroll state
+  // The document is empty until React renders, so the browser's own fragment
+  // scroll finds nothing and a shared /#pricing link lands at the top. Run it
+  // once the page actually exists.
   useEffect(() => {
-    const page = pageRef.current;
-    if (!page) return;
-    const onScroll = () => setNavScrolled(page.scrollTop > 40);
-    page.addEventListener("scroll", onScroll, { passive: true });
-    return () => page.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Scroll reveal
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("visible"); }),
-      { threshold: 0.1 }
-    );
-    const targets = document.querySelectorAll(".reveal");
-    targets.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  // Hover detection
-  useEffect(() => {
-    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const update = () => setSupportsHover(mq.matches);
-    update();
-    if (typeof mq.addEventListener === "function") {
-      mq.addEventListener("change", update);
-      return () => mq.removeEventListener("change", update);
+    const hash = window.location.hash;
+    if (hash.length < 2) {
+      return;
     }
-    mq.addListener(update);
-    return () => mq.removeListener(update);
-  }, []);
 
-  const activeAudienceTitle = hoveredAudienceTitle ?? selectedAudienceTitle;
-  const activeAudience = audiences.find((a) => a.title === activeAudienceTitle) ?? null;
-  const closeModal = () => setActiveModal(null);
+    const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+    target?.scrollIntoView({ behavior: "instant" });
+  }, []);
 
   return (
-    <div className="landing-page" ref={pageRef}>
+    <>
+      <header className="nav">
+        <div className="shell nav-in">
+          <a className="brand" href="#top">
+            <span className="dot" />
+            Porta
+          </a>
+          <nav className="nav-links" aria-label="Main">
+            <a href="#report">The report</a>
+            <a href="#day">A day with Porta</a>
+            <a href="#trust">Why it's believed</a>
+            <a href="#pricing">Pricing</a>
+          </nav>
+          <a className="btn btn-primary btn-sm" href="#pricing">
+            Try it free
+          </a>
+        </div>
+      </header>
 
-      {/* ── MODAL ───────────────────────────────────────────────────── */}
-      {activeModal && <Modal modalKey={activeModal} onClose={closeModal} />}
-
-      {/* ── NAV ─────────────────────────────────────────────────────── */}
-      <nav className={`site-nav${navScrolled ? " nav-scrolled" : ""}`}>
-        <a href="/" className="nav-logo">Ari</a>
-        <ul className="nav-links">
-          <li><a href="#how-it-works">How it works</a></li>
-          <li><a href="#trust">Trust</a></li>
-          <li>
-            <a href={DOWNLOAD_URL} download className="btn-nav">
-              <DownloadIcon />
-              Download
-            </a>
-          </li>
-        </ul>
-      </nav>
-
-      {/* ── HERO ────────────────────────────────────────────────────── */}
-      <div className="hero">
-        <div className="hero-glow" />
-        <div className="hero-glow2" />
-        <div className="hero-inner">
-          <div className="hero-text">
-            <div className="hero-tag">
-              <span className="hero-tag-dot" />
-              AI Focus Agent · Windows
-            </div>
-            <h1 className="hero-h1">Protect Your <em>Focus</em> at Work.</h1>
-            <p className="hero-sub">
-              Ari runs silently on your Windows PC, tracks how your focus moves through the day, and sends you a clear summary every evening.
+      <main id="top">
+        {/* ══ 1. HERO ═══════════════════════════════════════════ */}
+        <section className="shell hero">
+          <div className="hero-copy">
+            <p className="eyebrow">For freelancers and contractors · Windows</p>
+            <h1>
+              Stop writing
+              <br />
+              the update.
+            </h1>
+            <p className="lede">
+              Porta counts your work while you do it. At the end of the week it writes the
+              progress report your client is waiting for. You read it and press send.
             </p>
-            <div className="hero-ctas">
-              <a href={DOWNLOAD_URL} download className="btn-primary">
-                <DownloadIcon />
+            <div className="hero-cta">
+              <a className="btn btn-primary" href={DOWNLOAD_HREF}>
                 Download for Windows
               </a>
-              <a href="#how-it-works" className="btn-ghost">See how it works →</a>
+              <a className="btn btn-ghost" href={REPORT_DEMO_HREF}>
+                {REPORT_DEMO_LABEL}
+              </a>
             </div>
-            <div className="hero-meta">
-              <div className="hero-meta-item"><CheckIcon />Free beta</div>
-              <div className="hero-meta-item"><CheckIcon />Windows 10 &amp; 11</div>
-              <div className="hero-meta-item"><CheckIcon />No account required</div>
-            </div>
+            <p className="hint">14 days free · No card · Windows 10 and 11</p>
           </div>
 
-          {/* Widget mockup */}
-          <div className="hero-visual">
-            <div className="widget-glow-ring" />
-            <div className="widget-wrap">
-              <div className="widget-main">
-                <div className="widget-topbar">
-                  <div className="widget-logo-row">
-                    <div className="widget-logo-icon"><LogoIcon /></div>
-                    <span className="widget-logo-text">Ari</span>
-                  </div>
-                  <div className="widget-status-badge">
-                    <span className="status-dot" />
-                    Focused
-                  </div>
-                </div>
-                <div className="widget-focus-score">
-                  <div className="score-ring">
-                    <svg viewBox="0 0 80 80">
-                      <circle className="score-ring-bg" cx="40" cy="40" r="33" />
-                      <circle className="score-ring-fill" cx="40" cy="40" r="33" />
-                    </svg>
-                    <div className="score-number">80</div>
-                  </div>
-                  <div className="score-label">Focus Score</div>
-                </div>
-                <div className="widget-stats">
-                  <div className="widget-stat">
-                    <div className="widget-stat-val">2h <span>14m</span></div>
-                    <div className="widget-stat-lbl">Deep Work</div>
-                  </div>
-                  <div className="widget-stat">
-                    <div className="widget-stat-val">4 <span>sessions</span></div>
-                    <div className="widget-stat-lbl">Today</div>
-                  </div>
-                </div>
-                <div className="widget-ari-card">
-                  <div className="ari-avatar">A</div>
-                  <div className="ari-message">
-                    You&apos;ve been focused for <strong>47 min</strong>. Consider a short break — you&apos;ll come back sharper.
-                  </div>
-                </div>
-              </div>
+          <div>
+            <Widget
+              status="FOCUSED · 31m 04s"
+              spark={HERO_SPARK}
+              work="6h 44m 10s"
+              pressure="68%"
+              pressureWarn
+              task={{ mark: "✓", name: "Checkout flow rebuild", tags: ["Harbor", "planned"] }}
+            />
+            <p className="wg-cap">Sits in the corner. Nothing to open.</p>
+          </div>
+        </section>
 
-              <div className="float-card float-card-1">
-                <div className="float-title">This week</div>
-                {[["Mon","85%"],["Tue","60%"],["Wed","92%"],["Today","45%"]].map(([d,w]) => (
-                  <div key={d} className="float-bar-row">
-                    <div className="float-bar-label">{d}</div>
-                    <div className="float-bar-track"><div className="float-bar-fill" style={{width:w}} /></div>
+        {/* ══ 2. THE REPORT ═════════════════════════════════════ */}
+        <section className="shell stage" id="report">
+          <div className="stage-bar">
+            <ReportToggle
+              tabs={REPORT_TABS}
+              value={view}
+              onChange={setView}
+              label="Report view"
+            />
+            <p className="stage-hint">{REPORT_HINTS[view]}</p>
+          </div>
+
+          <div
+            className="view"
+            id="v-client"
+            role="tabpanel"
+            aria-labelledby="tab-client"
+            hidden={view !== 0}
+          >
+            <ReportSheet variant="client" />
+            <p className="cap">
+              <span className="ar" aria-hidden="true">
+                →
+              </span>
+              Your client clicks a link. Nothing to install, no account, no password. What they
+              see is frozen the moment you send it, so it says the same thing in six months.
+            </p>
+          </div>
+
+          <div
+            className="view"
+            id="v-you"
+            role="tabpanel"
+            aria-labelledby="tab-you"
+            hidden={view !== 1}
+          >
+            <ReportSheet variant="private" />
+            <p className="cap">
+              <span className="ar" aria-hidden="true">
+                →
+              </span>
+              Same week, two views. You draw the line once, and Porta never moves it.
+            </p>
+          </div>
+        </section>
+
+        {/* ══ 3. STATEMENT ══════════════════════════════════════ */}
+        <section className="statement">
+          <div className="shell">
+            <p>
+              They stop asking how it's going, <em>because they can already see.</em>
+            </p>
+          </div>
+        </section>
+
+        {/* ══ 4. THE PROBLEM ════════════════════════════════════ */}
+        <section className="shell band" id="why">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Why this exists</p>
+              <h2>The work is the easy part.</h2>
+              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
+                Proving it is what costs you every week.
+              </p>
+            </div>
+            <div className="probs">
+              {PROBLEMS.map((problem) => (
+                <div className="prob" key={problem.n}>
+                  <span className="prob-n">{problem.n}</span>
+                  <div>
+                    <h3>{problem.title}</h3>
+                    <p>{problem.body}</p>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 5. A DAY WITH PORTA ═══════════════════════════════ */}
+        <section className="shell band" id="day">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "60ch" }}>
+            <p className="eyebrow">A day with Porta</p>
+            <h2>You do the work. It does the paperwork.</h2>
+            <p className="lede">
+              Four moments in a day. You only touch one of them, and it takes about a minute.
+            </p>
+          </div>
+
+          <div className="day-rail">
+            <div className="stop">
+              <p className="stop-when">Morning</p>
+              <h3>It asks what today is for</h3>
+              <p>One card. Pick what you're working on, or add something new.</p>
+              <div className="stop-ui">
+                <CheckInCard variant="morning" />
+              </div>
+            </div>
+
+            <div className="stop">
+              <p className="stop-when">All day</p>
+              <h3>It counts, quietly</h3>
+              <p>
+                No timer to start. No timer to forget to stop. The corner panel shows what's
+                being counted.
+              </p>
+              <div className="stop-ui">
+                <Widget
+                  full
+                  status="FOCUSED · 52m 18s"
+                  spark={DAY_SPARK}
+                  work="4h 12m 30s"
+                  pressure="41%"
+                  task={{ mark: "◷", name: "Account settings", tags: ["Harbor"] }}
+                />
+              </div>
+            </div>
+
+            <div className="stop">
+              <p className="stop-when">Evening</p>
+              <h3>Four taps and the day is closed</h3>
+              <p>
+                It shows what it counted. You say what came of it. That sentence is the one your
+                client reads.
+              </p>
+              <div className="stop-ui">
+                <CheckInCard variant="evening" />
+              </div>
+            </div>
+
+            <div className="stop">
+              <p className="stop-when">11:30 pm</p>
+              <h3>Your day lands in your inbox</h3>
+              <p>Just for you. Nobody else gets this one, and it never mentions a client.</p>
+              <div className="stop-ui">
+                <DigestMail />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 6. THE CHAIN ══════════════════════════════════════ */}
+        <section className="shell band" id="chain">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "58ch" }}>
+            <p className="eyebrow">Where the words come from</p>
+            <h2>One tap becomes one line.</h2>
+            <p className="lede">
+              Nothing in the report is a machine guessing at your work. The hours were counted.
+              The words are yours.
+            </p>
+          </div>
+
+          <div className="chain">
+            <div className="ch-side">
+              <p className="ch-l">You typed this, Thursday 6:40 pm</p>
+              <div className="ch-tap">
+                <p className="q">What came of it?</p>
+                <p className="a">Live on staging, ready for review</p>
+              </div>
+            </div>
+            <div className="ch-ar" aria-hidden="true">
+              →
+            </div>
+            <div className="ch-side">
+              <p className="ch-l">Your client reads this, Friday</p>
+              <div className="ch-out">
+                <p className="l">In the summary</p>
+                <p className="x">
+                  "The checkout flow is rebuilt and live on staging, ready for review. 7.6 hours
+                  across Monday and Tuesday."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 7. WHY IT'S BELIEVED ══════════════════════════════ */}
+        <section className="shell band" id="trust">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Why a client believes it</p>
+              <h2>Counted, not remembered.</h2>
+              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
+                Anyone can argue with an invoice. These rules mean your answer is the
+                measurement, not your word.
+              </p>
+            </div>
+            <div className="rules">
+              {RULES.map(([title, body], index) => (
+                <div className="ri" key={title}>
+                  <span className="mk">{String(index + 1).padStart(2, "0")}</span>
+                  <p>
+                    <b>{title}</b>
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 8. PRIVACY ════════════════════════════════════════ */}
+        <section className="shell band" id="privacy">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "60ch" }}>
+            <p className="eyebrow">Privacy</p>
+            <h2>Other tools prove your work by watching you.</h2>
+            <p className="lede">
+              Screenshots every ten minutes. Keystroke counts. A score your client can read. It
+              works, and it costs you your dignity. Porta counts the shape of the work, never
+              what's in it.
+            </p>
+          </div>
+
+          <div className="never">
+            <p className="eyebrow">Porta never</p>
+            <div className="ng">
+              {NEVER.map(([title, body]) => (
+                <div className="ni" key={title}>
+                  <span className="x" aria-hidden="true">
+                    ✕
+                  </span>
+                  <p>
+                    <b>{title}</b>
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 9. FIT ════════════════════════════════════════════ */}
+        <section className="shell band" id="fit">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "56ch" }}>
+            <p className="eyebrow">Fit</p>
+            <h2>Who this is for, and who it isn't.</h2>
+          </div>
+          <div className="fit">
+            <div className="fc yes">
+              <h3>You'll get it straight away if</h3>
+              <ul>
+                {[
+                  "You bill by the hour, the day, or on a retainer",
+                  "Your client can't see you work, and asks how it's going",
+                  "You work on a Windows PC",
+                  "Jobs run for weeks or months, not an afternoon",
+                ].map((item) => (
+                  <li key={item}>
+                    <span className="mk" aria-hidden="true">
+                      ✓
+                    </span>
+                    {item}
+                  </li>
                 ))}
-              </div>
-
-              <div className="float-card float-card-2">
-                <div className="float-title">Focus Streak</div>
-                <div className="float-streak">7</div>
-                <div className="float-streak-label">days in a row 🔥</div>
-              </div>
+              </ul>
+            </div>
+            <div className="fc no">
+              <h3>Give it a miss if</h3>
+              <ul>
+                {[
+                  "You're on a Mac. There's no Mac version, and we won't pretend there is.",
+                  "You work fixed-price and hours never come up",
+                  "You need invoicing. Porta hands you the hours; your invoicing tool keeps its job.",
+                  "You want to watch a team. This is bought by the person doing the work.",
+                ].map((item) => (
+                  <li key={item}>
+                    <span className="mk" aria-hidden="true">
+                      ✕
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* ── STATS BAR ───────────────────────────────────────────────── */}
-      <div className="stats-bar">
-        <div className="stat-item">
-          <div className="stat-num"><em>0</em> tabs</div>
-          <div className="stat-label">needed to track</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-num">&lt; <em>1 min</em></div>
-          <div className="stat-label">to install &amp; run</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-num"><em>100%</em></div>
-          <div className="stat-label">runs on your machine</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-num"><em>0</em></div>
-          <div className="stat-label">screenshots or keylogging</div>
-        </div>
-      </div>
-
-      {/* ── WIDGET SECTION ──────────────────────────────────────────── */}
-      <section className="site-section" id="widget">
-        <div className="section-tag">Always with you</div>
-        <h2 className="section-h2">Always know where you stand.</h2>
-        <p className="section-sub">A small floating panel shows your focus time, pressure level, and time worked — updated live, without opening anything.</p>
-        <div className="reveal widget-standalone-wrap">
-          <img className="widget-standalone-img" src="/images/widget.png" alt="Ari widget" />
-        </div>
-      </section>
-
-      {/* ── HISTORY SECTION ─────────────────────────────────────────── */}
-      <section className="site-section" id="history">
-        <div className="section-tag">Your day, visualized</div>
-        <h2 className="section-h2">See exactly how your <em>day moved.</em></h2>
-        <p className="section-sub">Ari builds a visual map of your day — focus blocks, distractions, breaks — by the hour. Day, week, or two weeks at a glance.</p>
-        <div className="reveal">
-          <ScreenshotFrame src="/images/history.png" alt="Ari history calendar showing a full day of focus blocks" />
-        </div>
-      </section>
-
-      {/* ── DIGEST SECTION ──────────────────────────────────────────── */}
-      <section className="site-section" id="digest">
-        <div className="section-tag">Every evening</div>
-        <h2 className="section-h2">A clear recap lands in your <em>inbox</em> every night.</h2>
-        <p className="section-sub">At the end of each day, Ari emails you a summary of how you worked — total focus time, pressure moments, what pulled your attention. No app to open.</p>
-        <div className="reveal digest-frame-wrap">
-          <div className="digest-clip-box">
-            <img className="digest-img" src="/images/digest.png" alt="Ari nightly digest email" />
+        {/* ══ 10. PRICING ═══════════════════════════════════════ */}
+        <section className="shell band" id="pricing">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: "56ch" }}>
+            <p className="eyebrow">Pricing</p>
+            <h2>Start on your own. Bring people when you need to.</h2>
+            <p className="lede">
+              If one report saves you an hour of writing, it's paid for the month twice over.
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <section className="site-section" id="how-it-works">
-        <div className="section-tag">When focus slips</div>
-        <h2 className="section-h2">Ari quietly <em>steps in.</em></h2>
-        <p className="section-sub">When overload builds or deep work is interrupted, Ari suggests a break, suppresses notifications, or nudges you back — without breaking your flow.</p>
-        <div className="cards-grid reveal">
-          <AriCard icon={<IconEye />}    title="Suggest a break"    desc="A short pause when overload keeps rising." />
-          <AriCard icon={<IconBell />}   title="Quiet notifications" desc="Silenced during deep work, turned back on after." />
-          <AriCard icon={<IconTarget />} title="Stay on task"       desc="A nudge when your attention drifts." />
-        </div>
-      </section>
-
-      {/* ── TRUST SECTION ───────────────────────────────────────────── */}
-      <section className="site-section" id="trust">
-        <div className="section-tag">Privacy</div>
-        <h2 className="section-h2">Your data stays <em>on your device.</em></h2>
-        <p className="section-sub">Ari never reads what you type, never takes screenshots, never logs what files you open. It only sees the rhythm of your keyboard, mouse, and which app is in focus.</p>
-        <div className="cards-grid reveal">
-          <AriCard icon={<IconKey />}    title="No keylogging"  desc="Ari never reads what you type or copies clipboard contents." />
-          <AriCard icon={<IconCamera />} title="No screenshots" desc="Ari never captures your screen or records what you see." />
-          <AriCard icon={<IconShield />} title="No file names"  desc="Ari only sees the rhythm of your keyboard, mouse, and which app is in focus." />
-        </div>
-      </section>
-
-      {/* ── WHO IT'S FOR ─────────────────────────────────────────────── */}
-      <section className="site-section" id="for">
-        <div className="section-tag">Who it&apos;s for</div>
-        <h2 className="section-h2">For anyone who does <em>deep work</em> at a computer.</h2>
-        <div onMouseLeave={() => { if (supportsHover) setHoveredAudienceTitle(null); }}>
-          <div className="chips-cloud">
-            {audiences.map((audience, i) => (
-              <button
-                key={audience.title}
-                type="button"
-                className="audience-chip reveal"
-                style={{ transitionDelay: `${i * 40}ms` }}
-                data-active={activeAudienceTitle === audience.title ? "true" : "false"}
-                onMouseEnter={() => { if (supportsHover) setHoveredAudienceTitle(audience.title); }}
-                onFocus={() => setHoveredAudienceTitle(audience.title)}
-                onBlur={() => { if (supportsHover) setHoveredAudienceTitle(null); }}
-                onClick={() => {
-                  if (!supportsHover) {
-                    setSelectedAudienceTitle((c) => c === audience.title ? null : audience.title);
-                  }
-                }}
-              >
-                {audience.title}
-              </button>
-            ))}
+          <div className="plans">
+            <PlanCard
+              lead
+              name="Solo"
+              audience="One person, as many clients as you like."
+              amount="$19"
+              per="a month"
+              hint="or $15 a month paid yearly"
+              features={[
+                "Unlimited reports and clients",
+                "Counted automatically, no timers",
+                "A permanent link per report, plus PDF",
+                "Daily and weekly email, just for you",
+                "Sent in your name, replies come to you",
+              ]}
+              cta={{ label: "Start 14 days free", href: DOWNLOAD_URL, primary: true }}
+              note="No card. Send a real report first."
+            />
+            <PlanCard
+              name="Team"
+              audience="Three or more of you, on shared projects."
+              amount="$15"
+              amountSmall
+              per="per person, a month"
+              hint="3 people minimum"
+              features={[
+                "Everything in Solo",
+                "Shared projects and clients",
+                "One report covering the whole team's week",
+                "Each person's private view stays private",
+              ]}
+              cta={{ label: "Talk to us", href: talkToUs("Team") }}
+              note="Tell us how you work and we'll set it up."
+            />
+            <PlanCard
+              name="Agency"
+              audience="A studio or agency reporting to many clients."
+              amount="Let's talk"
+              amountSmall
+              amountNumeric={false}
+              hint="priced on how many of you there are"
+              features={[
+                "Everything in Team",
+                "Set up with you, machine by machine",
+                "Someone you can call",
+              ]}
+              cta={{ label: "Talk to us", href: talkToUs("Agency") }}
+              note="Usually a 20 minute call."
+            />
           </div>
-          {activeAudience && (
-            <div className="audience-detail">
-              <div className="audience-detail-title">{activeAudience.title}</div>
-              <p className="audience-detail-text">{activeAudience.detail}</p>
+        </section>
+
+        {/* ══ 11. DOWNLOAD ══════════════════════════════════════ */}
+        <section className="shell band" id="download">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Download</p>
+              <h2>Put it on your machine.</h2>
+              <p style={{ fontSize: "15.5px", color: "var(--ink-3)" }}>
+                Windows 10 and 11. Fourteen days free, no card. We'll email you the link.
+              </p>
             </div>
-          )}
-        </div>
-      </section>
+            <BetaRequestForm
+              title="Where should we send it?"
+              description="Two fields, and one question we'd genuinely like the answer to."
+            />
+          </div>
+        </section>
 
-      {/* ── DOWNLOAD CTA ─────────────────────────────────────────────── */}
-      <div className="cta-section" id="download">
-        <div className="cta-box reveal">
-          <div className="section-tag">Free during beta</div>
-          <h2 className="cta-h2">Your best work is waiting.</h2>
-          <p className="cta-sub">Download Ari and stay in focus — runs silently on Windows 10 &amp; 11, no account needed.</p>
-          <div className="cta-buttons">
-            <a href={DOWNLOAD_URL} download className="btn-primary">
-              <DownloadIcon />
+        {/* ══ 12. FAQ ═══════════════════════════════════════════ */}
+        <section className="shell band" id="faq">
+          <div className="split">
+            <div className="split-head">
+              <p className="eyebrow">Before you ask</p>
+              <h2>The usual questions.</h2>
+            </div>
+            <div className="faq">
+              {FAQ.map(([question, answer]) => (
+                <div className="qa" key={question}>
+                  <h3>{question}</h3>
+                  <p>{answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ 13. CLOSE ═════════════════════════════════════════ */}
+        <section className="shell band close">
+          <h2>Send the week. Not an email about it.</h2>
+          <p className="lede">
+            Install it on a Monday. By Friday there's a report waiting, and you didn't write a
+            word of it.
+          </p>
+          <div className="hero-cta">
+            <a className="btn btn-primary" href={DOWNLOAD_HREF}>
               Download for Windows
             </a>
+            <a className="btn btn-ghost" href={REPORT_DEMO_HREF}>
+              {REPORT_DEMO_LABEL}
+            </a>
           </div>
-          <div className="cta-note">
-            <span>Windows 10 &amp; 11</span>
-            <span className="cta-note-sep">·</span>
-            <span>Free beta</span>
-            <span className="cta-note-sep">·</span>
-            <span>No account required</span>
-          </div>
+          <p className="hint">Windows 10 and 11 · 14 days free · No card</p>
+        </section>
+      </main>
+
+      <footer className="foot">
+        <div className="shell foot-in">
+          <a className="brand" href="#top">
+            <span className="dot" />
+            Porta
+          </a>
+          <nav className="foot-links" aria-label="Footer">
+            <a href="#day">How it works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#faq">Questions</a>
+            <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+          </nav>
+          <p className="hint">useporta.com</p>
         </div>
-      </div>
-
-      {/* ── FOOTER ──────────────────────────────────────────────────── */}
-      <footer className="site-footer">
-        <a href="/" className="footer-logo">Ari</a>
-        <ul className="footer-links">
-          <li><button className="footer-link-btn" onClick={() => setActiveModal("privacy")}>Privacy</button></li>
-          <li><button className="footer-link-btn" onClick={() => setActiveModal("terms")}>Terms</button></li>
-          <li><button className="footer-link-btn" onClick={() => setActiveModal("contact")}>Contact</button></li>
-        </ul>
-        <div className="footer-copy">© 2025 Porta</div>
       </footer>
-
-    </div>
+    </>
   );
 }

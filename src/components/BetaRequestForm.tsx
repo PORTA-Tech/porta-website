@@ -17,16 +17,8 @@ type BetaRequestFormProps = {
 const INITIAL_FORM: BetaRequestPayload = {
   workEmail: "",
   role: "",
-  hoursPerDay: "",
+  clientUpdateMethod: "",
 };
-
-const HOURS_OPTIONS = [
-  "Less than 4 hours",
-  "4 to 6 hours",
-  "6 to 8 hours",
-  "8 to 10 hours",
-  "10+ hours",
-];
 
 export default function BetaRequestForm({
   title,
@@ -62,24 +54,21 @@ export default function BetaRequestForm({
       return "Please tell us your role.";
     }
 
-    if (!form.hoursPerDay) {
-      return "Please choose how many hours per day you work on a computer.";
-    }
-
+    // clientUpdateMethod is deliberately optional — it is the question we most
+    // want answered, but not one worth blocking a download over.
     return null;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     const validationError = validateForm();
     if (validationError) {
       setRequestState({ tone: "error", message: validationError });
       return;
     }
 
-    setRequestState({
-      tone: "loading",
-      message: "Sending your beta request...",
-    });
+    setRequestState({ tone: "loading", message: "Sending your request..." });
 
     const result = await submitBetaRequest(form);
     if (!result.ok) {
@@ -98,74 +87,65 @@ export default function BetaRequestForm({
     .join(" ");
 
   return (
-    <>
-      <div className={resolvedPanelClassName}>
-        <h2 className="scene-access-title">{title}</h2>
-        <p className="scene-access-copy">{description}</p>
+    <form className={resolvedPanelClassName} onSubmit={handleSubmit} noValidate>
+      <h3 className="scene-access-title">{title}</h3>
+      <p className="scene-access-copy">{description}</p>
 
-        <div className="scene-access-form">
-          <label className="scene-access-field">
-            <span className="scene-access-label">Work email</span>
-            <input
-              className="scene-access-input"
-              type="email"
-              value={form.workEmail}
-              onChange={(e) => updateField("workEmail", e.target.value)}
-              placeholder="you@company.com"
-              autoComplete="email"
-            />
-          </label>
+      <div className="scene-access-form">
+        <label className="scene-access-field">
+          <span className="scene-access-label">Work email</span>
+          <input
+            className="scene-access-input"
+            type="email"
+            value={form.workEmail}
+            onChange={(e) => updateField("workEmail", e.target.value)}
+            placeholder="you@company.com"
+            autoComplete="email"
+          />
+        </label>
 
-          <label className="scene-access-field">
-            <span className="scene-access-label">Role</span>
-            <input
-              className="scene-access-input"
-              type="text"
-              value={form.role}
-              onChange={(e) => updateField("role", e.target.value)}
-              placeholder="Engineer, PM, founder..."
-              autoComplete="organization-title"
-            />
-          </label>
+        <label className="scene-access-field">
+          <span className="scene-access-label">Role</span>
+          <input
+            className="scene-access-input"
+            type="text"
+            value={form.role}
+            onChange={(e) => updateField("role", e.target.value)}
+            placeholder="Developer, designer, consultant..."
+            autoComplete="organization-title"
+          />
+        </label>
 
-          <label className="scene-access-field">
-            <span className="scene-access-label">Hours per day on a computer</span>
-            <select
-              className="scene-access-input scene-access-select"
-              value={form.hoursPerDay}
-              onChange={(e) => updateField("hoursPerDay", e.target.value)}
-            >
-              <option value="">Choose one</option>
-              {HOURS_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <button
-          className="scene-access-button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Sending request..." : "Request beta access"}
-        </button>
-
-        {requestState.message && requestState.tone !== "idle" && (
-          <div className="scene-access-feedback" data-tone={requestState.tone}>
-            <p className="scene-access-status" data-tone={requestState.tone}>
-              {requestState.message}
-            </p>
-            {requestState.tone === "success" && submittedEmail ? (
-              <p className="scene-access-followup">
-                We will review your request and reply to <strong>{submittedEmail}</strong>.
-              </p>
-            ) : null}
-          </div>
-        )}
+        <label className="scene-access-field">
+          <span className="scene-access-label">
+            How do you tell clients where things stand today?
+          </span>
+          <input
+            className="scene-access-input"
+            type="text"
+            value={form.clientUpdateMethod}
+            onChange={(e) => updateField("clientUpdateMethod", e.target.value)}
+            placeholder="A Friday email, a spreadsheet, they just ask..."
+          />
+        </label>
       </div>
-    </>
+
+      <button className="scene-access-button" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Sending..." : "Send me the download"}
+      </button>
+
+      {requestState.message && requestState.tone !== "idle" && (
+        <div className="scene-access-feedback" data-tone={requestState.tone} role="status">
+          <p className="scene-access-status" data-tone={requestState.tone}>
+            {requestState.message}
+          </p>
+          {requestState.tone === "success" && submittedEmail ? (
+            <p className="scene-access-followup">
+              We&apos;ll reply to <strong>{submittedEmail}</strong>.
+            </p>
+          ) : null}
+        </div>
+      )}
+    </form>
   );
 }

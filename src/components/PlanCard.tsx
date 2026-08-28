@@ -56,7 +56,13 @@ export default function PlanCard({
           </li>
         ))}
       </ul>
-      <a className={cta.primary ? "btn btn-primary" : "btn btn-ghost"} href={cta.href}>
+      <a
+        className={cta.primary ? "btn btn-primary" : "btn btn-ghost"}
+        href={cta.href}
+        // An absolute href here is the installer itself. rel is set because the link leaves our
+        // origin; no target, because a download should start and leave the page where it is.
+        {...(cta.href.startsWith("http") ? { rel: "noopener noreferrer" } : {})}
+      >
         {cta.label}
       </a>
       <p className="plan-note">{note}</p>

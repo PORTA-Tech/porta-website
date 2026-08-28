@@ -6,7 +6,18 @@ import PlanCard from "./components/PlanCard";
 import ReportSheet from "./components/ReportSheet";
 import ReportToggle, { type ReportTab } from "./components/ReportToggle";
 import Widget from "./components/Widget";
-import { CONTACT_HREF, CTA_HREF, CTA_LABEL, REPORT_HREF, REPORT_LABEL, talkToUs } from "./lib/links";
+import {
+  CONTACT_FORM_LABEL,
+  CONTACT_HREF,
+  CTA_HREF,
+  CTA_LABEL,
+  DOWNLOAD_LABEL,
+  DOWNLOAD_URL,
+  REPORT_HREF,
+  REPORT_LABEL,
+  TRIAL_NOTE,
+  talkToUs,
+} from "./lib/links";
 
 const HERO_SPARK =
   "0,15 14,13 28,14 42,10 56,12 70,8 84,11 98,7 112,9 126,6 140,8 154,5 168,7 182,4 196,6 210,5 224,7 238,4 252,6 266,5 280,6";
@@ -471,8 +482,8 @@ export default function App() {
                 "Daily email, just for you",
                 "Sent in your name, replies come to you",
               ]}
-              cta={{ label: CTA_LABEL, href: CTA_HREF, primary: true }}
-              note="No card. Send a real report first."
+              cta={{ label: DOWNLOAD_LABEL, href: DOWNLOAD_URL, primary: true }}
+              note={TRIAL_NOTE}
             />
             <PlanCard
               name="Team"
@@ -486,7 +497,7 @@ export default function App() {
                 "Shared projects and clients, so two people never send the same client two reports",
                 "One report covering the whole team's week",
               ]}
-              cta={{ label: "Talk to us", href: talkToUs("Team") }}
+              cta={{ label: CONTACT_FORM_LABEL, href: talkToUs() }}
               note="Tell us how you work and we'll set it up."
             />
             <PlanCard
@@ -502,7 +513,7 @@ export default function App() {
                 "A named person you can call, not a ticket queue",
                 "New people set up as you hire them",
               ]}
-              cta={{ label: "Talk to us", href: talkToUs("Agency") }}
+              cta={{ label: CONTACT_FORM_LABEL, href: talkToUs() }}
               note="Usually a 20 minute call."
             />
           </div>
@@ -526,19 +537,24 @@ export default function App() {
           </div>
         </section>
 
-        {/* ══ 11. DOWNLOAD — the one call to action ═════════════ */}
-        <section className="shell band" id="download">
+        {/* ══ 11. CONTACT — for Team and Agency only ════════════
+            This used to be the download form, and every button on the page pointed at it. It no
+            longer hands out the installer: Solo downloads straight from the pricing card, so a
+            form standing between a person and a free trial was a toll booth on the one path we
+            most want taken. What is left is a way to reach us about Team and Agency. */}
+        <section className="shell band" id="contact">
           <div className="split">
             <div className="split-head">
-              <p className="eyebrow">Download</p>
-              <h2>Put it on your machine.</h2>
+              <p className="eyebrow">Contact</p>
+              <h2>Setting up a team?</h2>
               <p className="head-sub">
-                Windows 10 and 11. Fourteen days free, no card. We email you the link.
+                Solo is a download, up in Pricing — no form, no card. This is for Team and Agency,
+                or anything else you want to ask.
               </p>
             </div>
             <BetaRequestForm
-              title="Where should we send it?"
-              description="Two fields, and one question we would genuinely like the answer to."
+              title="Tell us how you work"
+              description="This reaches us directly. It does not send you a download — Solo is the button in Pricing."
             />
           </div>
         </section>
